@@ -27,21 +27,26 @@ export default async function Home({
   searchParams: Promise<{ category?: string }>
 }) {
   const { category } = await searchParams
-  const supabase = await createClient()
+  let programList: Program[] = []
 
-  let query = supabase
-    .from('programs')
-    .select('*')
-    .eq('published', true)
-    .order('created_at', { ascending: false })
+  try {
+    const supabase = await createClient()
 
-  if (category && CATEGORIES.includes(category as typeof CATEGORIES[number])) {
-    query = query.eq('category', category)
+    let query = supabase
+      .from('programs')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+
+    if (category && CATEGORIES.includes(category as typeof CATEGORIES[number])) {
+      query = query.eq('category', category)
+    }
+
+    const { data: programs } = await query
+    programList = (programs as Program[]) ?? []
+  } catch {
+    // DB接続エラーは無視して空リストを表示
   }
-
-  const { data: programs } = await query
-
-  const programList = (programs as Program[]) ?? []
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">

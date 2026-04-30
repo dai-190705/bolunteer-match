@@ -3,10 +3,15 @@ import { createClient } from '@/utils/supabase/server'
 import SignOutButton from './SignOutButton'
 
 export default async function Header() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase.auth.getUser()
+    user = data.user
+  } catch {
+    // Supabase接続エラーは無視してヘッダーを表示
+  }
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm">
