@@ -48,10 +48,10 @@ export default async function ProgramDetailPage({
       </Link>
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        {program.banner_image_tall_url && (
-          <div className="w-full aspect-[2/3] max-h-96 overflow-hidden">
+        {program.banner_image_url && (
+          <div className="w-full aspect-[16/9] overflow-hidden">
             <img
-              src={program.banner_image_tall_url}
+              src={program.banner_image_url}
               alt={program.title}
               className="w-full h-full object-cover"
             />

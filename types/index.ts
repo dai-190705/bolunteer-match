@@ -10,7 +10,6 @@ export type Program = {
   published: boolean
   created_at: string
   updated_at: string
-  banner_image_wide_url: string | null
-  banner_image_tall_url: string | null
+  banner_image_url: string | null
   category: 'スキボラ' | 'ちょボラ' | 'ガチボラ' | null
 }

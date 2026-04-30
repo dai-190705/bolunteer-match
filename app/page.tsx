@@ -98,10 +98,10 @@ export default async function Home({
                 href={`/programs/${program.id}`}
                 className="block bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all overflow-hidden"
               >
-                {program.banner_image_wide_url && (
-                  <div className="w-full aspect-[8/5] overflow-hidden">
+                {program.banner_image_url && (
+                  <div className="w-full aspect-[16/9] overflow-hidden">
                     <img
-                      src={program.banner_image_wide_url}
+                      src={program.banner_image_url}
                       alt={program.title}
                       className="w-full h-full object-cover"
                     />

@@ -17,75 +17,42 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
   const [loading, setLoading] = useState(false)
   const [category, setCategory] = useState<string>(program?.category ?? '')
 
-  const [wideUrl, setWideUrl] = useState<string>(program?.banner_image_wide_url ?? '')
-  const [wideUploading, setWideUploading] = useState(false)
-  const [wideError, setWideError] = useState<string | null>(null)
-  const wideInputRef = useRef<HTMLInputElement>(null)
+  const [bannerUrl, setBannerUrl] = useState<string>(program?.banner_image_url ?? '')
+  const [bannerUploading, setBannerUploading] = useState(false)
+  const [bannerError, setBannerError] = useState<string | null>(null)
+  const bannerInputRef = useRef<HTMLInputElement>(null)
 
-  const [tallUrl, setTallUrl] = useState<string>(program?.banner_image_tall_url ?? '')
-  const [tallUploading, setTallUploading] = useState(false)
-  const [tallError, setTallError] = useState<string | null>(null)
-  const tallInputRef = useRef<HTMLInputElement>(null)
-
-  async function handleWideChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleBannerChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
 
-    setWideUploading(true)
-    setWideError(null)
+    setBannerUploading(true)
+    setBannerError(null)
 
     try {
       const supabase = createClient()
-      const filename = `wide-${Date.now()}-${file.name}`
+      const filename = `banner-${Date.now()}-${file.name}`
 
       const { error: uploadError } = await supabase.storage
         .from('banners')
         .upload(filename, file, { upsert: true })
 
       if (uploadError) {
-        setWideError(`アップロードに失敗しました: ${uploadError.message}`)
+        setBannerError(`アップロードに失敗しました: ${uploadError.message}`)
         return
       }
 
       const { data } = supabase.storage.from('banners').getPublicUrl(filename)
-      setWideUrl(data.publicUrl)
+      setBannerUrl(data.publicUrl)
     } finally {
-      setWideUploading(false)
-    }
-  }
-
-  async function handleTallChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setTallUploading(true)
-    setTallError(null)
-
-    try {
-      const supabase = createClient()
-      const filename = `tall-${Date.now()}-${file.name}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('banners')
-        .upload(filename, file, { upsert: true })
-
-      if (uploadError) {
-        setTallError(`アップロードに失敗しました: ${uploadError.message}`)
-        return
-      }
-
-      const { data } = supabase.storage.from('banners').getPublicUrl(filename)
-      setTallUrl(data.publicUrl)
-    } finally {
-      setTallUploading(false)
+      setBannerUploading(false)
     }
   }
 
   async function handleSubmit(formData: FormData) {
     setLoading(true)
     formData.set('published', String(published))
-    formData.set('banner_image_wide_url', wideUrl)
-    formData.set('banner_image_tall_url', tallUrl)
+    formData.set('banner_image_url', bannerUrl)
     formData.set('category', category)
     await action(formData)
     setLoading(false)
@@ -93,22 +60,22 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
 
   return (
     <form action={handleSubmit} className="space-y-6">
-      {/* 一覧用バナー（横長 8:5） */}
+      {/* バナー画像（16:9） */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          一覧用バナー（横長 8:5）
+          バナー画像
         </label>
-        <div className="relative w-full aspect-[8/5] bg-gray-100 rounded-lg border border-gray-200 overflow-hidden mb-3">
-          {wideUrl ? (
+        <div className="relative w-full aspect-[16/9] bg-gray-100 rounded-lg border border-gray-200 overflow-hidden mb-3">
+          {bannerUrl ? (
             <>
               <img
-                src={wideUrl}
-                alt="一覧用バナープレビュー"
+                src={bannerUrl}
+                alt="バナープレビュー"
                 className="w-full h-full object-cover"
               />
               <button
                 type="button"
-                onClick={() => { setWideUrl(''); if (wideInputRef.current) wideInputRef.current.value = '' }}
+                onClick={() => { setBannerUrl(''); if (bannerInputRef.current) bannerInputRef.current.value = '' }}
                 className="absolute top-2 right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-gray-500 hover:text-red-500 shadow text-xs border border-gray-200"
               >
                 ✕
@@ -116,66 +83,23 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-              横長画像（8:5）
+              16:9 画像
             </div>
           )}
         </div>
         <input
-          ref={wideInputRef}
+          ref={bannerInputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
-          onChange={handleWideChange}
-          disabled={wideUploading}
+          onChange={handleBannerChange}
+          disabled={bannerUploading}
           className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
         />
-        {wideUploading && (
+        {bannerUploading && (
           <p className="text-xs text-indigo-500 mt-1">アップロード中...</p>
         )}
-        {wideError && (
-          <p className="text-xs text-red-500 mt-1">{wideError}</p>
-        )}
-      </div>
-
-      {/* 詳細用バナー（縦長 2:3） */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          詳細用バナー（縦長 2:3）
-        </label>
-        <div className="relative w-48 aspect-[2/3] bg-gray-100 rounded-lg border border-gray-200 overflow-hidden mb-3">
-          {tallUrl ? (
-            <>
-              <img
-                src={tallUrl}
-                alt="詳細用バナープレビュー"
-                className="w-full h-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => { setTallUrl(''); if (tallInputRef.current) tallInputRef.current.value = '' }}
-                className="absolute top-2 right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-gray-500 hover:text-red-500 shadow text-xs border border-gray-200"
-              >
-                ✕
-              </button>
-            </>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm text-center px-2">
-              縦長画像（2:3）
-            </div>
-          )}
-        </div>
-        <input
-          ref={tallInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={handleTallChange}
-          disabled={tallUploading}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
-        />
-        {tallUploading && (
-          <p className="text-xs text-indigo-500 mt-1">アップロード中...</p>
-        )}
-        {tallError && (
-          <p className="text-xs text-red-500 mt-1">{tallError}</p>
+        {bannerError && (
+          <p className="text-xs text-red-500 mt-1">{bannerError}</p>
         )}
       </div>
 
@@ -310,7 +234,7 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
       <div className="flex gap-3 pt-2">
         <button
           type="submit"
-          disabled={loading || wideUploading || tallUploading || !category}
+          disabled={loading || bannerUploading || !category}
           className="flex-1 sm:flex-none px-8 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
         >
           {loading ? '保存中...' : submitLabel}
