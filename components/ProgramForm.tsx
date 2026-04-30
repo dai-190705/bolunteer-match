@@ -31,7 +31,8 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
 
     try {
       const supabase = createClient()
-      const filename = `banner-${Date.now()}-${file.name}`
+      const ext = file.name.split('.').pop() ?? 'png'
+      const filename = `banner-${Date.now()}.${ext}`
 
       const { error: uploadError } = await supabase.storage
         .from('banners')
