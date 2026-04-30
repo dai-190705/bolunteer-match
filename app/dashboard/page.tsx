@@ -99,10 +99,10 @@ export default async function DashboardPage() {
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      {program.banner_image_url && (
+                      {program.banner_image_wide_url && (
                         <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0">
                           <img
-                            src={program.banner_image_url}
+                            src={program.banner_image_wide_url}
                             alt=""
                             className="w-full h-full object-cover"
                           />

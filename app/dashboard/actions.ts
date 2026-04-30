@@ -20,7 +20,8 @@ export async function createProgram(formData: FormData) {
 
   const deadline = (formData.get('deadline') as string) || null
 
-  const bannerImageUrl = (formData.get('banner_image_url') as string) || null
+  const bannerImageWideUrl = (formData.get('banner_image_wide_url') as string) || null
+  const bannerImageTallUrl = (formData.get('banner_image_tall_url') as string) || null
   const category = (formData.get('category') as string) || null
 
   const { error } = await supabase.from('programs').insert({
@@ -32,7 +33,8 @@ export async function createProgram(formData: FormData) {
     tags: tags.length > 0 ? tags : null,
     published: formData.get('published') === 'true',
     publisher_id: user.id,
-    banner_image_url: bannerImageUrl,
+    banner_image_wide_url: bannerImageWideUrl,
+    banner_image_tall_url: bannerImageTallUrl,
     category,
   })
 
@@ -59,7 +61,8 @@ export async function updateProgram(id: string, formData: FormData) {
 
   const deadline = (formData.get('deadline') as string) || null
 
-  const bannerImageUrl = (formData.get('banner_image_url') as string) || null
+  const bannerImageWideUrl = (formData.get('banner_image_wide_url') as string) || null
+  const bannerImageTallUrl = (formData.get('banner_image_tall_url') as string) || null
   const category = (formData.get('category') as string) || null
 
   const { error } = await supabase
@@ -72,7 +75,8 @@ export async function updateProgram(id: string, formData: FormData) {
       apply_url: (formData.get('apply_url') as string) || null,
       tags: tags.length > 0 ? tags : null,
       published: formData.get('published') === 'true',
-      banner_image_url: bannerImageUrl,
+      banner_image_wide_url: bannerImageWideUrl,
+      banner_image_tall_url: bannerImageTallUrl,
       category,
     })
     .eq('id', id)
