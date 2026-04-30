@@ -21,17 +21,22 @@ export default async function ProgramDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('programs')
-    .select('*')
-    .eq('id', id)
-    .eq('published', true)
-    .single()
+  let program: Program | null = null
 
-  if (!data) notFound()
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('programs')
+      .select('*')
+      .eq('id', id)
+      .eq('published', true)
+      .single()
+    program = data as Program | null
+  } catch {
+    // ignore
+  }
 
-  const program = data as Program
+  if (!program) notFound()
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">

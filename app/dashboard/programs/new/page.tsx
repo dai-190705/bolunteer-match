@@ -5,10 +5,17 @@ import ProgramForm from '@/components/ProgramForm'
 import { createProgram } from '@/app/dashboard/actions'
 
 export default async function NewProgramPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+
+  try {
+    const supabase = await createClient()
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser()
+    user = authUser
+  } catch {
+    // ignore
+  }
 
   if (!user) redirect('/login')
 

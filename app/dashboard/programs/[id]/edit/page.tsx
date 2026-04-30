@@ -11,23 +11,35 @@ export default async function EditProgramPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+  let program: Program | null = null
+
+  try {
+    const supabase = await createClient()
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser()
+    user = authUser
+  } catch {
+    // ignore
+  }
 
   if (!user) redirect('/login')
 
-  const { data } = await supabase
-    .from('programs')
-    .select('*')
-    .eq('id', id)
-    .eq('publisher_id', user.id)
-    .single()
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('programs')
+      .select('*')
+      .eq('id', id)
+      .eq('publisher_id', user.id)
+      .single()
+    program = data as Program | null
+  } catch {
+    // ignore
+  }
 
-  if (!data) notFound()
-
-  const program = data as Program
+  if (!program) notFound()
 
   async function handleUpdate(formData: FormData) {
     'use server'

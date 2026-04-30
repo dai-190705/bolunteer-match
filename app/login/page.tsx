@@ -3,12 +3,13 @@ import { createClient } from '@/utils/supabase/server'
 import LoginForm from './LoginForm'
 
 export default async function LoginPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (user) redirect('/dashboard')
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) redirect('/dashboard')
+  } catch {
+    // エラー時はログインフォームをそのまま表示
+  }
 
   return (
     <div className="min-h-[calc(100vh-65px)] flex items-center justify-center px-4">

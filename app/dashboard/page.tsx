@@ -17,20 +17,32 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+  let programList: Program[] = []
+
+  try {
+    const supabase = await createClient()
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser()
+    user = authUser
+  } catch {
+    // ignore
+  }
 
   if (!user) redirect('/login')
 
-  const { data: programs } = await supabase
-    .from('programs')
-    .select('*')
-    .eq('publisher_id', user.id)
-    .order('created_at', { ascending: false })
-
-  const programList = (programs as Program[]) ?? []
+  try {
+    const supabase = await createClient()
+    const { data: programs } = await supabase
+      .from('programs')
+      .select('*')
+      .eq('publisher_id', user.id)
+      .order('created_at', { ascending: false })
+    programList = (programs as Program[]) ?? []
+  } catch {
+    // ignore
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
