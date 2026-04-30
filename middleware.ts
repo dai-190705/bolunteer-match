@@ -1,13 +1,23 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/utils/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
-  try {
-    return await updateSession(request)
-  } catch {
-    // middlewareエラー時はそのまま通過
-    return NextResponse.next()
+  const { pathname } = request.nextUrl
+
+  // /dashboard/* はログイン必須
+  if (pathname.startsWith('/dashboard')) {
+    // Supabaseのsession cookieが存在するか確認
+    const hasSession = request.cookies.getAll().some(
+      (cookie) => cookie.name.startsWith('sb-') && cookie.name.includes('-auth-token')
+    )
+
+    if (!hasSession) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
   }
+
+  return NextResponse.next()
 }
 
 export const config = {
