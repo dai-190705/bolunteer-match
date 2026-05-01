@@ -110,12 +110,20 @@ export default function LoginForm() {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
-        学生の方で新規登録は{' '}
-        <Link href="/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
-          こちら
-        </Link>
-      </p>
+      <div className="mt-6 space-y-2 text-center text-sm text-gray-500">
+        <p>
+          学生の方で新規登録は{' '}
+          <Link href="/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
+            こちら
+          </Link>
+        </p>
+        <p>
+          ボランティアを掲載したい方は{' '}
+          <Link href="/publisher-signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
+            パブリッシャー申請
+          </Link>
+        </p>
+      </div>
     </>
   )
 }

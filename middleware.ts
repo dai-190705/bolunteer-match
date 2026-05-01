@@ -3,8 +3,8 @@ import { type NextRequest, NextResponse } from 'next/server'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // /dashboard/* および /mypage はログイン必須
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/mypage')) {
+  // /dashboard/* /mypage /admin はログイン必須
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/mypage') || pathname.startsWith('/admin')) {
     // Supabaseのsession cookieが存在するか確認
     const hasSession = request.cookies.getAll().some(
       (cookie) => cookie.name.startsWith('sb-') && cookie.name.includes('-auth-token')
