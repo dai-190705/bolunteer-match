@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 
 export default function SignUpPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -16,6 +14,7 @@ export default function SignUpPage() {
   const [firstNameKana, setFirstNameKana] = useState('')
   const [school, setSchool] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -26,7 +25,6 @@ export default function SignUpPage() {
       setError('パスワードが一致しません')
       return
     }
-
     if (password.length < 6) {
       setError('パスワードは6文字以上で入力してください')
       return
@@ -36,7 +34,21 @@ export default function SignUpPage() {
 
     try {
       const supabase = createClient()
-      const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: 'student',
+            last_name: lastName,
+            first_name: firstName,
+            last_name_kana: lastNameKana,
+            first_name_kana: firstNameKana,
+            school,
+          },
+          emailRedirectTo: `${location.origin}/auth/callback?next=/mypage`,
+        },
+      })
 
       if (signUpError) {
         setError(signUpError.message)
@@ -44,31 +56,28 @@ export default function SignUpPage() {
         return
       }
 
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('student_profiles')
-          .insert({
-            id: data.user.id,
-            last_name: lastName,
-            first_name: firstName,
-            last_name_kana: lastNameKana,
-            first_name_kana: firstNameKana,
-            school,
-          })
-
-        if (profileError) {
-          setError('プロフィールの保存に失敗しました: ' + profileError.message)
-          setLoading(false)
-          return
-        }
-      }
-
-      router.push('/mypage')
-      router.refresh()
+      setDone(true)
     } catch {
       setError('エラーが発生しました。もう一度お試しください。')
       setLoading(false)
     }
+  }
+
+  if (done) {
+    return (
+      <div className="min-h-[calc(100vh-65px)] flex items-center justify-center px-4">
+        <div className="w-full max-w-md text-center">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10">
+            <div className="text-4xl mb-4">📧</div>
+            <h1 className="text-xl font-bold text-gray-900 mb-3">メールを確認してください</h1>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              <span className="font-medium text-gray-700">{email}</span> 宛に確認メールを送りました。<br />
+              メール内のリンクをクリックして登録を完了してください。
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -83,65 +92,54 @@ export default function SignUpPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* 氏名 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 氏名 <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                    placeholder="性（例: 山田）"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                    placeholder="名（例: 太郎）"
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  placeholder="性（例: 山田）"
+                />
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  placeholder="名（例: 太郎）"
+                />
               </div>
             </div>
 
-            {/* ふりがな */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 ふりがな <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <input
-                    type="text"
-                    value={lastNameKana}
-                    onChange={(e) => setLastNameKana(e.target.value)}
-                    required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                    placeholder="せい（例: やまだ）"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    value={firstNameKana}
-                    onChange={(e) => setFirstNameKana(e.target.value)}
-                    required
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                    placeholder="めい（例: たろう）"
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={lastNameKana}
+                  onChange={(e) => setLastNameKana(e.target.value)}
+                  required
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  placeholder="せい（例: やまだ）"
+                />
+                <input
+                  type="text"
+                  value={firstNameKana}
+                  onChange={(e) => setFirstNameKana(e.target.value)}
+                  required
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  placeholder="めい（例: たろう）"
+                />
               </div>
             </div>
 
-            {/* 所属学校 */}
             <div>
               <label htmlFor="school" className="block text-sm font-medium text-gray-700 mb-1.5">
                 所属学校 <span className="text-red-500">*</span>
@@ -157,7 +155,6 @@ export default function SignUpPage() {
               />
             </div>
 
-            {/* メールアドレス */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
                 メールアドレス <span className="text-red-500">*</span>
@@ -174,7 +171,6 @@ export default function SignUpPage() {
               />
             </div>
 
-            {/* パスワード */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
                 パスワード <span className="text-red-500">*</span>

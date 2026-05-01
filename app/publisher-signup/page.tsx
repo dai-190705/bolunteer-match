@@ -31,7 +31,18 @@ export default function PublisherSignUpPage() {
 
     try {
       const supabase = createClient()
-      const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: 'publisher',
+            name,
+            organization,
+          },
+          emailRedirectTo: `${location.origin}/auth/callback?next=publisher-pending`,
+        },
+      })
 
       if (signUpError) {
         setError(signUpError.message)
@@ -39,25 +50,6 @@ export default function PublisherSignUpPage() {
         return
       }
 
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            name,
-            organization,
-            approved: false,
-          })
-
-        if (profileError) {
-          setError('申請情報の保存に失敗しました: ' + profileError.message)
-          setLoading(false)
-          return
-        }
-      }
-
-      // ログアウトして承認待ち画面へ
-      await supabase.auth.signOut()
       setDone(true)
     } catch {
       setError('エラーが発生しました。もう一度お試しください。')
