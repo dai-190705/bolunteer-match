@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 
 export default function SignUpPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -14,7 +16,6 @@ export default function SignUpPage() {
   const [firstNameKana, setFirstNameKana] = useState('')
   const [school, setSchool] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [done, setDone] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -34,21 +35,7 @@ export default function SignUpPage() {
 
     try {
       const supabase = createClient()
-      const { error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            role: 'student',
-            last_name: lastName,
-            first_name: firstName,
-            last_name_kana: lastNameKana,
-            first_name_kana: firstNameKana,
-            school,
-          },
-          emailRedirectTo: `${location.origin}/auth/callback?next=/mypage`,
-        },
-      })
+      const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
 
       if (signUpError) {
         setError(signUpError.message)
@@ -56,28 +43,31 @@ export default function SignUpPage() {
         return
       }
 
-      setDone(true)
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('student_profiles')
+          .insert({
+            id: data.user.id,
+            last_name: lastName,
+            first_name: firstName,
+            last_name_kana: lastNameKana,
+            first_name_kana: firstNameKana,
+            school,
+          })
+
+        if (profileError) {
+          setError('プロフィールの保存に失敗しました: ' + profileError.message)
+          setLoading(false)
+          return
+        }
+      }
+
+      router.push('/mypage')
+      router.refresh()
     } catch {
       setError('エラーが発生しました。もう一度お試しください。')
       setLoading(false)
     }
-  }
-
-  if (done) {
-    return (
-      <div className="min-h-[calc(100vh-65px)] flex items-center justify-center px-4">
-        <div className="w-full max-w-md text-center">
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10">
-            <div className="text-4xl mb-4">📧</div>
-            <h1 className="text-xl font-bold text-gray-900 mb-3">メールを確認してください</h1>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              <span className="font-medium text-gray-700">{email}</span> 宛に確認メールを送りました。<br />
-              メール内のリンクをクリックして登録を完了してください。
-            </p>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
