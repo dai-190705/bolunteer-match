@@ -3,20 +3,21 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { Application } from '@/types'
 
-function formatDeadline(deadline: string | null) {
-  if (!deadline) return null
-  const d = new Date(deadline)
-  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
-}
-
 const CATEGORY_COLORS: Record<string, string> = {
   スキボラ: 'bg-blue-100 text-blue-800',
   ちょボラ: 'bg-green-100 text-green-800',
   ガチボラ: 'bg-orange-100 text-orange-800',
 }
 
+function formatDeadline(deadline: string | null) {
+  if (!deadline) return null
+  const d = new Date(deadline)
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
+}
+
 export default async function MyPage() {
   let applications: Application[] = []
+  let diaryApplicationIds: Set<string> = new Set()
 
   let user = null
   try {
@@ -37,6 +38,21 @@ export default async function MyPage() {
       .eq('student_id', user.id)
       .order('applied_at', { ascending: false })
     applications = (data as Application[]) ?? []
+  } catch {
+    // ignore
+  }
+
+  // 日記が既に書かれている応募IDを取得
+  try {
+    const supabase = await createClient()
+    const completedIds = applications.filter((a) => a.status === 'completed').map((a) => a.id)
+    if (completedIds.length > 0) {
+      const { data: diaries } = await supabase
+        .from('diary_entries')
+        .select('application_id')
+        .in('application_id', completedIds)
+      diaryApplicationIds = new Set((diaries ?? []).map((d) => d.application_id))
+    }
   } catch {
     // ignore
   }
@@ -87,7 +103,11 @@ export default async function MyPage() {
         ) : (
           <div className="space-y-3">
             {completed.map((app) => (
-              <ApplicationCard key={app.id} app={app} dimmed />
+              <CompletedCard
+                key={app.id}
+                app={app}
+                hasDiary={diaryApplicationIds.has(app.id)}
+              />
             ))}
           </div>
         )}
@@ -102,52 +122,79 @@ export default async function MyPage() {
   )
 }
 
-function ApplicationCard({ app, dimmed = false }: { app: Application; dimmed?: boolean }) {
+function ApplicationCard({ app }: { app: Application }) {
   const program = app.programs
   if (!program) return null
 
-  const CATEGORY_COLORS: Record<string, string> = {
-    スキボラ: 'bg-blue-100 text-blue-800',
-    ちょボラ: 'bg-green-100 text-green-800',
-    ガチボラ: 'bg-orange-100 text-orange-800',
-  }
-
-  function formatDeadline(deadline: string | null) {
-    if (!deadline) return null
-    const d = new Date(deadline)
-    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
-  }
-
   return (
     <Link href={`/programs/${program.id}`}>
-      <div
-        className={`bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow flex items-start justify-between gap-4 ${dimmed ? 'opacity-60' : ''}`}
-      >
+      <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             {program.category && (
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}
-              >
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}>
                 {program.category}
               </span>
             )}
-            {app.status === 'completed' && (
-              <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-600">
-                参加済み
-              </span>
-            )}
           </div>
-          <p className="font-semibold text-gray-900 text-sm leading-snug truncate">
-            {program.title}
-          </p>
+          <p className="font-semibold text-gray-900 text-sm leading-snug">{program.title}</p>
           {program.deadline && (
-            <p className="text-xs text-gray-500 mt-1">
-              締切: {formatDeadline(program.deadline)}
-            </p>
+            <p className="text-xs text-gray-500 mt-1">締切: {formatDeadline(program.deadline)}</p>
           )}
         </div>
       </div>
     </Link>
+  )
+}
+
+function CompletedCard({ app, hasDiary }: { app: Application; hasDiary: boolean }) {
+  const program = app.programs
+  if (!program) return null
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-start justify-between gap-4">
+      <Link href={`/programs/${program.id}`} className="flex-1 min-w-0 opacity-60 hover:opacity-80 transition-opacity">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
+          {program.category && (
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}>
+              {program.category}
+            </span>
+          )}
+          <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-600">
+            参加済み
+          </span>
+        </div>
+        <p className="font-semibold text-gray-900 text-sm leading-snug">{program.title}</p>
+        {program.deadline && (
+          <p className="text-xs text-gray-500 mt-1">締切: {formatDeadline(program.deadline)}</p>
+        )}
+      </Link>
+
+      {/* 体験日記ボタン */}
+      <Link
+        href={`/mypage/diary/${app.id}`}
+        className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          hasDiary
+            ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
+            : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200'
+        }`}
+      >
+        {hasDiary ? (
+          <>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            日記を編集
+          </>
+        ) : (
+          <>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+            日記を書く
+          </>
+        )}
+      </Link>
+    </div>
   )
 }
