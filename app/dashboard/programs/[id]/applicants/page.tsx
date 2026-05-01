@@ -56,12 +56,31 @@ export default async function ApplicantsPage({
 
   try {
     const supabase = await createClient()
-    const { data } = await supabase
+
+    // まず応募データを取得
+    const { data: appData } = await supabase
       .from('applications')
-      .select('*, student_profiles(last_name, first_name, last_name_kana, first_name_kana, school)')
+      .select('*')
       .eq('program_id', id)
       .order('applied_at', { ascending: false })
-    applications = (data as ApplicationWithProfile[]) ?? []
+
+    if (appData && appData.length > 0) {
+      // 応募者のstudent_idリストでプロフィールを一括取得
+      const studentIds = appData.map((a) => a.student_id)
+      const { data: profileData } = await supabase
+        .from('student_profiles')
+        .select('id, last_name, first_name, last_name_kana, first_name_kana, school')
+        .in('id', studentIds)
+
+      const profileMap = Object.fromEntries(
+        (profileData ?? []).map((p) => [p.id, p])
+      )
+
+      applications = appData.map((a) => ({
+        ...a,
+        student_profiles: profileMap[a.student_id] ?? null,
+      })) as ApplicationWithProfile[]
+    }
   } catch {
     // ignore
   }
