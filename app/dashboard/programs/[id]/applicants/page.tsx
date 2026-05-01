@@ -16,7 +16,16 @@ export default async function ApplicantsPage({
 }) {
   const { id } = await params
   let program: Program | null = null
-  let applications: Application[] = []
+  type ApplicationWithProfile = Application & {
+    student_profiles: {
+      last_name: string
+      first_name: string
+      last_name_kana: string
+      first_name_kana: string
+      school: string
+    } | null
+  }
+  let applications: ApplicationWithProfile[] = []
 
   let user = null
   try {
@@ -49,10 +58,10 @@ export default async function ApplicantsPage({
     const supabase = await createClient()
     const { data } = await supabase
       .from('applications')
-      .select('*')
+      .select('*, student_profiles(last_name, first_name, last_name_kana, first_name_kana, school)')
       .eq('program_id', id)
       .order('applied_at', { ascending: false })
-    applications = (data as Application[]) ?? []
+    applications = (data as ApplicationWithProfile[]) ?? []
   } catch {
     // ignore
   }
@@ -81,7 +90,10 @@ export default async function ApplicantsPage({
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
-                  応募者ID
+                  氏名
+                </th>
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
+                  所属学校
                 </th>
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
                   応募日時
@@ -97,13 +109,30 @@ export default async function ApplicantsPage({
             <tbody>
               {applications.map((app, i) => {
                 const markAction = markAsCompleted.bind(null, app.id)
+                const profile = app.student_profiles
                 return (
                   <tr
                     key={app.id}
                     className={`${i < applications.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-gray-50 transition-colors`}
                   >
-                    <td className="px-6 py-4 text-xs text-gray-500 font-mono">
-                      {app.student_id.slice(0, 8)}...
+                    <td className="px-6 py-4">
+                      {profile ? (
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {profile.last_name} {profile.first_name}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {profile.last_name_kana} {profile.first_name_kana}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400 font-mono">
+                          {app.student_id.slice(0, 8)}...
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-600">
+                      {profile?.school ?? '—'}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-600">
                       {formatDate(app.applied_at)}

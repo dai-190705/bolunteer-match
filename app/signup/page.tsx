@@ -10,6 +10,11 @@ export default function SignUpPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastNameKana, setLastNameKana] = useState('')
+  const [firstNameKana, setFirstNameKana] = useState('')
+  const [school, setSchool] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -31,12 +36,31 @@ export default function SignUpPage() {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.signUp({ email, password })
+      const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
 
-      if (error) {
-        setError(error.message)
+      if (signUpError) {
+        setError(signUpError.message)
         setLoading(false)
         return
+      }
+
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('student_profiles')
+          .insert({
+            id: data.user.id,
+            last_name: lastName,
+            first_name: firstName,
+            last_name_kana: lastNameKana,
+            first_name_kana: firstNameKana,
+            school,
+          })
+
+        if (profileError) {
+          setError('プロフィールの保存に失敗しました: ' + profileError.message)
+          setLoading(false)
+          return
+        }
       }
 
       router.push('/mypage')
@@ -48,7 +72,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-65px)] flex items-center justify-center px-4">
+    <div className="min-h-[calc(100vh-65px)] flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
           <div className="text-center mb-8">
@@ -59,9 +83,84 @@ export default function SignUpPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* 氏名 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                氏名 <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                    placeholder="性（例: 山田）"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                    placeholder="名（例: 太郎）"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ふりがな */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                ふりがな <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <input
+                    type="text"
+                    value={lastNameKana}
+                    onChange={(e) => setLastNameKana(e.target.value)}
+                    required
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                    placeholder="せい（例: やまだ）"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    value={firstNameKana}
+                    onChange={(e) => setFirstNameKana(e.target.value)}
+                    required
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                    placeholder="めい（例: たろう）"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 所属学校 */}
+            <div>
+              <label htmlFor="school" className="block text-sm font-medium text-gray-700 mb-1.5">
+                所属学校 <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="school"
+                type="text"
+                value={school}
+                onChange={(e) => setSchool(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                placeholder="例: ○○高等学校"
+              />
+            </div>
+
+            {/* メールアドレス */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
-                メールアドレス
+                メールアドレス <span className="text-red-500">*</span>
               </label>
               <input
                 id="email"
@@ -75,9 +174,10 @@ export default function SignUpPage() {
               />
             </div>
 
+            {/* パスワード */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
-                パスワード
+                パスワード <span className="text-red-500">*</span>
               </label>
               <input
                 id="password"
@@ -93,7 +193,7 @@ export default function SignUpPage() {
 
             <div>
               <label htmlFor="passwordConfirm" className="block text-sm font-medium text-gray-700 mb-1.5">
-                パスワード確認
+                パスワード確認 <span className="text-red-500">*</span>
               </label>
               <input
                 id="passwordConfirm"
