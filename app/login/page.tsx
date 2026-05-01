@@ -18,7 +18,7 @@ export default async function LoginPage() {
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-gray-900">ログイン</h1>
             <p className="mt-2 text-sm text-gray-500">
-              パブリッシャーアカウントでログイン
+              学生用アカウントでログイン
             </p>
           </div>
           <LoginForm />
