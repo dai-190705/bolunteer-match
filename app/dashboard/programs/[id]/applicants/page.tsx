@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { Application, Program } from '@/types'
 import { markAsCompleted } from '@/app/dashboard/actions'
+import CsvDownloadButton from './CsvDownloadButton'
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -24,6 +26,7 @@ export default async function ApplicantsPage({
       first_name_kana: string
       school: string
     } | null
+    email?: string
   }
   let applications: ApplicationWithProfile[] = []
 
@@ -40,7 +43,6 @@ export default async function ApplicantsPage({
 
   try {
     const supabase = await createClient()
-    // Verify this program belongs to the logged-in publisher
     const { data: prog } = await supabase
       .from('programs')
       .select('*')
@@ -57,7 +59,6 @@ export default async function ApplicantsPage({
   try {
     const supabase = await createClient()
 
-    // まず応募データを取得
     const { data: appData } = await supabase
       .from('applications')
       .select('*')
@@ -65,8 +66,9 @@ export default async function ApplicantsPage({
       .order('applied_at', { ascending: false })
 
     if (appData && appData.length > 0) {
-      // 応募者のstudent_idリストでプロフィールを一括取得
       const studentIds = appData.map((a) => a.student_id)
+
+      // プロフィール取得
       const { data: profileData } = await supabase
         .from('student_profiles')
         .select('id, last_name, first_name, last_name_kana, first_name_kana, school')
@@ -76,17 +78,35 @@ export default async function ApplicantsPage({
         (profileData ?? []).map((p) => [p.id, p])
       )
 
+      // メールアドレスをサービスロールで取得
+      const adminClient = createAdminClient()
+      const { data: { users } } = await adminClient.auth.admin.listUsers({ perPage: 1000 })
+      const emailMap = Object.fromEntries(users.map((u) => [u.id, u.email ?? '']))
+
       applications = appData.map((a) => ({
         ...a,
         student_profiles: profileMap[a.student_id] ?? null,
+        email: emailMap[a.student_id] ?? '',
       })) as ApplicationWithProfile[]
     }
   } catch {
     // ignore
   }
 
+  // CSV用データ
+  const csvData = applications.map((app) => ({
+    姓: app.student_profiles?.last_name ?? '',
+    名: app.student_profiles?.first_name ?? '',
+    姓カナ: app.student_profiles?.last_name_kana ?? '',
+    名カナ: app.student_profiles?.first_name_kana ?? '',
+    所属学校: app.student_profiles?.school ?? '',
+    メールアドレス: app.email ?? '',
+    応募日時: formatDate(app.applied_at),
+    ステータス: app.status === 'completed' ? '参加済み' : '応募中',
+  }))
+
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="max-w-4xl mx-auto px-4 py-10">
       <Link
         href="/dashboard"
         className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 mb-6 transition-colors"
@@ -94,9 +114,14 @@ export default async function ApplicantsPage({
         ← ダッシュボードに戻る
       </Link>
 
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">応募者一覧</h1>
-        <p className="text-sm text-gray-500 mt-1">{program.title}</p>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">応募者一覧</h1>
+          <p className="text-sm text-gray-500 mt-1">{program.title}</p>
+        </div>
+        {applications.length > 0 && (
+          <CsvDownloadButton data={csvData} filename={`応募者_${program.title}`} />
+        )}
       </div>
 
       {applications.length === 0 ? (
@@ -104,8 +129,8 @@ export default async function ApplicantsPage({
           まだ応募者はいません
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <table className="w-full">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-x-auto">
+          <table className="w-full min-w-[700px]">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
@@ -113,6 +138,9 @@ export default async function ApplicantsPage({
                 </th>
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
                   所属学校
+                </th>
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
+                  メールアドレス
                 </th>
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
                   応募日時
@@ -152,6 +180,9 @@ export default async function ApplicantsPage({
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-600">
                       {profile?.school ?? '—'}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-600">
+                      {app.email || '—'}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-600">
                       {formatDate(app.applied_at)}
