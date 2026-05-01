@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { Program } from '@/types'
+import { applyToProgram } from '@/app/actions'
 
 function formatDeadline(deadline: string | null) {
   if (!deadline) return null
@@ -22,6 +23,8 @@ export default async function ProgramDetailPage({
 }) {
   const { id } = await params
   let program: Program | null = null
+  let userId: string | null = null
+  let alreadyApplied = false
 
   try {
     const supabase = await createClient()
@@ -32,11 +35,26 @@ export default async function ProgramDetailPage({
       .eq('published', true)
       .single()
     program = data as Program | null
+
+    const { data: { user } } = await supabase.auth.getUser()
+    userId = user?.id ?? null
+
+    if (userId && program) {
+      const { data: application } = await supabase
+        .from('applications')
+        .select('id')
+        .eq('program_id', id)
+        .eq('student_id', userId)
+        .maybeSingle()
+      alreadyApplied = !!application
+    }
   } catch {
     // ignore
   }
 
   if (!program) notFound()
+
+  const applyAction = applyToProgram.bind(null, id)
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
@@ -110,19 +128,30 @@ export default async function ProgramDetailPage({
             </div>
           </div>
 
-          {program.apply_url ? (
-            <a
-              href={program.apply_url}
-              target="_blank"
-              rel="noopener noreferrer"
+          {/* Apply button section */}
+          {!userId ? (
+            <Link
+              href={`/login?next=/programs/${id}`}
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors text-base shadow-sm"
             >
-              応募する →
-            </a>
+              応募するにはログインが必要です
+            </Link>
+          ) : alreadyApplied ? (
+            <button
+              disabled
+              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-gray-200 text-gray-500 font-semibold rounded-xl cursor-not-allowed text-base"
+            >
+              応募済み ✓
+            </button>
           ) : (
-            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-800">
-              応募URLは現在準備中です
-            </div>
+            <form action={applyAction}>
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors text-base shadow-sm"
+              >
+                応募する →
+              </button>
+            </form>
           )}
         </div>
       </div>

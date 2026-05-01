@@ -1,3 +1,14 @@
+export type Application = {
+  id: string
+  program_id: string
+  student_id: string
+  status: 'applied' | 'completed'
+  applied_at: string
+  completed_at: string | null
+  // joined
+  programs?: Program
+}
+
 export type Program = {
   id: string
   title: string

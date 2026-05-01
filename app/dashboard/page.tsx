@@ -153,7 +153,15 @@ export default async function DashboardPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <DashboardActions program={program} />
+                    <div className="flex items-center gap-2 justify-end">
+                      <Link
+                        href={`/dashboard/programs/${program.id}/applicants`}
+                        className="text-xs px-3 py-1.5 border border-indigo-300 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium"
+                      >
+                        応募者を見る
+                      </Link>
+                      <DashboardActions program={program} />
+                    </div>
                   </td>
                 </tr>
               ))}

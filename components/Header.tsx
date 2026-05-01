@@ -4,11 +4,21 @@ import SignOutButton from './SignOutButton'
 
 export default async function Header() {
   let user = null
+  let isPublisher = false
 
   try {
     const supabase = await createClient()
     const { data } = await supabase.auth.getUser()
     user = data.user
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('approved')
+        .eq('id', user.id)
+        .maybeSingle()
+      isPublisher = !!profile
+    }
   } catch {
     // Supabase接続エラーは無視してヘッダーを表示
   }
@@ -24,12 +34,21 @@ export default async function Header() {
         </Link>
         {user ? (
           <div className="flex items-center gap-4">
-            <Link
-              href="/dashboard"
-              className="text-sm text-gray-600 hover:text-indigo-700 transition-colors font-medium"
-            >
-              ダッシュボード
-            </Link>
+            {isPublisher ? (
+              <Link
+                href="/dashboard"
+                className="text-sm text-gray-600 hover:text-indigo-700 transition-colors font-medium"
+              >
+                ダッシュボード
+              </Link>
+            ) : (
+              <Link
+                href="/mypage"
+                className="text-sm text-gray-600 hover:text-indigo-700 transition-colors font-medium"
+              >
+                マイページ
+              </Link>
+            )}
             <SignOutButton />
           </div>
         ) : null}

@@ -126,6 +126,24 @@ export async function togglePublished(id: string, currentValue: boolean) {
   revalidatePath('/')
 }
 
+export async function markAsCompleted(applicationId: string) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  const { error } = await supabase
+    .from('applications')
+    .update({ status: 'completed', completed_at: new Date().toISOString() })
+    .eq('id', applicationId)
+
+  if (error) throw new Error(error.message)
+
+  revalidatePath('/dashboard')
+}
+
 export async function signOut() {
   const supabase = await createClient()
   await supabase.auth.signOut()
