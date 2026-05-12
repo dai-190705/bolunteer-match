@@ -1,0 +1,65 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
+const NAV_ITEMS = [
+  { href: '/', label: 'ホーム', icon: '🏠' },
+  { href: '/inventory', label: '在庫', icon: '📦' },
+  { href: '/search', label: 'レシピ', icon: '🔍' },
+  { href: '/calendar', label: 'カレンダー', icon: '📅' },
+]
+
+export default function AppNav() {
+  const pathname = usePathname()
+
+  return (
+    <>
+      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-8">
+          <Link href="/" className="text-xl font-bold text-emerald-700 flex items-center gap-2 shrink-0">
+            🍽️ 献立ナビ
+          </Link>
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_ITEMS.map(item => {
+              const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    active
+                      ? 'bg-emerald-50 text-emerald-700'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
+                >
+                  <span>{item.icon}</span>
+                  <span>{item.label}</span>
+                </Link>
+              )
+            })}
+          </nav>
+        </div>
+      </header>
+
+      {/* Mobile bottom navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 flex">
+        {NAV_ITEMS.map(item => {
+          const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex-1 flex flex-col items-center py-2 gap-0.5 text-xs font-medium transition-colors ${
+                active ? 'text-emerald-700' : 'text-gray-500'
+              }`}
+            >
+              <span className="text-xl">{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          )
+        })}
+      </nav>
+    </>
+  )
+}
