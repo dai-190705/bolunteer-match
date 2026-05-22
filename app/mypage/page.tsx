@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { Application } from '@/types'
+import CancelButton from './CancelButton'
 
 const CATEGORY_COLORS: Record<string, string> = {
   スキボラ: 'bg-blue-100 text-blue-800',
@@ -62,9 +63,20 @@ export default async function MyPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">マイページ</h1>
-        <p className="text-sm text-gray-500 mt-1">{user.email}</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">マイページ</h1>
+          <p className="text-sm text-gray-500 mt-1">{user.email}</p>
+        </div>
+        <Link
+          href="/mypage/profile"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          プロフィール編集
+        </Link>
       </div>
 
       {/* 応募中 */}
@@ -127,23 +139,23 @@ function ApplicationCard({ app }: { app: Application }) {
   if (!program) return null
 
   return (
-    <Link href={`/programs/${program.id}`}>
-      <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            {program.category && (
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}>
-                {program.category}
-              </span>
-            )}
-          </div>
-          <p className="font-semibold text-gray-900 text-sm leading-snug">{program.title}</p>
-          {program.deadline && (
-            <p className="text-xs text-gray-500 mt-1">締切: {formatDeadline(program.deadline)}</p>
+    <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow flex items-start justify-between gap-4">
+      <Link href={`/programs/${program.id}`} className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
+          {program.category && (
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}>
+              {program.category}
+            </span>
           )}
         </div>
-      </div>
-    </Link>
+        <p className="font-semibold text-gray-900 text-sm leading-snug">{program.title}</p>
+        {program.deadline && (
+          <p className="text-xs text-gray-500 mt-1">締切: {formatDeadline(program.deadline)}</p>
+        )}
+      </Link>
+
+      <CancelButton applicationId={app.id} />
+    </div>
   )
 }
 

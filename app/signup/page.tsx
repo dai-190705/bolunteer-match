@@ -15,6 +15,8 @@ export default function SignUpPage() {
   const [lastNameKana, setLastNameKana] = useState('')
   const [firstNameKana, setFirstNameKana] = useState('')
   const [school, setSchool] = useState('')
+  const [userHandle, setUserHandle] = useState('')
+  const [nickname, setNickname] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -53,6 +55,8 @@ export default function SignUpPage() {
             last_name_kana: lastNameKana,
             first_name_kana: firstNameKana,
             school,
+            user_handle: userHandle,
+            nickname,
           })
 
         if (profileError) {
@@ -142,6 +146,40 @@ export default function SignUpPage() {
                 required
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 placeholder="例: ○○高等学校"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="userHandle" className="block text-sm font-medium text-gray-700 mb-1.5">
+                ユーザーID <span className="text-red-500">*</span>
+              </label>
+              <div className="flex items-center">
+                <span className="px-3 py-2.5 bg-gray-50 border border-r-0 border-gray-300 rounded-l-lg text-sm text-gray-500">@</span>
+                <input
+                  id="userHandle"
+                  type="text"
+                  value={userHandle}
+                  onChange={(e) => setUserHandle(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
+                  required
+                  className="flex-1 px-4 py-2.5 border border-gray-300 rounded-r-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  placeholder="例: taro_yamada"
+                />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">半角英数字・アンダースコアのみ使用可</p>
+            </div>
+
+            <div>
+              <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 mb-1.5">
+                ニックネーム <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="nickname"
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                placeholder="例: たろう"
               />
             </div>
 

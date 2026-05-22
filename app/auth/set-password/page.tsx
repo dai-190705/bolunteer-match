@@ -35,7 +35,7 @@ export default function SetPasswordPage() {
     if (error) {
       setError(error.message)
     } else {
-      router.push('/dashboard')
+      router.push('/login')
     }
   }
 

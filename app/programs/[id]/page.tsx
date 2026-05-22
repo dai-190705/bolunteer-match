@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { Program } from '@/types'
-import { applyToProgram } from '@/app/actions'
 
 function formatDeadline(deadline: string | null) {
   if (!deadline) return null
@@ -54,8 +53,7 @@ export default async function ProgramDetailPage({
 
   if (!program) notFound()
 
-  const applyAction = applyToProgram.bind(null, id)
-
+  // 応募後に ?applied=1 で戻ってきたときの表示用
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <Link
@@ -131,7 +129,7 @@ export default async function ProgramDetailPage({
           {/* Apply button section */}
           {!userId ? (
             <Link
-              href={`/login?next=/programs/${id}`}
+              href={`/login?next=/programs/${id}/apply`}
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors text-base shadow-sm"
             >
               応募するにはログインが必要です
@@ -144,14 +142,12 @@ export default async function ProgramDetailPage({
               応募済み ✓
             </button>
           ) : (
-            <form action={applyAction}>
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors text-base shadow-sm"
-              >
-                応募する →
-              </button>
-            </form>
+            <Link
+              href={`/programs/${id}/apply`}
+              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors text-base shadow-sm"
+            >
+              応募する →
+            </Link>
           )}
         </div>
       </div>

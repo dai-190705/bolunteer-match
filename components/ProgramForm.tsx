@@ -200,6 +200,34 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
         />
       </div>
 
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          キャンセルポリシー
+          <span className="ml-1 text-xs font-normal text-gray-400">（応募確定画面に表示されます）</span>
+        </label>
+        <textarea
+          name="cancel_policy"
+          defaultValue={program?.cancel_policy ?? ''}
+          rows={4}
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y"
+          placeholder="例: 参加できなくなった場合は、3日前までにご連絡ください。"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          注意事項
+          <span className="ml-1 text-xs font-normal text-gray-400">（応募確定画面に表示されます）</span>
+        </label>
+        <textarea
+          name="notes"
+          defaultValue={program?.notes ?? ''}
+          rows={4}
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y"
+          placeholder="例: 当日は動きやすい服装でお越しください。"
+        />
+      </div>
+
       <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
         <button
           type="button"

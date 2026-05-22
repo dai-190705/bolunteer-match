@@ -130,25 +130,25 @@ export default async function ApplicantsPage({
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-x-auto">
-          <table className="w-full min-w-[700px]">
+          <table className="w-full min-w-[860px]">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3 whitespace-nowrap">
                   氏名
                 </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">
                   所属学校
                 </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">
                   メールアドレス
                 </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">
                   応募日時
                 </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">
                   ステータス
                 </th>
-                <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
+                <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3 whitespace-nowrap">
                   操作
                 </th>
               </tr>
@@ -162,7 +162,7 @@ export default async function ApplicantsPage({
                     key={app.id}
                     className={`${i < applications.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-gray-50 transition-colors`}
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {profile ? (
                         <div>
                           <div className="text-sm font-medium text-gray-900">
@@ -178,16 +178,16 @@ export default async function ApplicantsPage({
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-600">
+                    <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
                       {profile?.school ?? '—'}
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-600">
+                    <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
                       {app.email || '—'}
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-600">
+                    <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
                       {formatDate(app.applied_at)}
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center text-xs px-2.5 py-1 rounded-full font-medium ${
                           app.status === 'completed'
@@ -198,17 +198,25 @@ export default async function ApplicantsPage({
                         {app.status === 'completed' ? '参加済み' : '応募中'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      {app.status === 'applied' && (
-                        <form action={markAction}>
-                          <button
-                            type="submit"
-                            className="text-xs px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-                          >
-                            参加済み承認
-                          </button>
-                        </form>
-                      )}
+                    <td className="px-6 py-4 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/dashboard/programs/${id}/applicants/${app.id}`}
+                          className="text-xs px-3 py-1.5 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                        >
+                          詳細を見る
+                        </Link>
+                        {app.status === 'applied' && (
+                          <form action={markAction}>
+                            <button
+                              type="submit"
+                              className="text-xs px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                            >
+                              参加済み承認
+                            </button>
+                          </form>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )

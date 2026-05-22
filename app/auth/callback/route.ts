@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js'
+import type { EmailOtpType } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -68,10 +69,14 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // OTPリンク（旧フロー用）
+  // OTPリンク（パスワードリセット等）
   if (token_hash && type) {
-    const { error } = await supabase.auth.verifyOtp({ token_hash, type: type as any })
+    const { error } = await supabase.auth.verifyOtp({ token_hash, type: type as EmailOtpType })
     if (!error) {
+      // パスワードリセットの場合は set-password ページへ
+      if (type === 'recovery') {
+        return NextResponse.redirect(`${origin}/auth/set-password`)
+      }
       return NextResponse.redirect(`${origin}/mypage`)
     }
   }

@@ -5,6 +5,8 @@ export type Application = {
   status: 'applied' | 'completed'
   applied_at: string
   completed_at: string | null
+  motivation: string | null
+  self_pr: string | null
   // joined
   programs?: Program
 }
@@ -23,4 +25,6 @@ export type Program = {
   updated_at: string
   banner_image_url: string | null
   category: 'スキボラ' | 'ちょボラ' | 'ガチボラ' | null
+  cancel_policy: string | null
+  notes: string | null
 }

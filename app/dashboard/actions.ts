@@ -34,6 +34,8 @@ export async function createProgram(formData: FormData) {
     publisher_id: user.id,
     banner_image_url: bannerImageUrl,
     category,
+    cancel_policy: (formData.get('cancel_policy') as string) || null,
+    notes: (formData.get('notes') as string) || null,
   })
 
   if (error) throw new Error(error.message)
@@ -74,6 +76,8 @@ export async function updateProgram(id: string, formData: FormData) {
       published: formData.get('published') === 'true',
       banner_image_url: bannerImageUrl,
       category,
+      cancel_policy: (formData.get('cancel_policy') as string) || null,
+      notes: (formData.get('notes') as string) || null,
     })
     .eq('id', id)
     .eq('publisher_id', user.id)
