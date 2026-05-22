@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
-import { notifyNewPublisherApplication } from '@/app/actions/notify'
 
 export default function PublisherSignUpPage() {
   const [name, setName] = useState('')
@@ -58,10 +57,6 @@ export default function PublisherSignUpPage() {
       }
 
       await supabase.auth.signOut()
-
-      // 管理者にメール通知
-      await notifyNewPublisherApplication({ name, organization, email })
-
       setDone(true)
     } catch {
       setError('エラーが発生しました。もう一度お試しください。')

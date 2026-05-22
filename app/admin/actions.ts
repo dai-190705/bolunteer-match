@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { notifyPublisherApproved } from '@/app/actions/notify'
 
 async function isAdmin() {
   const supabase = await createClient()
@@ -15,10 +16,31 @@ export async function approvePublisher(userId: string) {
   if (!(await isAdmin())) throw new Error('Unauthorized')
 
   const adminClient = createAdminClient()
+
+  // プロフィール取得（名前・団体名）
+  const { data: profile } = await adminClient
+    .from('profiles')
+    .select('name, organization')
+    .eq('id', userId)
+    .single()
+
+  // メールアドレス取得
+  const { data: { user: authUser } } = await adminClient.auth.admin.getUserById(userId)
+
+  // 承認
   await adminClient
     .from('profiles')
     .update({ approved: true })
     .eq('id', userId)
+
+  // 承認完了メールをパブリッシャーに送信
+  if (authUser?.email && profile) {
+    await notifyPublisherApproved({
+      email: authUser.email,
+      name: profile.name,
+      organization: profile.organization ?? '',
+    })
+  }
 
   revalidatePath('/admin')
 }
