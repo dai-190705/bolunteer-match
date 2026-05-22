@@ -19,6 +19,7 @@ export default function SignUpPage() {
   const [nickname, setNickname] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -37,19 +38,13 @@ export default function SignUpPage() {
 
     try {
       const supabase = createClient()
-      const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
-
-      if (signUpError) {
-        setError(signUpError.message)
-        setLoading(false)
-        return
-      }
-
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('student_profiles')
-          .insert({
-            id: data.user.id,
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            role: 'student',
             last_name: lastName,
             first_name: firstName,
             last_name_kana: lastNameKana,
@@ -57,21 +52,38 @@ export default function SignUpPage() {
             school,
             user_handle: userHandle,
             nickname,
-          })
+          },
+        },
+      })
 
-        if (profileError) {
-          setError('プロフィールの保存に失敗しました: ' + profileError.message)
-          setLoading(false)
-          return
-        }
+      if (signUpError) {
+        setError(signUpError.message)
+        setLoading(false)
+        return
       }
 
-      router.push('/mypage')
-      router.refresh()
+      setDone(true)
     } catch {
       setError('エラーが発生しました。もう一度お試しください。')
       setLoading(false)
     }
+  }
+
+  if (done) {
+    return (
+      <div className="min-h-[calc(100vh-65px)] flex items-center justify-center px-4">
+        <div className="w-full max-w-md text-center">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10">
+            <div className="text-4xl mb-4">📬</div>
+            <h1 className="text-xl font-bold text-gray-900 mb-3">確認メールを送信しました</h1>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              登録したメールアドレスに確認メールを送りました。<br />
+              メール内のリンクをクリックしてアカウントを有効化してください。
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

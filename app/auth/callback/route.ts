@@ -3,6 +3,7 @@ import { createClient as createSupabaseAdmin } from '@supabase/supabase-js'
 import type { EmailOtpType } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { notifyNewPublisherApplication } from '@/app/actions/notify'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -51,6 +52,12 @@ export async function GET(request: NextRequest) {
           organization: meta.organization ?? null,
           approved: false,
         })
+        // 管理者にメール通知
+        await notifyNewPublisherApplication({
+          name: meta.name ?? '',
+          organization: meta.organization ?? '',
+          email: user.email ?? '',
+        })
         // ログアウトして承認待ち画面へ
         await supabase.auth.signOut()
         return NextResponse.redirect(`${origin}/publisher-pending`)
@@ -63,6 +70,8 @@ export async function GET(request: NextRequest) {
           last_name_kana: meta.last_name_kana ?? '',
           first_name_kana: meta.first_name_kana ?? '',
           school: meta.school ?? '',
+          user_handle: meta.user_handle ?? null,
+          nickname: meta.nickname ?? null,
         })
         return NextResponse.redirect(`${origin}/mypage`)
       }

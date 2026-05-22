@@ -31,7 +31,18 @@ export default function PublisherSignUpPage() {
 
     try {
       const supabase = createClient()
-      const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            role: 'publisher',
+            name,
+            organization,
+          },
+        },
+      })
 
       if (signUpError) {
         setError(signUpError.message)
@@ -39,24 +50,6 @@ export default function PublisherSignUpPage() {
         return
       }
 
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            name,
-            organization,
-            approved: false,
-          })
-
-        if (profileError) {
-          setError('申請情報の保存に失敗しました: ' + profileError.message)
-          setLoading(false)
-          return
-        }
-      }
-
-      await supabase.auth.signOut()
       setDone(true)
     } catch {
       setError('エラーが発生しました。もう一度お試しください。')
@@ -70,14 +63,11 @@ export default function PublisherSignUpPage() {
         <div className="w-full max-w-md text-center">
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10">
             <div className="text-4xl mb-4">📬</div>
-            <h1 className="text-xl font-bold text-gray-900 mb-3">申請を受け付けました</h1>
+            <h1 className="text-xl font-bold text-gray-900 mb-3">確認メールを送信しました</h1>
             <p className="text-sm text-gray-500 leading-relaxed">
-              管理者が内容を確認後、承認いたします。<br />
-              承認が完了したら{' '}
-              <Link href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
-                こちらからログイン
-              </Link>
-              してください。
+              登録したメールアドレスに確認メールを送りました。<br />
+              メール内のリンクをクリックすると申請が完了し、<br />
+              管理者が内容を確認後に承認いたします。
             </p>
           </div>
         </div>
