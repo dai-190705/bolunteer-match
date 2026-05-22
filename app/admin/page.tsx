@@ -28,7 +28,7 @@ export default async function AdminPage() {
     // ignore
   }
 
-  if (!isAdmin) redirect('/')
+  if (!isAdmin) redirect('/admin/login')
 
   // 承認待ち・承認済みpublisher一覧をサービスロールで取得
   let pending: PendingPublisher[] = []
