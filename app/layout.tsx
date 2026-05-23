@@ -9,8 +9,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "ボランティア",
-  description: "ボランティアの一覧・応募サイト",
+  title: "Caredent",
+  description: "探究プログラム・ボランティア募集プラットフォーム",
 };
 
 export default function RootLayout({

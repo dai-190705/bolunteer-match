@@ -71,102 +71,104 @@ export default async function DashboardPage() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
-                  タイトル
-                </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 hidden sm:table-cell">
-                  カテゴリ
-                </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 hidden sm:table-cell">
-                  締切
-                </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">
-                  ステータス
-                </th>
-                <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
-                  操作
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {programList.map((program, i) => (
-                <tr
-                  key={program.id}
-                  className={`${i < programList.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-gray-50 transition-colors`}
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      {program.banner_image_url && (
-                        <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0">
-                          <img
-                            src={program.banner_image_url}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div>
-                        <div className="font-medium text-gray-900 text-sm">
-                          {program.title}
-                        </div>
-                        {program.tags && program.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {program.tags.slice(0, 3).map((tag) => (
-                              <span
-                                key={tag}
-                                className="text-xs bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded"
-                              >
-                                {tag}
-                              </span>
-                            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[700px]">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3 w-[40%]">
+                    タイトル
+                  </th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">
+                    カテゴリ
+                  </th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">
+                    締切
+                  </th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">
+                    ステータス
+                  </th>
+                  <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3 whitespace-nowrap">
+                    操作
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {programList.map((program, i) => (
+                  <tr
+                    key={program.id}
+                    className={`${i < programList.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-gray-50 transition-colors`}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        {program.banner_image_url && (
+                          <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0">
+                            <img
+                              src={program.banner_image_url}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
                           </div>
                         )}
+                        <div className="min-w-0">
+                          <div className="font-medium text-gray-900 text-sm leading-snug">
+                            {program.title}
+                          </div>
+                          {program.tags && program.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {program.tags.slice(0, 3).map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="text-xs bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded whitespace-nowrap"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 hidden sm:table-cell">
-                    {program.category ? (
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      {program.category ? (
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}
+                        >
+                          {program.category}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
+                      {formatDeadline(program.deadline)}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}
+                        className={`inline-flex items-center text-xs px-2.5 py-1 rounded-full font-medium ${
+                          program.published
+                            ? 'bg-green-50 text-green-700'
+                            : 'bg-gray-100 text-gray-500'
+                        }`}
                       >
-                        {program.category}
+                        {program.published ? '公開中' : '下書き'}
                       </span>
-                    ) : (
-                      <span className="text-xs text-gray-400">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-500 hidden sm:table-cell">
-                    {formatDeadline(program.deadline)}
-                  </td>
-                  <td className="px-4 py-4">
-                    <span
-                      className={`inline-flex items-center text-xs px-2.5 py-1 rounded-full font-medium ${
-                        program.published
-                          ? 'bg-green-50 text-green-700'
-                          : 'bg-gray-100 text-gray-500'
-                      }`}
-                    >
-                      {program.published ? '公開中' : '下書き'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 justify-end">
-                      <Link
-                        href={`/dashboard/programs/${program.id}/applicants`}
-                        className="text-xs px-3 py-1.5 border border-indigo-300 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium"
-                      >
-                        応募者を見る
-                      </Link>
-                      <DashboardActions program={program} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 justify-end">
+                        <Link
+                          href={`/dashboard/programs/${program.id}/applicants`}
+                          className="text-xs px-3 py-1.5 border border-indigo-300 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium whitespace-nowrap"
+                        >
+                          応募者を見る
+                        </Link>
+                        <DashboardActions program={program} />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

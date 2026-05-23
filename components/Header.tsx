@@ -28,30 +28,49 @@ export default async function Header() {
       <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
         <Link
           href="/"
-          className="text-xl font-bold text-indigo-700 hover:text-indigo-900 transition-colors"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         >
-          ボランティア
+          <img src="/logo.png" alt="Caredent" className="h-8 w-8 object-contain" />
+          <span className="text-xl font-bold" style={{ color: '#4592c0' }}>Caredent</span>
         </Link>
-        {user ? (
-          <div className="flex items-center gap-4">
-            {isPublisher ? (
+        <div className="flex items-center gap-3">
+          {user ? (
+            <>
+              {isPublisher ? (
+                <Link
+                  href="/dashboard"
+                  className="text-sm font-medium text-gray-600 hover:text-[#4592c0] transition-colors"
+                >
+                  ダッシュボード
+                </Link>
+              ) : (
+                <Link
+                  href="/mypage"
+                  className="text-sm font-medium text-gray-600 hover:text-[#4592c0] transition-colors"
+                >
+                  マイページ
+                </Link>
+              )}
+              <SignOutButton />
+            </>
+          ) : (
+            <>
               <Link
-                href="/dashboard"
-                className="text-sm text-gray-600 hover:text-indigo-700 transition-colors font-medium"
+                href="/login"
+                className="text-sm font-medium text-gray-600 hover:text-[#4592c0] transition-colors"
               >
-                ダッシュボード
+                ログイン
               </Link>
-            ) : (
               <Link
-                href="/mypage"
-                className="text-sm text-gray-600 hover:text-indigo-700 transition-colors font-medium"
+                href="/signup"
+                className="text-sm font-semibold text-white px-4 py-1.5 rounded-full transition-opacity hover:opacity-90"
+                style={{ backgroundColor: '#4592c0' }}
               >
-                マイページ
+                新規登録
               </Link>
-            )}
-            <SignOutButton />
-          </div>
-        ) : null}
+            </>
+          )}
+        </div>
       </div>
     </header>
   )
