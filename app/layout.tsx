@@ -11,6 +11,29 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: "Caredent",
   description: "探究プログラム・ボランティア募集プラットフォーム",
+  metadataBase: new URL("https://tankyuu-program.vercel.app"),
+  openGraph: {
+    title: "Caredent",
+    description: "探究プログラム・ボランティア募集プラットフォーム",
+    url: "https://tankyuu-program.vercel.app",
+    siteName: "Caredent",
+    images: [
+      {
+        url: "/ogp.png",
+        width: 1200,
+        height: 630,
+        alt: "Caredent",
+      },
+    ],
+    locale: "ja_JP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Caredent",
+    description: "探究プログラム・ボランティア募集プラットフォーム",
+    images: ["/ogp.png"],
+  },
 };
 
 export default function RootLayout({
