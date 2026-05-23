@@ -72,6 +72,7 @@ export async function GET(request: NextRequest) {
           school: meta.school ?? '',
           user_handle: meta.user_handle ?? null,
           nickname: meta.nickname ?? null,
+          grade: meta.grade ?? null,
         })
         return NextResponse.redirect(`${origin}/mypage`)
       }

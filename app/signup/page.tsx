@@ -17,6 +17,7 @@ export default function SignUpPage() {
   const [school, setSchool] = useState('')
   const [userHandle, setUserHandle] = useState('')
   const [nickname, setNickname] = useState('')
+  const [grade, setGrade] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
@@ -52,6 +53,7 @@ export default function SignUpPage() {
             school,
             user_handle: userHandle,
             nickname,
+            grade,
           },
         },
       })
@@ -159,6 +161,32 @@ export default function SignUpPage() {
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 placeholder="例: ○○高等学校"
               />
+            </div>
+
+            <div>
+              <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-1.5">
+                学年 <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="grade"
+                value={grade}
+                onChange={(e) => setGrade(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-white"
+              >
+                <option value="">選択してください</option>
+                <optgroup label="高校生">
+                  <option value="高校1年生">高校1年生</option>
+                  <option value="高校2年生">高校2年生</option>
+                  <option value="高校3年生">高校3年生</option>
+                </optgroup>
+                <optgroup label="大学生">
+                  <option value="大学1年生">大学1年生</option>
+                  <option value="大学2年生">大学2年生</option>
+                  <option value="大学3年生">大学3年生</option>
+                  <option value="大学4年生">大学4年生</option>
+                </optgroup>
+              </select>
             </div>
 
             <div>

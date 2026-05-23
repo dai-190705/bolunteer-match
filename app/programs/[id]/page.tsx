@@ -24,6 +24,7 @@ export default async function ProgramDetailPage({
   let program: Program | null = null
   let userId: string | null = null
   let alreadyApplied = false
+  let applicantCount = 0
 
   try {
     const supabase = await createClient()
@@ -38,6 +39,14 @@ export default async function ProgramDetailPage({
     const { data: { user } } = await supabase.auth.getUser()
     userId = user?.id ?? null
 
+    if (program) {
+      const { count } = await supabase
+        .from('applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('program_id', id)
+      applicantCount = count ?? 0
+    }
+
     if (userId && program) {
       const { data: application } = await supabase
         .from('applications')
@@ -50,6 +59,8 @@ export default async function ProgramDetailPage({
   } catch {
     // ignore
   }
+
+  const isFull = program?.capacity != null && applicantCount >= program.capacity
 
   if (!program) notFound()
 
@@ -115,6 +126,19 @@ export default async function ProgramDetailPage({
                 </dd>
               </div>
             )}
+            {program.capacity != null && (
+              <div>
+                <dt className="text-xs font-medium text-gray-500 mb-1">定員</dt>
+                <dd className="text-sm text-gray-800 flex items-center gap-2">
+                  <span>{applicantCount} / {program.capacity} 名</span>
+                  {isFull && (
+                    <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                      満員
+                    </span>
+                  )}
+                </dd>
+              </div>
+            )}
           </div>
 
           <div className="mb-8">
@@ -140,6 +164,13 @@ export default async function ProgramDetailPage({
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-gray-200 text-gray-500 font-semibold rounded-xl cursor-not-allowed text-base"
             >
               応募済み ✓
+            </button>
+          ) : isFull ? (
+            <button
+              disabled
+              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-red-100 text-red-400 font-semibold rounded-xl cursor-not-allowed text-base"
+            >
+              満員のため応募を締め切りました
             </button>
           ) : (
             <Link

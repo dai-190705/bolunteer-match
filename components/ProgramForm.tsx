@@ -182,6 +182,21 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            定員
+            <span className="ml-1 text-xs font-normal text-gray-400">（未入力で無制限）</span>
+          </label>
+          <input
+            name="capacity"
+            type="number"
+            min={1}
+            defaultValue={program?.capacity ?? ''}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            placeholder="例: 10"
+          />
+        </div>
       </div>
 
       <div>

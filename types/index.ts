@@ -27,4 +27,5 @@ export type Program = {
   category: 'スキボラ' | 'ちょボラ' | 'ガチボラ' | null
   cancel_policy: string | null
   notes: string | null
+  capacity: number | null
 }

@@ -23,6 +23,9 @@ export async function createProgram(formData: FormData) {
   const bannerImageUrl = (formData.get('banner_image_url') as string) || null
   const category = (formData.get('category') as string) || null
 
+  const capacityRaw = (formData.get('capacity') as string) || null
+  const capacity = capacityRaw ? parseInt(capacityRaw, 10) : null
+
   const { error } = await supabase.from('programs').insert({
     title: formData.get('title') as string,
     description: formData.get('description') as string,
@@ -36,6 +39,7 @@ export async function createProgram(formData: FormData) {
     category,
     cancel_policy: (formData.get('cancel_policy') as string) || null,
     notes: (formData.get('notes') as string) || null,
+    capacity,
   })
 
   if (error) throw new Error(error.message)
@@ -64,6 +68,9 @@ export async function updateProgram(id: string, formData: FormData) {
   const bannerImageUrl = (formData.get('banner_image_url') as string) || null
   const category = (formData.get('category') as string) || null
 
+  const capacityRaw = (formData.get('capacity') as string) || null
+  const capacity = capacityRaw ? parseInt(capacityRaw, 10) : null
+
   const { error } = await supabase
     .from('programs')
     .update({
@@ -78,6 +85,7 @@ export async function updateProgram(id: string, formData: FormData) {
       category,
       cancel_policy: (formData.get('cancel_policy') as string) || null,
       notes: (formData.get('notes') as string) || null,
+      capacity,
     })
     .eq('id', id)
     .eq('publisher_id', user.id)

@@ -19,7 +19,7 @@ export default async function ApplyPage({
   // プログラム取得
   const { data: program } = await supabase
     .from('programs')
-    .select('id, title, category, cancel_policy, notes')
+    .select('id, title, category, cancel_policy, notes, capacity')
     .eq('id', id)
     .eq('published', true)
     .single()
@@ -35,6 +35,15 @@ export default async function ApplyPage({
     .maybeSingle()
 
   if (existing) redirect(`/programs/${id}`)
+
+  // 定員チェック
+  if (program.capacity != null) {
+    const { count } = await supabase
+      .from('applications')
+      .select('id', { count: 'exact', head: true })
+      .eq('program_id', id)
+    if ((count ?? 0) >= program.capacity) redirect(`/programs/${id}`)
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
