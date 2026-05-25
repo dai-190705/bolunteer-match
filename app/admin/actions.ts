@@ -33,13 +33,25 @@ export async function approvePublisher(userId: string) {
     .update({ approved: true })
     .eq('id', userId)
 
+  // デバッグ：状態を確認
+  console.log('[approvePublisher] profile:', JSON.stringify(profile))
+  console.log('[approvePublisher] authUser email:', authUser?.email)
+  console.log('[approvePublisher] RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY)
+
   // 承認完了メールをパブリッシャーに送信
   if (authUser?.email && profile) {
-    await notifyPublisherApproved({
-      email: authUser.email,
-      name: profile.name,
-      organization: profile.organization ?? '',
-    })
+    try {
+      await notifyPublisherApproved({
+        email: authUser.email,
+        name: profile.name ?? '',
+        organization: profile.organization ?? '',
+      })
+      console.log('[approvePublisher] メール送信完了')
+    } catch (e) {
+      console.error('[approvePublisher] メール送信エラー:', e)
+    }
+  } else {
+    console.error('[approvePublisher] メール送信スキップ - authUser:', authUser?.email, 'profile:', profile)
   }
 
   revalidatePath('/admin')
