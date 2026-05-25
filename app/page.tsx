@@ -14,7 +14,7 @@ function isDeadlinePast(deadline: string | null) {
 }
 
 const CATEGORY_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  1day: { label: '1day', color: 'text-sky-700', bg: 'bg-sky-100' },
+  '1day': { label: '1day', color: 'text-sky-700', bg: 'bg-sky-100' },
   中期: { label: '中期', color: 'text-emerald-700', bg: 'bg-emerald-100' },
   長期: { label: '長期', color: 'text-orange-700', bg: 'bg-orange-100' },
 }
