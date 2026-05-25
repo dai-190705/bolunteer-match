@@ -42,7 +42,7 @@ export async function createProgram(formData: FormData) {
     capacity,
   })
 
-  if (error) throw new Error(error.message)
+  if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
   revalidatePath('/dashboard')
   revalidatePath('/')
@@ -90,7 +90,7 @@ export async function updateProgram(id: string, formData: FormData) {
     .eq('id', id)
     .eq('publisher_id', user.id)
 
-  if (error) throw new Error(error.message)
+  if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
   revalidatePath('/dashboard')
   revalidatePath('/')
@@ -112,7 +112,7 @@ export async function deleteProgram(id: string) {
     .eq('id', id)
     .eq('publisher_id', user.id)
 
-  if (error) throw new Error(error.message)
+  if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
   revalidatePath('/dashboard')
   revalidatePath('/')
@@ -132,7 +132,7 @@ export async function togglePublished(id: string, currentValue: boolean) {
     .eq('id', id)
     .eq('publisher_id', user.id)
 
-  if (error) throw new Error(error.message)
+  if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
   revalidatePath('/dashboard')
   revalidatePath('/')
@@ -151,7 +151,7 @@ export async function markAsCompleted(applicationId: string) {
     .update({ status: 'completed', completed_at: new Date().toISOString() })
     .eq('id', applicationId)
 
-  if (error) throw new Error(error.message)
+  if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
   revalidatePath('/dashboard')
 }

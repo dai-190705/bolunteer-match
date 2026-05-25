@@ -48,7 +48,7 @@ export default function DiaryForm({ applicationId, studentId, initialDiary }: Pr
           .upload(filename, file, { upsert: false })
 
         if (uploadError) {
-          setError(`アップロードに失敗しました: ${uploadError.message}`)
+          setError('アップロードに失敗しました。もう一度お試しください。')
           return
         }
 
