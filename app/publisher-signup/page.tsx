@@ -57,7 +57,6 @@ export default function PublisherSignUpPage() {
   const [orgCategoryMain, setOrgCategoryMain] = useState('')
   const [orgCategorySub, setOrgCategorySub] = useState('')
   const [websiteUrl, setWebsiteUrl] = useState('')
-  const [snsUrl, setSnsUrl] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -100,7 +99,6 @@ export default function PublisherSignUpPage() {
             org_category_main: orgCategoryMain,
             org_category_sub: orgCategorySub,
             website_url: websiteUrl,
-            sns_url: snsUrl,
           },
         },
       })
@@ -241,10 +239,11 @@ export default function PublisherSignUpPage() {
               </select>
             </div>
 
-            {/* WebサイトURL */}
+            {/* Webサイト or SNS URL */}
             <div>
               <label htmlFor="websiteUrl" className="block text-sm font-medium text-gray-700 mb-1.5">
-                組織のWebサイトURL <span className="text-red-500">*</span>
+                WebサイトまたはSNSアカウントのURL <span className="text-red-500">*</span>
+                <span className="ml-1 text-xs font-normal text-gray-400">（Instagram・X・Facebook・公式サイト等）</span>
               </label>
               <input
                 id="websiteUrl"
@@ -254,23 +253,6 @@ export default function PublisherSignUpPage() {
                 required
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 placeholder="https://example.org"
-              />
-            </div>
-
-            {/* SNS URL */}
-            <div>
-              <label htmlFor="snsUrl" className="block text-sm font-medium text-gray-700 mb-1.5">
-                SNSアカウントURL <span className="text-red-500">*</span>
-                <span className="ml-1 text-xs font-normal text-gray-400">（Instagram・X・Facebook等）</span>
-              </label>
-              <input
-                id="snsUrl"
-                type="url"
-                value={snsUrl}
-                onChange={(e) => setSnsUrl(e.target.value)}
-                required
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                placeholder="https://instagram.com/youraccount"
               />
             </div>
 

@@ -14,7 +14,6 @@ type PendingPublisher = {
   org_category_main?: string | null
   org_category_sub?: string | null
   website_url?: string | null
-  sns_url?: string | null
 }
 
 function formatDate(dateStr: string) {
@@ -58,7 +57,6 @@ export default async function AdminPage() {
           org_category_main: meta.org_category_main ?? null,
           org_category_sub: meta.org_category_sub ?? null,
           website_url: meta.website_url ?? null,
-          sns_url: meta.sns_url ?? null,
         }
       })
       pending = withMeta.filter((p) => !p.approved)
@@ -134,20 +132,11 @@ export default async function AdminPage() {
                       <dt className="text-xs font-medium text-gray-400 mb-0.5">種類（中分類）</dt>
                       <dd className="text-sm text-gray-700">{pub.org_category_sub ?? '—'}</dd>
                     </div>
-                    <div>
-                      <dt className="text-xs font-medium text-gray-400 mb-0.5">WebサイトURL</dt>
+                    <div className="sm:col-span-2">
+                      <dt className="text-xs font-medium text-gray-400 mb-0.5">WebサイトまたはSNSアカウントURL</dt>
                       <dd className="text-sm">
                         {pub.website_url
                           ? <a href={pub.website_url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline break-all">{pub.website_url}</a>
-                          : <span className="text-gray-400">—</span>
-                        }
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-medium text-gray-400 mb-0.5">SNSアカウントURL</dt>
-                      <dd className="text-sm">
-                        {pub.sns_url
-                          ? <a href={pub.sns_url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline break-all">{pub.sns_url}</a>
                           : <span className="text-gray-400">—</span>
                         }
                       </dd>
