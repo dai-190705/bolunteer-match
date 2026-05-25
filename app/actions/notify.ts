@@ -13,10 +13,13 @@ export async function notifyPublisherApproved({
   name: string
   organization: string
 }) {
-  if (!process.env.RESEND_API_KEY) return
+  if (!process.env.RESEND_API_KEY) {
+    console.error('[notify] RESEND_API_KEY が未設定です')
+    return
+  }
 
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: 'Caredent <no-reply@nocsy.me>',
       to: email,
       subject: '【Caredent】パブリッシャー申請が承認されました',
@@ -51,8 +54,9 @@ export async function notifyPublisherApproved({
         </div>
       `,
     })
+    console.log('[notify] 承認メール送信結果:', JSON.stringify(result))
   } catch (err) {
-    console.error('Failed to send approval email:', err)
+    console.error('[notify] 承認メール送信失敗:', err)
   }
 }
 
