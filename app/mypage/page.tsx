@@ -5,9 +5,9 @@ import { Application } from '@/types'
 import CancelButton from './CancelButton'
 
 const CATEGORY_COLORS: Record<string, string> = {
-  スキボラ: 'bg-blue-100 text-blue-800',
-  ちょボラ: 'bg-green-100 text-green-800',
-  ガチボラ: 'bg-orange-100 text-orange-800',
+  1day: 'bg-blue-100 text-blue-800',
+  中期: 'bg-green-100 text-green-800',
+  長期: 'bg-orange-100 text-orange-800',
 }
 
 function formatDeadline(deadline: string | null) {

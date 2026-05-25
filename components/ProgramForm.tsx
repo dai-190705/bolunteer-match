@@ -10,7 +10,7 @@ type Props = {
   submitLabel: string
 }
 
-const CATEGORIES = ['スキボラ', 'ちょボラ', 'ガチボラ'] as const
+const CATEGORIES = ['1day', '中期', '長期'] as const
 
 export default function ProgramForm({ program, action, submitLabel }: Props) {
   const [published, setPublished] = useState(program?.published ?? false)

@@ -14,12 +14,12 @@ function isDeadlinePast(deadline: string | null) {
 }
 
 const CATEGORY_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  スキボラ: { label: 'スキボラ', color: 'text-sky-700', bg: 'bg-sky-100' },
-  ちょボラ: { label: 'ちょボラ', color: 'text-emerald-700', bg: 'bg-emerald-100' },
-  ガチボラ: { label: 'ガチボラ', color: 'text-orange-700', bg: 'bg-orange-100' },
+  1day: { label: '1day', color: 'text-sky-700', bg: 'bg-sky-100' },
+  中期: { label: '中期', color: 'text-emerald-700', bg: 'bg-emerald-100' },
+  長期: { label: '長期', color: 'text-orange-700', bg: 'bg-orange-100' },
 }
 
-const CATEGORIES = ['スキボラ', 'ちょボラ', 'ガチボラ'] as const
+const CATEGORIES = ['1day', '中期', '長期'] as const
 
 export default async function Home({
   searchParams,

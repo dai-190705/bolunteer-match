@@ -24,7 +24,7 @@ export type Program = {
   created_at: string
   updated_at: string
   banner_image_url: string | null
-  category: 'スキボラ' | 'ちょボラ' | 'ガチボラ' | null
+  category: '1day' | '中期' | '長期' | null
   cancel_policy: string | null
   notes: string | null
   capacity: number | null
