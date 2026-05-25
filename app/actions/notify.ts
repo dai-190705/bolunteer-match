@@ -13,6 +13,9 @@ export async function notifyPublisherApproved({
   name: string
   organization: string
 }) {
+  console.log('[notify] RESEND_API_KEY先頭8文字:', process.env.RESEND_API_KEY?.slice(0, 8))
+  console.log('[notify] 送信先:', email)
+
   if (!process.env.RESEND_API_KEY) {
     console.error('[notify] RESEND_API_KEY が未設定です')
     return
