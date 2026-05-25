@@ -56,6 +56,55 @@ export async function notifyPublisherApproved({
   }
 }
 
+export async function notifyPublisherRejected({
+  email,
+  name,
+  organization,
+}: {
+  email: string
+  name: string
+  organization: string
+}) {
+  if (!process.env.RESEND_API_KEY) return
+
+  try {
+    await resend.emails.send({
+      from: 'Caredent <no-reply@nocsy.me>',
+      to: email,
+      subject: '【Caredent】パブリッシャー申請の審査結果について',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #f9fafb;">
+          <div style="background: white; border-radius: 16px; padding: 32px; border: 1px solid #e5e7eb;">
+            <div style="text-align: center; margin-bottom: 28px;">
+              <span style="font-size: 26px; font-weight: 800; color: #4592c0;">Caredent</span>
+            </div>
+
+            <h2 style="color: #111827; font-size: 20px; margin: 0 0 12px;">申請の審査結果について</h2>
+
+            <p style="color: #6b7280; font-size: 14px; line-height: 1.8; margin: 0 0 24px;">
+              ${name} 様<br /><br />
+              ${organization} のパブリッシャー申請について審査した結果、<br />
+              誠に恐れながら今回はご登録をお見送りさせていただくこととなりました。
+            </p>
+
+            <p style="color: #6b7280; font-size: 14px; line-height: 1.8; margin: 0 0 24px;">
+              ご不明な点がございましたら、お手数ですがCaredentまでお問い合わせください。
+            </p>
+
+            <hr style="border: none; border-top: 1px solid #f3f4f6; margin: 24px 0;" />
+
+            <p style="color: #d1d5db; font-size: 11px; text-align: center; margin: 0;">
+              このメールはCaredentのシステムから自動送信されています。
+            </p>
+          </div>
+        </div>
+      `,
+    })
+  } catch (err) {
+    console.error('Failed to send rejection email:', err)
+  }
+}
+
 export async function notifyNewPublisherApplication({
   name,
   organization,
