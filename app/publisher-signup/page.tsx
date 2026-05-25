@@ -4,15 +4,71 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 
+const ORG_TYPES = [
+  '企業（株式会社・合同会社・個人事業主など）',
+  '非営利団体・任意団体（NPO・一般社団法人・学生団体・サークルなど）',
+  '行政・公的機関（自治体・社会福祉協議会・外郭団体など）',
+  '教育・医療・福祉機関（学校・病院・社会福祉法人など）',
+] as const
+
+const ORG_CATEGORIES: Record<string, string[]> = {
+  '医療・福祉・健康': [
+    '医療・保健（病院・クリニック・薬局・看護）',
+    '介護・福祉（高齢者福祉・障がい者支援・児童福祉・子ども食堂）',
+    '健康・スポーツ（フィットネス・スポーツチーム・メンタルケア）',
+  ],
+  '教育・子ども・子育て': [
+    '学校・学習支援（学校・塾・フリースクール・学童保育）',
+    '幼児教育・子育て支援（保育園・幼稚園・育児コミュニティ）',
+    '教育サービス・教材開発（エドテック・体験型イベント企画）',
+  ],
+  'IT・情報・メディア': [
+    'IT・ソフトウェア・AI（アプリ開発・Web制作・システム開発・AI活用）',
+    'メディア・出版・広告（ローカルメディア・SNSマーケティング・映像制作）',
+    'デザイン・クリエイティブ（グラフィック・イラスト・ゲーム・ものづくり）',
+  ],
+  'まちづくり・地域活性・観光': [
+    '地域活性・コミュニティ（まちづくり協議会・移住支援・商店街活性）',
+    '観光・旅行・インバウンド（ゲストハウス・観光協会・地域ツアー企画）',
+    'イベント・レジャー（地域のお祭り・アートフェス・文化イベント）',
+  ],
+  '環境・農業・一次産業': [
+    '農業・林業・水産業（地方農家・六次産業化・伝統的漁業）',
+    '環境保全・エコ（里山再生・ゴミ拾いイベント・気候変動対策・動物愛護）',
+    '食・フード（オーガニック食材・フードロス削減・地域食堂）',
+  ],
+  'ビジネス・ものづくり・専門サービス': [
+    'メーカー・製造業（地場産業・町工場・伝統工芸・製品開発）',
+    '小売・流通・飲食（セレクトショップ・カフェ経営）',
+    '専門サービス・起業支援（コンサルティング・スタートアップ支援・士業）',
+  ],
+  '国際・人権・社会貢献': [
+    '国際協力・多文化共生（NGO・海外支援・在住外国人サポート）',
+    '人権・ジェンダー・多様性（ジェンダー平等・ひきこもり支援・就労支援）',
+  ],
+}
+
+const ORG_CATEGORY_MAINS = Object.keys(ORG_CATEGORIES)
+
 export default function PublisherSignUpPage() {
   const [name, setName] = useState('')
   const [organization, setOrganization] = useState('')
+  const [orgType, setOrgType] = useState('')
+  const [orgCategoryMain, setOrgCategoryMain] = useState('')
+  const [orgCategorySub, setOrgCategorySub] = useState('')
+  const [websiteUrl, setWebsiteUrl] = useState('')
+  const [snsUrl, setSnsUrl] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  function handleCategoryMainChange(val: string) {
+    setOrgCategoryMain(val)
+    setOrgCategorySub('')
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -40,6 +96,11 @@ export default function PublisherSignUpPage() {
             role: 'publisher',
             name,
             organization,
+            org_type: orgType,
+            org_category_main: orgCategoryMain,
+            org_category_sub: orgCategorySub,
+            website_url: websiteUrl,
+            sns_url: snsUrl,
           },
         },
       })
@@ -75,9 +136,11 @@ export default function PublisherSignUpPage() {
     )
   }
 
+  const subCategories = orgCategoryMain ? ORG_CATEGORIES[orgCategoryMain] ?? [] : []
+
   return (
     <div className="min-h-[calc(100vh-65px)] flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-lg">
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-gray-900">パブリッシャー申請</h1>
@@ -87,6 +150,8 @@ export default function PublisherSignUpPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+
+            {/* 担当者名 */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
                 担当者名 <span className="text-red-500">*</span>
@@ -102,6 +167,7 @@ export default function PublisherSignUpPage() {
               />
             </div>
 
+            {/* 団体・組織名 */}
             <div>
               <label htmlFor="organization" className="block text-sm font-medium text-gray-700 mb-1.5">
                 団体・組織名 <span className="text-red-500">*</span>
@@ -117,6 +183,98 @@ export default function PublisherSignUpPage() {
               />
             </div>
 
+            {/* 組織の形式 */}
+            <div>
+              <label htmlFor="orgType" className="block text-sm font-medium text-gray-700 mb-1.5">
+                組織の形式 <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="orgType"
+                value={orgType}
+                onChange={(e) => setOrgType(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-white"
+              >
+                <option value="">選択してください</option>
+                {ORG_TYPES.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 組織の種類（大分類） */}
+            <div>
+              <label htmlFor="orgCategoryMain" className="block text-sm font-medium text-gray-700 mb-1.5">
+                組織の種類（大分類） <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="orgCategoryMain"
+                value={orgCategoryMain}
+                onChange={(e) => handleCategoryMainChange(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-white"
+              >
+                <option value="">選択してください</option>
+                {ORG_CATEGORY_MAINS.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 組織の種類（中分類） */}
+            <div>
+              <label htmlFor="orgCategorySub" className="block text-sm font-medium text-gray-700 mb-1.5">
+                組織の種類（中分類） <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="orgCategorySub"
+                value={orgCategorySub}
+                onChange={(e) => setOrgCategorySub(e.target.value)}
+                required
+                disabled={!orgCategoryMain}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-white disabled:bg-gray-50 disabled:text-gray-400"
+              >
+                <option value="">{orgCategoryMain ? '選択してください' : '先に大分類を選んでください'}</option>
+                {subCategories.map((sub) => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* WebサイトURL */}
+            <div>
+              <label htmlFor="websiteUrl" className="block text-sm font-medium text-gray-700 mb-1.5">
+                組織のWebサイトURL <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="websiteUrl"
+                type="url"
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                placeholder="https://example.org"
+              />
+            </div>
+
+            {/* SNS URL */}
+            <div>
+              <label htmlFor="snsUrl" className="block text-sm font-medium text-gray-700 mb-1.5">
+                SNSアカウントURL <span className="text-red-500">*</span>
+                <span className="ml-1 text-xs font-normal text-gray-400">（Instagram・X・Facebook等）</span>
+              </label>
+              <input
+                id="snsUrl"
+                type="url"
+                value={snsUrl}
+                onChange={(e) => setSnsUrl(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                placeholder="https://instagram.com/youraccount"
+              />
+            </div>
+
+            {/* メールアドレス */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
                 メールアドレス <span className="text-red-500">*</span>
@@ -133,6 +291,7 @@ export default function PublisherSignUpPage() {
               />
             </div>
 
+            {/* パスワード */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
                 パスワード <span className="text-red-500">*</span>
@@ -149,6 +308,7 @@ export default function PublisherSignUpPage() {
               />
             </div>
 
+            {/* パスワード確認 */}
             <div>
               <label htmlFor="passwordConfirm" className="block text-sm font-medium text-gray-700 mb-1.5">
                 パスワード確認 <span className="text-red-500">*</span>
