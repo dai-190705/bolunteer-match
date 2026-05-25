@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/utils/supabase/client'
+import { submitPublisherApplication } from './actions'
 
 const ORG_TYPES = [
   '企業（株式会社・合同会社・個人事業主など）',
@@ -85,33 +85,19 @@ export default function PublisherSignUpPage() {
     setLoading(true)
 
     try {
-      const supabase = createClient()
-      const { error: signUpError } = await supabase.auth.signUp({
+      await submitPublisherApplication({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: {
-            role: 'publisher',
-            name,
-            organization,
-            org_type: orgType,
-            org_category_main: orgCategoryMain,
-            org_category_sub: orgCategorySub,
-            website_url: websiteUrl,
-          },
-        },
+        name,
+        organization,
+        orgType,
+        orgCategoryMain,
+        orgCategorySub,
+        websiteUrl,
       })
-
-      if (signUpError) {
-        setError('登録に失敗しました。入力内容を確認してもう一度お試しください。')
-        setLoading(false)
-        return
-      }
-
       setDone(true)
-    } catch {
-      setError('エラーが発生しました。もう一度お試しください。')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'エラーが発生しました。もう一度お試しください。')
       setLoading(false)
     }
   }
@@ -121,12 +107,11 @@ export default function PublisherSignUpPage() {
       <div className="min-h-[calc(100vh-65px)] flex items-center justify-center px-4">
         <div className="w-full max-w-md text-center">
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10">
-            <div className="text-4xl mb-4">📬</div>
-            <h1 className="text-xl font-bold text-gray-900 mb-3">確認メールを送信しました</h1>
+            <div className="text-4xl mb-4">✅</div>
+            <h1 className="text-xl font-bold text-gray-900 mb-3">申請完了</h1>
             <p className="text-sm text-gray-500 leading-relaxed">
-              登録したメールアドレスに確認メールを送りました。<br />
-              メール内のリンクをクリックすると申請が完了し、<br />
-              管理者が内容を確認後に承認いたします。
+              申請を受け付けました。<br />
+              管理者に承認され次第、メールにてご案内いたします。
             </p>
           </div>
         </div>
