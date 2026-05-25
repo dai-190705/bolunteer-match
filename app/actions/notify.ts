@@ -13,13 +13,7 @@ export async function notifyPublisherApproved({
   name: string
   organization: string
 }) {
-  console.log('[notify] RESEND_API_KEY先頭8文字:', process.env.RESEND_API_KEY?.slice(0, 8))
-  console.log('[notify] 送信先:', email)
-
-  if (!process.env.RESEND_API_KEY) {
-    console.error('[notify] RESEND_API_KEY が未設定です')
-    return
-  }
+  if (!process.env.RESEND_API_KEY) return
 
   try {
     const result = await resend.emails.send({
@@ -57,9 +51,8 @@ export async function notifyPublisherApproved({
         </div>
       `,
     })
-    console.log('[notify] 承認メール送信結果:', JSON.stringify(result))
   } catch (err) {
-    console.error('[notify] 承認メール送信失敗:', err)
+    console.error('Failed to send approval email:', err)
   }
 }
 
