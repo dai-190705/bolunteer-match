@@ -17,27 +17,37 @@ export async function notifyPublisherApproved({
 
   try {
     await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'Caredent <no-reply@nocsy.me>',
       to: email,
-      subject: '【探究プログラム】パブリッシャー申請が承認されました',
+      subject: '【Caredent】パブリッシャー申請が承認されました',
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-          <h2 style="color: #1e1e1e; margin-bottom: 8px;">申請が承認されました 🎉</h2>
-          <p style="color: #555; margin-bottom: 24px;">
-            ${organization}（担当：${name}）様のパブリッシャー申請が承認されました。<br />
-            以下のリンクからログインして、ボランティアの掲載を開始してください。
-          </p>
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #f9fafb;">
+          <div style="background: white; border-radius: 16px; padding: 32px; border: 1px solid #e5e7eb;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <span style="font-size: 24px; font-weight: 800; color: #4592c0;">Caredent</span>
+            </div>
 
-          <a
-            href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://tankyuu-program.vercel.app'}/login"
-            style="display: inline-block; background: #4f46e5; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;"
-          >
-            ログインする →
-          </a>
+            <h2 style="color: #111827; font-size: 20px; margin: 0 0 16px;">申請が承認されました 🎉</h2>
 
-          <p style="margin-top: 32px; color: #aaa; font-size: 12px;">
-            このメールは探究プログラムのシステムから自動送信されています。
-          </p>
+            <p style="color: #6b7280; font-size: 14px; line-height: 1.8; margin: 0 0 24px;">
+              ${name} 様<br /><br />
+              ${organization} のパブリッシャー申請が承認されました。<br />
+              以下のボタンからログインして、プログラムの掲載を開始してください。
+            </p>
+
+            <div style="text-align: center; margin: 32px 0;">
+              <a
+                href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.nocsy.me'}/login"
+                style="display: inline-block; background: #4592c0; color: white; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700;"
+              >
+                ログインする →
+              </a>
+            </div>
+
+            <p style="margin: 24px 0 0; color: #9ca3af; font-size: 12px; text-align: center;">
+              このメールはCaredentのシステムから自動送信されています。
+            </p>
+          </div>
         </div>
       `,
     })
@@ -60,39 +70,47 @@ export async function notifyNewPublisherApplication({
 
   try {
     await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'Caredent <no-reply@nocsy.me>',
       to: adminEmail,
-      subject: '【探究プログラム】新規パブリッシャー申請が届きました',
+      subject: '【Caredent】新規パブリッシャー申請が届きました',
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-          <h2 style="color: #1e1e1e; margin-bottom: 8px;">新規パブリッシャー申請</h2>
-          <p style="color: #555; margin-bottom: 24px;">以下の内容で新しい申請が届きました。管理画面から承認または却下してください。</p>
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #f9fafb;">
+          <div style="background: white; border-radius: 16px; padding: 32px; border: 1px solid #e5e7eb;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <span style="font-size: 24px; font-weight: 800; color: #4592c0;">Caredent</span>
+            </div>
 
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px 0; color: #888; width: 120px; font-size: 14px;">担当者名</td>
-              <td style="padding: 12px 0; color: #1e1e1e; font-size: 14px;">${name}</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 12px 0; color: #888; font-size: 14px;">団体・組織名</td>
-              <td style="padding: 12px 0; color: #1e1e1e; font-size: 14px;">${organization}</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 0; color: #888; font-size: 14px;">メールアドレス</td>
-              <td style="padding: 12px 0; color: #1e1e1e; font-size: 14px;">${email}</td>
-            </tr>
-          </table>
+            <h2 style="color: #111827; font-size: 20px; margin: 0 0 16px;">新規パブリッシャー申請</h2>
+            <p style="color: #6b7280; font-size: 14px; margin: 0 0 24px;">以下の内容で新しい申請が届きました。管理画面から承認または却下してください。</p>
 
-          <a
-            href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://tankyuu-program.vercel.app'}/admin"
-            style="display: inline-block; background: #4f46e5; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;"
-          >
-            管理画面で確認する →
-          </a>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;">
+              <tr style="border-bottom: 1px solid #f3f4f6;">
+                <td style="padding: 12px 8px 12px 0; color: #9ca3af; width: 120px;">担当者名</td>
+                <td style="padding: 12px 0; color: #111827;">${name}</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #f3f4f6;">
+                <td style="padding: 12px 8px 12px 0; color: #9ca3af;">団体・組織名</td>
+                <td style="padding: 12px 0; color: #111827;">${organization}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 8px 12px 0; color: #9ca3af;">メールアドレス</td>
+                <td style="padding: 12px 0; color: #111827;">${email}</td>
+              </tr>
+            </table>
 
-          <p style="margin-top: 32px; color: #aaa; font-size: 12px;">
-            このメールは探究プログラムのシステムから自動送信されています。
-          </p>
+            <div style="text-align: center;">
+              <a
+                href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.nocsy.me'}/admin"
+                style="display: inline-block; background: #4592c0; color: white; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700;"
+              >
+                管理画面で確認する →
+              </a>
+            </div>
+
+            <p style="margin: 24px 0 0; color: #9ca3af; font-size: 12px; text-align: center;">
+              このメールはCaredentのシステムから自動送信されています。
+            </p>
+          </div>
         </div>
       `,
     })
