@@ -59,7 +59,7 @@ export default function SignUpPage() {
       })
 
       if (signUpError) {
-        setError(`[DEBUG] ${signUpError.message}`)
+        setError('登録に失敗しました。入力内容を確認してもう一度お試しください。')
         setLoading(false)
         return
       }
