@@ -292,6 +292,16 @@ export default function SignUpPage() {
               ログインはこちら
             </Link>
           </p>
+
+          <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+            <p className="text-xs text-gray-400 mb-2">ボランティアを掲載したい団体・企業の方</p>
+            <Link
+              href="/publisher-signup"
+              className="inline-block text-sm text-gray-500 hover:text-indigo-600 font-medium border border-gray-200 hover:border-indigo-300 rounded-lg px-4 py-2 transition-colors"
+            >
+              掲載者（パブリッシャー）の申請はこちら →
+            </Link>
+          </div>
         </div>
       </div>
     </div>
