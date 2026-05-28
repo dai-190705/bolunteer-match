@@ -101,11 +101,11 @@ export default function NOCSYHomePage() {
                 「学校」と「社会」の境界をなくし、中高生の主体的な学びを支援する探究マッチングを展開しています。生徒一人ひとりの好奇心を軸に、地域社会や企業での探究活動・ボランティア機会を創出。実社会での質の高い経験は、近年の総合型選抜（旧AO入試）や学校推薦型選択において、自分だけの「志望理由」や「活動実績」を語る強力な武器となります。伴走型のサポートを通じて、大学入試の先まで見据えた、未来を切り拓く力と唯一無二のキャリア形成を後押しします。
               </p>
 
-              <div className="mb-8 rounded-xl overflow-hidden h-56 md:h-72">
+              <div className="mb-8">
                 <img
                   src="/ogp.png"
                   alt="探究・ボランティアマッチングCaredent"
-                  className="w-full h-full object-cover"
+                  className="w-full object-contain"
                 />
               </div>
 
@@ -113,7 +113,7 @@ export default function NOCSYHomePage() {
                 href="/caredent"
                 className="inline-block border border-gray-900 text-gray-900 px-8 py-3 text-sm font-medium hover:bg-gray-900 hover:text-white transition-colors"
               >
-                私たちの仕事ページへ →
+                Caredentサービスページへ →
               </Link>
             </div>
           </div>
