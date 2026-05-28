@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/utils/supabase/server'
 import SignOutButton from './SignOutButton'
 
@@ -30,7 +31,7 @@ export default async function Header() {
           href="/"
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         >
-          <img src="/logo.png" alt="Caredent" className="h-8 w-8 object-contain" />
+          <Image src="/logo.png" alt="Caredent" width={32} height={32} className="object-contain" />
           <span className="text-xl font-bold" style={{ color: '#4592c0' }}>Caredent</span>
         </Link>
         <div className="flex items-center gap-3">
