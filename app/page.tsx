@@ -8,15 +8,10 @@ export default function NOCSYHomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* NOCSY Logo */}
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="18" cy="18" r="18" fill="#1a1a2e"/>
-              <text x="18" y="23" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold" fontFamily="serif">N</text>
-            </svg>
-            <div>
-              <div className="text-lg font-bold tracking-widest text-gray-900">NOCSY</div>
-              <div className="text-[9px] tracking-wider text-gray-500 -mt-0.5">NO ONE CAN STOP YOU</div>
-            </div>
+            <Image src="/nocsy-logo.png" alt="NOCSY" width={56} height={56} className="object-contain" />
+            <span className="text-xl font-bold tracking-widest text-gray-900">NOCSY</span>
+            <span className="text-gray-300 font-light text-lg">|</span>
+            <span className="text-xs tracking-widest text-gray-500 uppercase">NO ONE CAN STOP YOU</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
             <a href="#greeting" className="hover:text-gray-900 transition-colors">ご挨拶</a>
