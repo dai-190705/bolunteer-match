@@ -146,10 +146,11 @@ export default function NOCSYHomePage() {
                   </p>
                   <p className="font-semibold text-gray-900">代表 安井大翔</p>
                 </div>
-                {/* Photo placeholder */}
-                <div className="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
-                  <span className="text-gray-500 text-sm">代表写真</span>
-                </div>
+                <img
+                  src="/portrait.jpg"
+                  alt="代表 安井大翔"
+                  className="rounded-lg w-full object-cover object-top"
+                />
               </div>
             </div>
           </div>
