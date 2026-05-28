@@ -28,7 +28,7 @@ export default async function Header() {
     <header className="bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
         <Link
-          href="/"
+          href="/caredent"
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         >
           <Image src="/logo.png" alt="Caredent" width={32} height={32} className="object-contain" />
@@ -39,14 +39,14 @@ export default async function Header() {
             <>
               {isPublisher ? (
                 <Link
-                  href="/dashboard"
+                  href="/caredent/dashboard"
                   className="text-sm font-medium text-gray-600 hover:text-[#4592c0] transition-colors"
                 >
                   ダッシュボード
                 </Link>
               ) : (
                 <Link
-                  href="/mypage"
+                  href="/caredent/mypage"
                   className="text-sm font-medium text-gray-600 hover:text-[#4592c0] transition-colors"
                 >
                   マイページ
@@ -57,13 +57,13 @@ export default async function Header() {
           ) : (
             <>
               <Link
-                href="/login"
+                href="/caredent/login"
                 className="text-sm font-medium text-gray-600 hover:text-[#4592c0] transition-colors"
               >
                 ログイン
               </Link>
               <Link
-                href="/signup"
+                href="/caredent/signup"
                 className="text-sm font-semibold text-white px-4 py-1.5 rounded-full transition-opacity hover:opacity-90"
                 style={{ backgroundColor: '#4592c0' }}
               >

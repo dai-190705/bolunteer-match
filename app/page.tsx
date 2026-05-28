@@ -1,207 +1,205 @@
 import Link from 'next/link'
-import { createClient } from '@/utils/supabase/server'
-import { Program } from '@/types'
+import Image from 'next/image'
 
-function formatDeadline(deadline: string | null) {
-  if (!deadline) return null
-  const d = new Date(deadline)
-  return `${d.getMonth() + 1}/${d.getDate()}`
-}
-
-function isDeadlinePast(deadline: string | null) {
-  if (!deadline) return false
-  return new Date(deadline) < new Date()
-}
-
-const CATEGORY_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  '1day': { label: '1day', color: 'text-sky-700', bg: 'bg-sky-100' },
-  中期: { label: '中期', color: 'text-emerald-700', bg: 'bg-emerald-100' },
-  長期: { label: '長期', color: 'text-orange-700', bg: 'bg-orange-100' },
-}
-
-const CATEGORIES = ['1day', '中期', '長期'] as const
-
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ category?: string; q?: string }>
-}) {
-  const { category, q } = await searchParams
-  let programList: Program[] = []
-
-  try {
-    const supabase = await createClient()
-
-    let query = supabase
-      .from('programs')
-      .select('*')
-      .eq('published', true)
-      .order('created_at', { ascending: false })
-
-    if (category && CATEGORIES.includes(category as typeof CATEGORIES[number])) {
-      query = query.eq('category', category)
-    }
-
-    if (q) {
-      query = query.ilike('title', `%${q}%`)
-    }
-
-    const { data: programs } = await query
-    programList = (programs as Program[]) ?? []
-  } catch {
-    // DB接続エラーは無視して空リストを表示
-  }
-
+export default function NOCSYHomePage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ヒーローバー */}
-      <div style={{ backgroundColor: '#4592c0' }} className="px-4 pt-5 pb-4">
-        {/* 検索バー */}
-        <form method="GET" action="/" className="relative">
-          <input
-            type="text"
-            name="q"
-            defaultValue={q ?? ''}
-            placeholder="キーワードで検索"
-            className="w-full bg-white rounded-xl px-4 py-3 pl-10 text-sm text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60"
-          />
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </form>
-
-        {/* カテゴリタブ */}
-        <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
-          <Link
-            href={q ? `/?q=${encodeURIComponent(q)}` : '/'}
-            className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              !category
-                ? 'bg-white text-[#4592c0] shadow-sm'
-                : 'bg-white/20 text-white'
-            }`}
-          >
-            すべて
-          </Link>
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat}
-              href={`/?category=${encodeURIComponent(cat)}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                category === cat
-                  ? 'bg-white text-[#4592c0] shadow-sm'
-                  : 'bg-white/20 text-white'
-              }`}
-            >
-              {cat}
-            </Link>
-          ))}
+    <div className="font-sans text-gray-900">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* NOCSY Logo */}
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="18" fill="#1a1a2e"/>
+              <text x="18" y="23" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold" fontFamily="serif">N</text>
+            </svg>
+            <div>
+              <div className="text-lg font-bold tracking-widest text-gray-900">NOCSY</div>
+              <div className="text-[9px] tracking-wider text-gray-500 -mt-0.5">NO ONE CAN STOP YOU</div>
+            </div>
+          </div>
+          <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
+            <a href="#greeting" className="hover:text-gray-900 transition-colors">ご挨拶</a>
+            <a href="#services" className="hover:text-gray-900 transition-colors">私たちの仕事</a>
+            <a href="#representative" className="hover:text-gray-900 transition-colors">代表情報</a>
+            <a href="#contact" className="hover:text-gray-900 transition-colors">お問い合わせ</a>
+          </div>
         </div>
-      </div>
+      </nav>
 
-      {/* 件数バー */}
-      <div className="px-4 py-3 flex items-center justify-between bg-white border-b border-gray-100">
-        <span className="text-sm text-gray-500">
-          <span className="font-semibold text-gray-800">{programList.length}</span> 件のプログラム
-        </span>
-        <span className="text-xs text-gray-400">新着順</span>
-      </div>
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1455849318743-b2233052fcff?w=1600&q=80')` }}
+        />
+        <div className="absolute inset-0 bg-black/55" />
 
-      {/* カードグリッド */}
-      <div className="px-3 py-4">
-        {programList.length === 0 ? (
-          <div className="text-center py-24 text-gray-400">
-            <div className="text-5xl mb-4">🔍</div>
-            <p className="text-base font-medium">プログラムが見つかりません</p>
-            <p className="text-sm mt-1">条件を変えて検索してみてください</p>
+        {/* Left vertical text */}
+        <div
+          className="absolute left-8 top-1/2 -translate-y-1/2 text-white/70 text-sm tracking-widest"
+          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+        >
+          出る杭は打たれる。
+        </div>
+
+        {/* Center text */}
+        <div className="relative z-10 text-center text-white">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-wider" style={{ fontFamily: 'Georgia, serif' }}>
+            No one can stop you.
+          </h1>
+        </div>
+
+        {/* Right vertical text */}
+        <div
+          className="absolute right-8 top-1/2 -translate-y-1/2 text-white/70 text-sm tracking-widest"
+          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+        >
+          でも、出過ぎる杭は打たれない。
+        </div>
+      </section>
+
+      {/* Section: ご挨拶 */}
+      <section id="greeting" className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex gap-8">
+            {/* Vertical label */}
+            <div className="flex-shrink-0 flex items-start gap-3">
+              <div className="w-px bg-gray-300 h-full min-h-[200px]" />
+              <span
+                className="text-xs text-gray-400 tracking-widest mt-2"
+                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+              >
+                存在意義
+              </span>
+            </div>
+
+            <div className="flex-1">
+              <h2 className="text-3xl md:text-4xl font-bold mb-10 leading-tight" style={{ fontFamily: 'Georgia, "Noto Serif JP", serif' }}>
+                学生の可能性を最大化させる。
+              </h2>
+              <div className="space-y-5 text-gray-700 leading-relaxed text-base">
+                <p>正解のない問いが降り注ぎ、昨日の常識が瞬く間に塗り替えられていく。</p>
+                <p>この加速し続ける時代の濁流において、今、若者たちに必要なのは、誰かに委ねる安定ではなく、自らの足で立ち、自らの思考で航路を切り拓く強さです。</p>
+                <p className="font-semibold text-lg text-gray-900">「No one can stop you.」</p>
+                <p>私たちは、この言葉をただの掲示物にはしません。</p>
+                <p>すべての学生の内側に眠る、まだ見ぬ可能性。その爆発を阻むあらゆる境界線を壊し、可能性を最大化させること。</p>
+                <p>誰にも止められない情熱が、この社会の新しい景色をつくると信じて。</p>
+                <p>私たちは、挑戦を愛するすべての若者の、もっとも熱い伴走者であり続けます。</p>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {programList.map((program) => {
-              const past = isDeadlinePast(program.deadline)
-              const cat = program.category ? CATEGORY_LABELS[program.category] : null
-              return (
-                <Link
-                  key={program.id}
-                  href={`/programs/${program.id}`}
-                  className="block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md active:scale-[0.98] transition-all"
-                >
-                  {/* サムネイル */}
-                  <div className="relative w-full aspect-video bg-gray-100">
-                    {program.banner_image_url ? (
-                      <img
-                        src={program.banner_image_url}
-                        alt={program.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-gray-300 text-4xl">🌱</span>
-                      </div>
-                    )}
-                    {/* 締切バッジ */}
-                    {program.deadline && (
-                      <span
-                        className={`absolute top-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full ${
-                          past
-                            ? 'bg-gray-600/80 text-white'
-                            : 'bg-red-500/90 text-white'
-                        }`}
-                      >
-                        {past ? '締切済' : `〆${formatDeadline(program.deadline)}`}
-                      </span>
-                    )}
-                  </div>
+        </div>
 
-                  {/* カード本文 */}
-                  <div className="p-3">
-                    <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 mb-1.5">
-                      {program.title}
-                    </p>
+        {/* Full-width image */}
+        <div className="mt-16 relative h-64 md:h-80 overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1533073526757-2c8ca1df9f1c?w=1200&q=80"
+            alt="NOCSY"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </section>
 
-                    {cat && (
-                      <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-1.5 ${cat.bg} ${cat.color}`}>
-                        {cat.label}
-                      </span>
-                    )}
+      {/* Section: 私たちのサービス */}
+      <section id="services" className="py-24 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex gap-8">
+            {/* Vertical label */}
+            <div className="flex-shrink-0 flex items-start gap-3">
+              <div className="w-px bg-gray-300 h-full min-h-[200px]" />
+              <span
+                className="text-xs text-gray-400 tracking-widest mt-2"
+                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+              >
+                私たちのサービス
+              </span>
+            </div>
 
-                    {program.target && (
-                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                        <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span className="line-clamp-1">{program.target}</span>
-                      </p>
-                    )}
+            <div className="flex-1">
+              <p className="text-sm text-gray-400 font-mono mb-3">01</p>
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 leading-tight">
+                ボランティア・探究プログラムの紹介
+              </h2>
+              <p className="text-gray-700 leading-relaxed mb-8">
+                「学校」と「社会」の境界をなくし、中高生の主体的な学びを支援する紹介エージェントを展開しています。生徒一人ひとりの好奇心を軸に、地域社会や企業での探究活動・ボランティア機会を創出。実社会での質の高い経験は、近年の総合型選抜（旧AO入試）や学校推薦型選択において、自分だけの「志望理由」や「活動実績」を語る強力な武器となります。伴走型のサポートを通じて、大学入試の先まで見据えた、未来を切り拓く力と唯一無二のキャリア形成を後押しします。
+              </p>
 
-                    {program.tags && program.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {program.tags.slice(0, 2).map((tag) => (
-                          <span
-                            key={tag}
-                            className="text-[10px] bg-[#e8f4fc] text-[#4592c0] px-1.5 py-0.5 rounded-full font-medium"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              )
-            })}
+              <div className="mb-8 rounded-xl overflow-hidden h-56 md:h-72">
+                <img
+                  src="https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=1200&q=80"
+                  alt="ボランティア・探究プログラム"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <Link
+                href="/caredent"
+                className="inline-block border border-gray-900 text-gray-900 px-8 py-3 text-sm font-medium hover:bg-gray-900 hover:text-white transition-colors"
+              >
+                私たちの仕事ページへ →
+              </Link>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      </section>
 
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+      {/* Section: 代表情報 */}
+      <section id="representative" className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex gap-8">
+            {/* Vertical label */}
+            <div className="flex-shrink-0 flex items-start gap-3">
+              <div className="w-px bg-gray-300 h-full min-h-[200px]" />
+              <span
+                className="text-xs text-gray-400 tracking-widest mt-2"
+                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+              >
+                代表情報
+              </span>
+            </div>
+
+            <div className="flex-1">
+              <div className="grid md:grid-cols-2 gap-10 items-start">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-6 leading-tight">
+                    全ての高校生に探究のインフラを
+                  </h2>
+                  <p className="text-gray-700 leading-relaxed mb-6">
+                    高校時代に、地方観光マーケティングを手掛けるスタートアップでインターンシップ生として入社し、オウンドメディアの運営やSNSマーケティング、旅館やホテルのマーケティングコンサルティングを10か月間従事。その後、個人事業主としてマーケティング支援Borderlessを立ち上げた。高校生の探究学習の重要性を感じ、2025年春に探究プログラムやボランティアを紹介するエージェントをスタートさせた。
+                  </p>
+                  <p className="font-semibold text-gray-900">代表 安井大翔</p>
+                </div>
+                {/* Photo placeholder */}
+                <div className="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
+                  <span className="text-gray-500 text-sm">代表写真</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section: お問い合わせ */}
+      <section id="contact" className="py-24 bg-gray-900 text-white">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">お問い合わせ</h2>
+          <p className="text-gray-300 mb-8">ご質問・ご相談はお気軽にご連絡ください。</p>
+          <a
+            href="mailto:contact@nocsy.me"
+            className="inline-block bg-white text-gray-900 px-10 py-4 text-sm font-semibold hover:bg-gray-100 transition-colors"
+          >
+            contact@nocsy.me
+          </a>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 border-t border-gray-800 py-6">
+        <div className="max-w-6xl mx-auto px-6 text-center text-gray-500 text-sm">
+          © 2025 NOCSY
+        </div>
+      </footer>
     </div>
   )
 }

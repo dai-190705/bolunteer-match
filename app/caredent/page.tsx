@@ -1,0 +1,207 @@
+import Link from 'next/link'
+import { createClient } from '@/utils/supabase/server'
+import { Program } from '@/types'
+
+function formatDeadline(deadline: string | null) {
+  if (!deadline) return null
+  const d = new Date(deadline)
+  return `${d.getMonth() + 1}/${d.getDate()}`
+}
+
+function isDeadlinePast(deadline: string | null) {
+  if (!deadline) return false
+  return new Date(deadline) < new Date()
+}
+
+const CATEGORY_LABELS: Record<string, { label: string; color: string; bg: string }> = {
+  '1day': { label: '1day', color: 'text-sky-700', bg: 'bg-sky-100' },
+  中期: { label: '中期', color: 'text-emerald-700', bg: 'bg-emerald-100' },
+  長期: { label: '長期', color: 'text-orange-700', bg: 'bg-orange-100' },
+}
+
+const CATEGORIES = ['1day', '中期', '長期'] as const
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; q?: string }>
+}) {
+  const { category, q } = await searchParams
+  let programList: Program[] = []
+
+  try {
+    const supabase = await createClient()
+
+    let query = supabase
+      .from('programs')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+
+    if (category && CATEGORIES.includes(category as typeof CATEGORIES[number])) {
+      query = query.eq('category', category)
+    }
+
+    if (q) {
+      query = query.ilike('title', `%${q}%`)
+    }
+
+    const { data: programs } = await query
+    programList = (programs as Program[]) ?? []
+  } catch {
+    // DB接続エラーは無視して空リストを表示
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* ヒーローバー */}
+      <div style={{ backgroundColor: '#4592c0' }} className="px-4 pt-5 pb-4">
+        {/* 検索バー */}
+        <form method="GET" action="/" className="relative">
+          <input
+            type="text"
+            name="q"
+            defaultValue={q ?? ''}
+            placeholder="キーワードで検索"
+            className="w-full bg-white rounded-xl px-4 py-3 pl-10 text-sm text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60"
+          />
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </form>
+
+        {/* カテゴリタブ */}
+        <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
+          <Link
+            href={q ? `/?q=${encodeURIComponent(q)}` : '/'}
+            className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              !category
+                ? 'bg-white text-[#4592c0] shadow-sm'
+                : 'bg-white/20 text-white'
+            }`}
+          >
+            すべて
+          </Link>
+          {CATEGORIES.map((cat) => (
+            <Link
+              key={cat}
+              href={`/?category=${encodeURIComponent(cat)}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                category === cat
+                  ? 'bg-white text-[#4592c0] shadow-sm'
+                  : 'bg-white/20 text-white'
+              }`}
+            >
+              {cat}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* 件数バー */}
+      <div className="px-4 py-3 flex items-center justify-between bg-white border-b border-gray-100">
+        <span className="text-sm text-gray-500">
+          <span className="font-semibold text-gray-800">{programList.length}</span> 件のプログラム
+        </span>
+        <span className="text-xs text-gray-400">新着順</span>
+      </div>
+
+      {/* カードグリッド */}
+      <div className="px-3 py-4">
+        {programList.length === 0 ? (
+          <div className="text-center py-24 text-gray-400">
+            <div className="text-5xl mb-4">🔍</div>
+            <p className="text-base font-medium">プログラムが見つかりません</p>
+            <p className="text-sm mt-1">条件を変えて検索してみてください</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {programList.map((program) => {
+              const past = isDeadlinePast(program.deadline)
+              const cat = program.category ? CATEGORY_LABELS[program.category] : null
+              return (
+                <Link
+                  key={program.id}
+                  href={`/programs/${program.id}`}
+                  className="block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md active:scale-[0.98] transition-all"
+                >
+                  {/* サムネイル */}
+                  <div className="relative w-full aspect-video bg-gray-100">
+                    {program.banner_image_url ? (
+                      <img
+                        src={program.banner_image_url}
+                        alt={program.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-gray-300 text-4xl">🌱</span>
+                      </div>
+                    )}
+                    {/* 締切バッジ */}
+                    {program.deadline && (
+                      <span
+                        className={`absolute top-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full ${
+                          past
+                            ? 'bg-gray-600/80 text-white'
+                            : 'bg-red-500/90 text-white'
+                        }`}
+                      >
+                        {past ? '締切済' : `〆${formatDeadline(program.deadline)}`}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* カード本文 */}
+                  <div className="p-3">
+                    <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 mb-1.5">
+                      {program.title}
+                    </p>
+
+                    {cat && (
+                      <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-1.5 ${cat.bg} ${cat.color}`}>
+                        {cat.label}
+                      </span>
+                    )}
+
+                    {program.target && (
+                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                        <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span className="line-clamp-1">{program.target}</span>
+                      </p>
+                    )}
+
+                    {program.tags && program.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {program.tags.slice(0, 2).map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[10px] bg-[#e8f4fc] text-[#4592c0] px-1.5 py-0.5 rounded-full font-medium"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+    </div>
+  )
+}
