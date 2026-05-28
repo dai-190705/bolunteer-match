@@ -37,7 +37,7 @@ export async function notifyPublisherApproved({
 
             <div style="text-align: center; margin: 32px 0;">
               <a
-                href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.nocsy.me'}/login"
+                href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.nocsy.me'}/caredent/login"
                 style="display: inline-block; background: #4592c0; color: white; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700;"
               >
                 ログインする →
@@ -149,7 +149,7 @@ export async function notifyNewPublisherApplication({
 
             <div style="text-align: center;">
               <a
-                href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.nocsy.me'}/admin"
+                href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.nocsy.me'}/caredent/admin"
                 style="display: inline-block; background: #4592c0; color: white; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700;"
               >
                 管理画面で確認する →
