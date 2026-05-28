@@ -95,16 +95,16 @@ export default function NOCSYHomePage() {
             <div className="flex-1">
               <p className="text-sm text-gray-400 font-mono mb-3">01</p>
               <h2 className="text-2xl md:text-3xl font-bold mb-6 leading-tight">
-                ボランティア・探究プログラムの紹介
+                探究・ボランティアマッチングCaredent
               </h2>
               <p className="text-gray-700 leading-relaxed mb-8">
-                「学校」と「社会」の境界をなくし、中高生の主体的な学びを支援する紹介エージェントを展開しています。生徒一人ひとりの好奇心を軸に、地域社会や企業での探究活動・ボランティア機会を創出。実社会での質の高い経験は、近年の総合型選抜（旧AO入試）や学校推薦型選択において、自分だけの「志望理由」や「活動実績」を語る強力な武器となります。伴走型のサポートを通じて、大学入試の先まで見据えた、未来を切り拓く力と唯一無二のキャリア形成を後押しします。
+                「学校」と「社会」の境界をなくし、中高生の主体的な学びを支援する探究マッチングを展開しています。生徒一人ひとりの好奇心を軸に、地域社会や企業での探究活動・ボランティア機会を創出。実社会での質の高い経験は、近年の総合型選抜（旧AO入試）や学校推薦型選択において、自分だけの「志望理由」や「活動実績」を語る強力な武器となります。伴走型のサポートを通じて、大学入試の先まで見据えた、未来を切り拓く力と唯一無二のキャリア形成を後押しします。
               </p>
 
               <div className="mb-8 rounded-xl overflow-hidden h-56 md:h-72">
                 <img
-                  src="https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=1200&q=80"
-                  alt="ボランティア・探究プログラム"
+                  src="/ogp.png"
+                  alt="探究・ボランティアマッチングCaredent"
                   className="w-full h-full object-cover"
                 />
               </div>
