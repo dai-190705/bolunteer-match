@@ -84,7 +84,7 @@ export default function ApplyPage() {
               申請を受け付けました。承認後にログインできるようになります。
             </p>
             <Link
-              href="/login"
+              href="/caredent/login"
               className="mt-6 inline-block text-sm text-indigo-600 hover:text-indigo-800 font-medium"
             >
               ログインページへ戻る
@@ -201,7 +201,7 @@ export default function ApplyPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             すでにアカウントをお持ちの方は{' '}
-            <Link href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link href="/caredent/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
               ログイン
             </Link>
           </p>

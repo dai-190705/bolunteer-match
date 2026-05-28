@@ -153,7 +153,7 @@ export default async function ProgramDetailPage({
           {/* Apply button section */}
           {!userId ? (
             <Link
-              href={`/login?next=/programs/${id}/apply`}
+              href={`/caredent/login?next=/caredent/programs/${id}/apply`}
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors text-base shadow-sm"
             >
               応募するにはログインが必要です
@@ -174,7 +174,7 @@ export default async function ProgramDetailPage({
             </button>
           ) : (
             <Link
-              href={`/programs/${id}/apply`}
+              href={`/caredent/programs/${id}/apply`}
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors text-base shadow-sm"
             >
               応募する →

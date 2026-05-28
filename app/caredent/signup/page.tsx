@@ -288,7 +288,7 @@ export default function SignUpPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             すでにアカウントをお持ちの方は{' '}
-            <Link href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link href="/caredent/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
               ログインはこちら
             </Link>
           </p>
@@ -296,7 +296,7 @@ export default function SignUpPage() {
           <div className="mt-4 pt-4 border-t border-gray-100 text-center">
             <p className="text-xs text-gray-400 mb-2">ボランティアを掲載したい団体・企業の方</p>
             <Link
-              href="/publisher-signup"
+              href="/caredent/publisher-signup"
               className="inline-block text-sm text-gray-500 hover:text-indigo-600 font-medium border border-gray-200 hover:border-indigo-300 rounded-lg px-4 py-2 transition-colors"
             >
               掲載者（パブリッシャー）の申請はこちら →

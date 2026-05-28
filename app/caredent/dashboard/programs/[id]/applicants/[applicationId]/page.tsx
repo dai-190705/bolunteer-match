@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
-import { markAsCompleted } from '@/app/dashboard/actions'
+import { markAsCompleted } from '@/app/caredent/dashboard/actions'
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -18,7 +18,7 @@ export default async function ApplicantDetailPage({
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   // 自分のプログラムか確認
   const { data: program } = await supabase
@@ -62,7 +62,7 @@ export default async function ApplicantDetailPage({
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <Link
-        href={`/dashboard/programs/${id}/applicants`}
+        href={`/caredent/dashboard/programs/${id}/applicants`}
         className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 mb-6 transition-colors"
       >
         ← 応募者一覧に戻る

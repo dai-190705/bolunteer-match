@@ -127,7 +127,7 @@ export default async function Home({
               return (
                 <Link
                   key={program.id}
-                  href={`/programs/${program.id}`}
+                  href={`/caredent/programs/${program.id}`}
                   className="block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md active:scale-[0.98] transition-all"
                 >
                   {/* サムネイル */}

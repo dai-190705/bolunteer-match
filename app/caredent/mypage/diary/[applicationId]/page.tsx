@@ -16,7 +16,7 @@ export default async function DiaryPage({
     user = authUser
   } catch { /* ignore */ }
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   const supabase = await createClient()
 
@@ -43,7 +43,7 @@ export default async function DiaryPage({
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <a
-        href="/mypage"
+        href="/caredent/mypage"
         className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 mb-6 transition-colors"
       >
         ← マイページに戻る

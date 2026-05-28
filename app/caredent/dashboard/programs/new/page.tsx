@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import ProgramForm from '@/components/ProgramForm'
-import { createProgram } from '@/app/dashboard/actions'
+import { createProgram } from '@/app/caredent/dashboard/actions'
 
 export default async function NewProgramPage() {
   let user = null
@@ -17,13 +17,13 @@ export default async function NewProgramPage() {
     // ignore
   }
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <div className="mb-6">
         <Link
-          href="/dashboard"
+          href="/caredent/dashboard"
           className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 transition-colors mb-4"
         >
           ← ダッシュボードに戻る

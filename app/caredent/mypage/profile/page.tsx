@@ -6,7 +6,7 @@ export default async function ProfilePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   const { data: profile } = await supabase
     .from('student_profiles')
@@ -14,12 +14,12 @@ export default async function ProfilePage() {
     .eq('id', user.id)
     .single()
 
-  if (!profile) redirect('/mypage')
+  if (!profile) redirect('/caredent/mypage')
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <a
-        href="/mypage"
+        href="/caredent/mypage"
         className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 mb-6 transition-colors"
       >
         ← マイページに戻る

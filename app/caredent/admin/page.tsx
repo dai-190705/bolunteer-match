@@ -31,7 +31,7 @@ export default async function AdminPage() {
     // ignore
   }
 
-  if (!isAdmin) redirect('/admin/login')
+  if (!isAdmin) redirect('/caredent/admin/login')
 
   let pending: PendingPublisher[] = []
   let approved: PendingPublisher[] = []

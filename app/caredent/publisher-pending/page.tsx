@@ -11,7 +11,7 @@ export default function PublisherPendingPage() {
             メールアドレスの確認が完了しました。<br />
             管理者が内容を確認後、承認いたします。<br /><br />
             承認が完了したら{' '}
-            <Link href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link href="/caredent/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
               こちらからログイン
             </Link>
             してください。

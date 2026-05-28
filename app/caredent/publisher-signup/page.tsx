@@ -309,7 +309,7 @@ export default function PublisherSignUpPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             すでにアカウントをお持ちの方は{' '}
-            <Link href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link href="/caredent/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
               ログインはこちら
             </Link>
           </p>

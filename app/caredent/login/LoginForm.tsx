@@ -41,10 +41,10 @@ export default function LoginForm() {
           setLoading(false)
           return
         }
-        router.push('/dashboard')
+        router.push('/caredent/dashboard')
       } else {
         // Student flow — no profiles row
-        router.push('/mypage')
+        router.push('/caredent/mypage')
       }
 
       router.refresh()
@@ -84,7 +84,7 @@ export default function LoginForm() {
             >
               パスワード
             </label>
-            <Link href="/forgot-password" className="text-xs text-indigo-600 hover:text-indigo-800">
+            <Link href="/caredent/forgot-password" className="text-xs text-indigo-600 hover:text-indigo-800">
               パスワードを忘れた方
             </Link>
           </div>
@@ -118,13 +118,13 @@ export default function LoginForm() {
       <div className="mt-6 space-y-2 text-center text-sm text-gray-500">
         <p>
           学生の方で新規登録は{' '}
-          <Link href="/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
+          <Link href="/caredent/signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
             こちら
           </Link>
         </p>
         <p>
           ボランティアを掲載したい方は{' '}
-          <Link href="/publisher-signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
+          <Link href="/caredent/publisher-signup" className="text-indigo-600 hover:text-indigo-800 font-medium">
             パブリッシャー申請
           </Link>
         </p>

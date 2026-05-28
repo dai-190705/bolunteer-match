@@ -3,7 +3,7 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 import { Application, Program } from '@/types'
-import { markAsCompleted } from '@/app/dashboard/actions'
+import { markAsCompleted } from '@/app/caredent/dashboard/actions'
 import CsvDownloadButton from './CsvDownloadButton'
 
 function formatDate(dateStr: string) {
@@ -39,7 +39,7 @@ export default async function ApplicantsPage({
     // ignore
   }
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   try {
     const supabase = await createClient()
@@ -108,7 +108,7 @@ export default async function ApplicantsPage({
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
       <Link
-        href="/dashboard"
+        href="/caredent/dashboard"
         className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 mb-6 transition-colors"
       >
         ← ダッシュボードに戻る
@@ -201,7 +201,7 @@ export default async function ApplicantsPage({
                     <td className="px-6 py-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-2">
                         <Link
-                          href={`/dashboard/programs/${id}/applicants/${app.id}`}
+                          href={`/caredent/dashboard/programs/${id}/applicants/${app.id}`}
                           className="text-xs px-3 py-1.5 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                         >
                           詳細を見る

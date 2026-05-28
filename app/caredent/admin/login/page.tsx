@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
 
       // サーバーサイドでADMIN_EMAILチェックするため/adminにリダイレクト
       // 管理者でなければ/admin側でまたloginに戻される
-      router.push('/admin')
+      router.push('/caredent/admin')
     } catch {
       setError('エラーが発生しました。もう一度お試しください。')
     } finally {

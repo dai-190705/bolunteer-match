@@ -42,7 +42,7 @@ export async function approvePublisher(userId: string) {
     })
   }
 
-  revalidatePath('/admin')
+  revalidatePath('/caredent/admin')
 }
 
 export async function rejectPublisher(userId: string) {
@@ -72,5 +72,5 @@ export async function rejectPublisher(userId: string) {
     })
   }
 
-  revalidatePath('/admin')
+  revalidatePath('/caredent/admin')
 }

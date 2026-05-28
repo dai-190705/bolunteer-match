@@ -30,7 +30,7 @@ export default async function DashboardPage() {
     // ignore
   }
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   try {
     const supabase = await createClient()
@@ -52,7 +52,7 @@ export default async function DashboardPage() {
           <p className="text-sm text-gray-500 mt-1">{user.email}</p>
         </div>
         <Link
-          href="/dashboard/programs/new"
+          href="/caredent/dashboard/programs/new"
           className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors text-sm shadow-sm"
         >
           + 新規作成
@@ -63,7 +63,7 @@ export default async function DashboardPage() {
         <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
           <p className="text-gray-400 mb-4">ボランティアがまだありません</p>
           <Link
-            href="/dashboard/programs/new"
+            href="/caredent/dashboard/programs/new"
             className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
           >
             最初のボランティアを作成する →
@@ -156,7 +156,7 @@ export default async function DashboardPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2 justify-end">
                         <Link
-                          href={`/dashboard/programs/${program.id}/applicants`}
+                          href={`/caredent/dashboard/programs/${program.id}/applicants`}
                           className="text-xs px-3 py-1.5 border border-indigo-300 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium whitespace-nowrap"
                         >
                           応募者を見る

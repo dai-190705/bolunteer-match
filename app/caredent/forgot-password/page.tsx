@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
               メールを確認してください。
             </p>
             <Link
-              href="/login"
+              href="/caredent/login"
               className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
             >
               ← ログインページに戻る
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-500">
-            <Link href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link href="/caredent/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
               ← ログインに戻る
             </Link>
           </p>

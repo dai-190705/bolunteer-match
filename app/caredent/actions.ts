@@ -10,7 +10,7 @@ export async function applyToProgram(programId: string) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect(`/login?next=/programs/${programId}`)
+  if (!user) redirect(`/caredent/login?next=/caredent/programs/${programId}`)
 
   try {
     const { error } = await supabase.from('applications').insert({
@@ -24,8 +24,8 @@ export async function applyToProgram(programId: string) {
     console.error(e)
   }
 
-  revalidatePath(`/programs/${programId}`)
-  redirect(`/programs/${programId}`)
+  revalidatePath(`/caredent/programs/${programId}`)
+  redirect(`/caredent/programs/${programId}`)
 }
 
 export async function cancelApplication(applicationId: string) {
@@ -34,7 +34,7 @@ export async function cancelApplication(applicationId: string) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   // 本人の "applied" 状態の応募のみ削除できる
   const { error } = await supabase
@@ -49,5 +49,5 @@ export async function cancelApplication(applicationId: string) {
     return
   }
 
-  revalidatePath('/mypage')
+  revalidatePath('/caredent/mypage')
 }

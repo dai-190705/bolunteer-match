@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
         })
         // ログアウトして承認待ち画面へ
         await supabase.auth.signOut()
-        return NextResponse.redirect(`${origin}/publisher-pending`)
+        return NextResponse.redirect(`${origin}/caredent/publisher-pending`)
       } else {
         // 学生プロフィールを作成
         await adminClient.from('student_profiles').upsert({
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
           nickname: meta.nickname ?? null,
           grade: meta.grade ?? null,
         })
-        return NextResponse.redirect(`${origin}/mypage`)
+        return NextResponse.redirect(`${origin}/caredent/mypage`)
       }
     }
   }
@@ -85,11 +85,11 @@ export async function GET(request: NextRequest) {
     if (!error) {
       // パスワードリセットの場合は set-password ページへ
       if (type === 'recovery') {
-        return NextResponse.redirect(`${origin}/auth/set-password`)
+        return NextResponse.redirect(`${origin}/caredent/auth/set-password`)
       }
-      return NextResponse.redirect(`${origin}/mypage`)
+      return NextResponse.redirect(`${origin}/caredent/mypage`)
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=認証リンクが無効です`)
+  return NextResponse.redirect(`${origin}/caredent/login?error=認証リンクが無効です`)
 }

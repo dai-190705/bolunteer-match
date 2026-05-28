@@ -6,7 +6,7 @@ export default async function LoginPage() {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (user) redirect('/dashboard')
+    if (user) redirect('/caredent/dashboard')
   } catch {
     // エラー時はログインフォームをそのまま表示
   }

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import ProgramForm from '@/components/ProgramForm'
-import { updateProgram } from '@/app/dashboard/actions'
+import { updateProgram } from '@/app/caredent/dashboard/actions'
 import { Program } from '@/types'
 
 export default async function EditProgramPage({
@@ -24,7 +24,7 @@ export default async function EditProgramPage({
     // ignore
   }
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   try {
     const supabase = await createClient()
@@ -50,7 +50,7 @@ export default async function EditProgramPage({
     <div className="max-w-2xl mx-auto px-4 py-10">
       <div className="mb-6">
         <Link
-          href="/dashboard"
+          href="/caredent/dashboard"
           className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 transition-colors mb-4"
         >
           ← ダッシュボードに戻る

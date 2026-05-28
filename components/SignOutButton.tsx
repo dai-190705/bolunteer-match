@@ -1,6 +1,6 @@
 'use client'
 
-import { signOut } from '@/app/dashboard/actions'
+import { signOut } from '@/app/caredent/dashboard/actions'
 
 export default function SignOutButton() {
   return (

@@ -36,7 +36,7 @@ export default function DashboardActions({ program }: { program: Program }) {
         {program.published ? '非公開にする' : '公開する'}
       </button>
       <Link
-        href={`/dashboard/programs/${program.id}/edit`}
+        href={`/caredent/dashboard/programs/${program.id}/edit`}
         className="text-xs px-2.5 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
       >
         編集

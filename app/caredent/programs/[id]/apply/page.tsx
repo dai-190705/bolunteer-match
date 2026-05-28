@@ -14,7 +14,7 @@ export default async function ApplyPage({
 
   // ログインチェック
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect(`/login?next=/programs/${id}/apply`)
+  if (!user) redirect(`/caredent/login?next=/caredent/programs/${id}/apply`)
 
   // プログラム取得
   const { data: program } = await supabase
@@ -34,7 +34,7 @@ export default async function ApplyPage({
     .eq('student_id', user.id)
     .maybeSingle()
 
-  if (existing) redirect(`/programs/${id}`)
+  if (existing) redirect(`/caredent/programs/${id}`)
 
   // 定員チェック
   if (program.capacity != null) {
@@ -42,13 +42,13 @@ export default async function ApplyPage({
       .from('applications')
       .select('id', { count: 'exact', head: true })
       .eq('program_id', id)
-    if ((count ?? 0) >= program.capacity) redirect(`/programs/${id}`)
+    if ((count ?? 0) >= program.capacity) redirect(`/caredent/programs/${id}`)
   }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <Link
-        href={`/programs/${id}`}
+        href={`/caredent/programs/${id}`}
         className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 mb-6 transition-colors"
       >
         ← ボランティア詳細に戻る

@@ -32,7 +32,7 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        router.push(`/login?next=/programs/${programId}/apply`)
+        router.push(`/caredent/login?next=/caredent/programs/${programId}/apply`)
         return
       }
 
@@ -52,7 +52,7 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
         return
       }
 
-      router.push(`/programs/${programId}?applied=1`)
+      router.push(`/caredent/programs/${programId}?applied=1`)
     } catch {
       setError('応募に失敗しました。もう一度お試しください。')
     } finally {

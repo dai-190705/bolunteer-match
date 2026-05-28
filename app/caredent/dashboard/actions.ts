@@ -10,7 +10,7 @@ export async function createProgram(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   const tagsRaw = (formData.get('tags') as string) ?? ''
   const tags = tagsRaw
@@ -44,9 +44,9 @@ export async function createProgram(formData: FormData) {
 
   if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
-  revalidatePath('/dashboard')
-  revalidatePath('/')
-  redirect('/dashboard')
+  revalidatePath('/caredent/dashboard')
+  revalidatePath('/caredent')
+  redirect('/caredent/dashboard')
 }
 
 export async function updateProgram(id: string, formData: FormData) {
@@ -55,7 +55,7 @@ export async function updateProgram(id: string, formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   const tagsRaw = (formData.get('tags') as string) ?? ''
   const tags = tagsRaw
@@ -92,10 +92,10 @@ export async function updateProgram(id: string, formData: FormData) {
 
   if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
-  revalidatePath('/dashboard')
-  revalidatePath('/')
-  revalidatePath(`/programs/${id}`)
-  redirect('/dashboard')
+  revalidatePath('/caredent/dashboard')
+  revalidatePath('/caredent')
+  revalidatePath(`/caredent/programs/${id}`)
+  redirect('/caredent/dashboard')
 }
 
 export async function deleteProgram(id: string) {
@@ -104,7 +104,7 @@ export async function deleteProgram(id: string) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   const { error } = await supabase
     .from('programs')
@@ -114,8 +114,8 @@ export async function deleteProgram(id: string) {
 
   if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
-  revalidatePath('/dashboard')
-  revalidatePath('/')
+  revalidatePath('/caredent/dashboard')
+  revalidatePath('/caredent')
 }
 
 export async function togglePublished(id: string, currentValue: boolean) {
@@ -124,7 +124,7 @@ export async function togglePublished(id: string, currentValue: boolean) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   const { error } = await supabase
     .from('programs')
@@ -134,8 +134,8 @@ export async function togglePublished(id: string, currentValue: boolean) {
 
   if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
-  revalidatePath('/dashboard')
-  revalidatePath('/')
+  revalidatePath('/caredent/dashboard')
+  revalidatePath('/caredent')
 }
 
 export async function markAsCompleted(applicationId: string) {
@@ -144,7 +144,7 @@ export async function markAsCompleted(applicationId: string) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect('/caredent/login')
 
   const { error } = await supabase
     .from('applications')
@@ -153,11 +153,11 @@ export async function markAsCompleted(applicationId: string) {
 
   if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
 
-  revalidatePath('/dashboard')
+  revalidatePath('/caredent/dashboard')
 }
 
 export async function signOut() {
   const supabase = await createClient()
   await supabase.auth.signOut()
-  redirect('/login')
+  redirect('/caredent/login')
 }

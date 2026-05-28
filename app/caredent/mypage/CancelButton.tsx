@@ -1,6 +1,6 @@
 'use client'
 
-import { cancelApplication } from '@/app/actions'
+import { cancelApplication } from '@/app/caredent/actions'
 
 export default function CancelButton({ applicationId }: { applicationId: string }) {
   const cancelAction = cancelApplication.bind(null, applicationId)
