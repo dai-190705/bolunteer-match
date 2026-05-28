@@ -27,27 +27,11 @@ export default function NOCSYHomePage() {
         />
         <div className="absolute inset-0 bg-black/55" />
 
-        {/* Left vertical text */}
-        <div
-          className="absolute left-8 top-1/2 -translate-y-1/2 text-white/70 text-sm tracking-widest"
-          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-        >
-          出る杭は打たれる。
-        </div>
-
         {/* Center text */}
         <div className="relative z-10 text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold tracking-wider" style={{ fontFamily: 'Georgia, serif' }}>
             No one can stop you.
           </h1>
-        </div>
-
-        {/* Right vertical text */}
-        <div
-          className="absolute right-8 top-1/2 -translate-y-1/2 text-white/70 text-sm tracking-widest"
-          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-        >
-          でも、出過ぎる杭は打たれない。
         </div>
       </section>
 
