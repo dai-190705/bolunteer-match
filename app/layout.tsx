@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     description: "学生の可能性を最大化させる。",
     url: "https://www.nocsy.me",
     siteName: "NOCSY",
-    images: [{ url: "/nocsy-ogp.jpg", width: 1200, height: 630, alt: "NOCSY" }],
+    images: [{ url: "/nocsy-ogp.png", width: 1200, height: 630, alt: "NOCSY" }],
     locale: "ja_JP",
     type: "website",
   },
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "NOCSY | NO ONE CAN STOP YOU",
     description: "学生の可能性を最大化させる。",
-    images: ["/nocsy-ogp.jpg"],
+    images: ["/nocsy-ogp.png"],
   },
 };
 
