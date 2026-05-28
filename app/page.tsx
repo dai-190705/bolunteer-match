@@ -8,10 +8,7 @@ export default function NOCSYHomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Image src="/nocsy-logo.png" alt="NOCSY" width={56} height={56} className="object-contain" />
-            <span className="text-xl font-bold tracking-widest text-gray-900">NOCSY</span>
-            <span className="text-gray-300 font-light text-lg">|</span>
-            <span className="text-xs tracking-widest text-gray-500 uppercase">NO ONE CAN STOP YOU</span>
+            <Image src="/nocsy-logo.png" alt="NOCSY" width={200} height={56} className="object-contain" />
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
             <a href="#greeting" className="hover:text-gray-900 transition-colors">ご挨拶</a>
