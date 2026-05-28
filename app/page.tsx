@@ -23,7 +23,7 @@ export default function NOCSYHomePage() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1455849318743-b2233052fcff?w=1600&q=80')` }}
+          style={{ backgroundImage: `url('/hero.png')` }}
         />
         <div className="absolute inset-0 bg-black/55" />
 
