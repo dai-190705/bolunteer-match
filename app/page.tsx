@@ -163,10 +163,10 @@ export default function NOCSYHomePage() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">お問い合わせ</h2>
           <p className="text-gray-300 mb-8">ご質問・ご相談はお気軽にご連絡ください。</p>
           <a
-            href="mailto:contact@nocsy.me"
+            href="mailto:daito.yasui@nocsy.me"
             className="inline-block bg-white text-gray-900 px-10 py-4 text-sm font-semibold hover:bg-gray-100 transition-colors"
           >
-            contact@nocsy.me
+            daito.yasui@nocsy.me
           </a>
         </div>
       </section>
