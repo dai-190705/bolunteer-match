@@ -74,7 +74,7 @@ export default async function ProgramDetailPage({
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <Link
-        href="/"
+        href="/caredent"
         className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 mb-6 transition-colors"
       >
         ← 一覧に戻る
