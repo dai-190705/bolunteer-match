@@ -73,10 +73,10 @@ export default function ProfileForm({ initialProfile }: { initialProfile: Profil
             <p className="text-xs text-gray-500 mb-1">氏名</p>
             <div className="grid grid-cols-2 gap-3">
               <div className="px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600">
-                {initialProfile.last_name}
+                {initialProfile?.last_name ?? '—'}
               </div>
               <div className="px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600">
-                {initialProfile.first_name}
+                {initialProfile?.first_name ?? '—'}
               </div>
             </div>
           </div>
@@ -84,10 +84,10 @@ export default function ProfileForm({ initialProfile }: { initialProfile: Profil
             <p className="text-xs text-gray-500 mb-1">ふりがな</p>
             <div className="grid grid-cols-2 gap-3">
               <div className="px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600">
-                {initialProfile.last_name_kana}
+                {initialProfile?.last_name_kana ?? '—'}
               </div>
               <div className="px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600">
-                {initialProfile.first_name_kana}
+                {initialProfile?.first_name_kana ?? '—'}
               </div>
             </div>
           </div>
