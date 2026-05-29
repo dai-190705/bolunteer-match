@@ -37,7 +37,7 @@ export default async function ProgramDetailPage({
       .eq('published', true)
       .single()
     if (data) {
-      const { profiles, ...rest } = data as any
+      const { profiles, ...rest } = data as Program & { profiles: { organization: string } | null }
       program = rest as Program
       organization = profiles?.organization ?? null
     }
