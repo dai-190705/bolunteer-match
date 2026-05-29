@@ -14,6 +14,29 @@ export default async function ProfilePage() {
     .eq('id', user.id)
     .maybeSingle()
 
+  // student_profilesが未作成の場合はuser_metadataをフォールバックとして使用し、自動作成する
+  const meta = user.user_metadata ?? {}
+  let effectiveProfile = profile
+
+  if (!profile && meta.role === 'student') {
+    const fallback = {
+      last_name: (meta.last_name as string) ?? '',
+      first_name: (meta.first_name as string) ?? '',
+      last_name_kana: (meta.last_name_kana as string) ?? '',
+      first_name_kana: (meta.first_name_kana as string) ?? '',
+      school: (meta.school as string) ?? '',
+      user_handle: (meta.user_handle as string) ?? null,
+      nickname: (meta.nickname as string) ?? null,
+    }
+    // DBに作成（応募者詳細等でも名前が表示されるように）
+    await supabase.from('student_profiles').upsert({
+      id: user.id,
+      ...fallback,
+      grade: (meta.grade as string) ?? null,
+    })
+    effectiveProfile = fallback
+  }
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <a
@@ -29,7 +52,7 @@ export default async function ProfilePage() {
         <p className="text-sm text-gray-500 mt-1">{user.email}</p>
       </div>
 
-      <ProfileForm initialProfile={profile} />
+      <ProfileForm initialProfile={effectiveProfile} />
     </div>
   )
 }

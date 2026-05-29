@@ -38,14 +38,12 @@ export async function GET(request: NextRequest) {
       const user = data.user
       const meta = user.user_metadata ?? {}
 
-      // サービスロールでプロフィールを作成
-      const adminClient = createSupabaseAdmin(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      )
-
       if (meta.role === 'publisher') {
-        // publisherプロフィールを作成（未承認状態）
+        // publisherプロフィールを作成（未承認状態）- サービスロール必須
+        const adminClient = createSupabaseAdmin(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        )
         await adminClient.from('profiles').upsert({
           id: user.id,
           name: meta.name ?? null,
@@ -62,8 +60,8 @@ export async function GET(request: NextRequest) {
         await supabase.auth.signOut()
         return NextResponse.redirect(`${origin}/caredent/publisher-pending`)
       } else {
-        // 学生プロフィールを作成
-        await adminClient.from('student_profiles').upsert({
+        // 学生プロフィールを作成（exchangeCodeForSession後は認証済みセッションあり → RLS通過可能）
+        await supabase.from('student_profiles').upsert({
           id: user.id,
           last_name: meta.last_name ?? '',
           first_name: meta.first_name ?? '',
@@ -92,12 +90,9 @@ export async function GET(request: NextRequest) {
       if (type === 'signup' && otpData.user) {
         const user = otpData.user
         const meta = user.user_metadata ?? {}
-        const adminClient = createSupabaseAdmin(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.SUPABASE_SERVICE_ROLE_KEY!
-        )
         if (meta.role === 'student') {
-          await adminClient.from('student_profiles').upsert({
+          // verifyOtp後は認証済みセッションあり → RLS通過可能（adminClient不要）
+          await supabase.from('student_profiles').upsert({
             id: user.id,
             last_name: meta.last_name ?? '',
             first_name: meta.first_name ?? '',
@@ -108,6 +103,19 @@ export async function GET(request: NextRequest) {
             nickname: meta.nickname ?? null,
             grade: meta.grade ?? null,
           })
+        } else if (meta.role === 'publisher') {
+          const adminClient = createSupabaseAdmin(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+          )
+          await adminClient.from('profiles').upsert({
+            id: user.id,
+            name: meta.name ?? null,
+            organization: meta.organization ?? null,
+            approved: false,
+          })
+          await supabase.auth.signOut()
+          return NextResponse.redirect(`${origin}/caredent/publisher-pending`)
         }
       }
 
