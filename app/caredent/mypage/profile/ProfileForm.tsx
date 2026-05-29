@@ -32,14 +32,19 @@ export default function ProfileForm({ initialProfile }: { initialProfile: Profil
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
+      const meta = user.user_metadata ?? {}
       const { error } = await supabase
         .from('student_profiles')
-        .update({
+        .upsert({
+          id: user.id,
+          last_name: meta.last_name ?? initialProfile?.last_name ?? '',
+          first_name: meta.first_name ?? initialProfile?.first_name ?? '',
+          last_name_kana: meta.last_name_kana ?? initialProfile?.last_name_kana ?? '',
+          first_name_kana: meta.first_name_kana ?? initialProfile?.first_name_kana ?? '',
           user_handle: userHandle || null,
           nickname: nickname || null,
           school,
         })
-        .eq('id', user.id)
 
       if (error) {
         if (error.code === '23505') {
