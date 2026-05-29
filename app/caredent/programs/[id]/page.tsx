@@ -32,14 +32,20 @@ export default async function ProgramDetailPage({
     const supabase = await createClient()
     const { data } = await supabase
       .from('programs')
-      .select('*, profiles(organization)')
+      .select('*')
       .eq('id', id)
       .eq('published', true)
       .single()
-    if (data) {
-      const { profiles, ...rest } = data as Program & { profiles: { organization: string } | null }
-      program = rest as Program
-      organization = profiles?.organization ?? null
+    program = data as Program | null
+
+    // 掲載団体名を別途取得
+    if (program?.publisher_id) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('organization')
+        .eq('id', program.publisher_id)
+        .maybeSingle()
+      organization = profile?.organization ?? null
     }
 
     const { data: { user } } = await supabase.auth.getUser()
