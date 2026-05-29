@@ -79,14 +79,38 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // OTPリンク（パスワードリセット等）
+  // OTPリンク（メール確認・パスワードリセット等）
   if (token_hash && type) {
-    const { error } = await supabase.auth.verifyOtp({ token_hash, type: type as EmailOtpType })
+    const { data: otpData, error } = await supabase.auth.verifyOtp({ token_hash, type: type as EmailOtpType })
     if (!error) {
       // パスワードリセットの場合は set-password ページへ
       if (type === 'recovery') {
         return NextResponse.redirect(`${origin}/caredent/auth/set-password`)
       }
+
+      // signup確認の場合は student_profiles を作成
+      if (type === 'signup' && otpData.user) {
+        const user = otpData.user
+        const meta = user.user_metadata ?? {}
+        const adminClient = createSupabaseAdmin(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        )
+        if (meta.role === 'student') {
+          await adminClient.from('student_profiles').upsert({
+            id: user.id,
+            last_name: meta.last_name ?? '',
+            first_name: meta.first_name ?? '',
+            last_name_kana: meta.last_name_kana ?? '',
+            first_name_kana: meta.first_name_kana ?? '',
+            school: meta.school ?? '',
+            user_handle: meta.user_handle ?? null,
+            nickname: meta.nickname ?? null,
+            grade: meta.grade ?? null,
+          })
+        }
+      }
+
       return NextResponse.redirect(`${origin}/caredent/mypage`)
     }
   }
