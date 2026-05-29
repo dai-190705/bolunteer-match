@@ -12,9 +12,7 @@ export default async function ProfilePage() {
     .from('student_profiles')
     .select('last_name, first_name, last_name_kana, first_name_kana, school, user_handle, nickname')
     .eq('id', user.id)
-    .single()
-
-  if (!profile) redirect('/caredent/mypage')
+    .maybeSingle()
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">

@@ -13,10 +13,10 @@ type Profile = {
   nickname: string | null
 }
 
-export default function ProfileForm({ initialProfile }: { initialProfile: Profile }) {
-  const [userHandle, setUserHandle] = useState(initialProfile.user_handle ?? '')
-  const [nickname, setNickname] = useState(initialProfile.nickname ?? '')
-  const [school, setSchool] = useState(initialProfile.school)
+export default function ProfileForm({ initialProfile }: { initialProfile: Profile | null }) {
+  const [userHandle, setUserHandle] = useState(initialProfile?.user_handle ?? '')
+  const [nickname, setNickname] = useState(initialProfile?.nickname ?? '')
+  const [school, setSchool] = useState(initialProfile?.school ?? '')
   const [saving, setSaving] = useState(false)
   const [savedMessage, setSavedMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
