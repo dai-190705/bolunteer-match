@@ -26,15 +26,21 @@ export default async function ProgramDetailPage({
   let alreadyApplied = false
   let applicantCount = 0
 
+  let organization: string | null = null
+
   try {
     const supabase = await createClient()
     const { data } = await supabase
       .from('programs')
-      .select('*')
+      .select('*, profiles(organization)')
       .eq('id', id)
       .eq('published', true)
       .single()
-    program = data as Program | null
+    if (data) {
+      const { profiles, ...rest } = data as any
+      program = rest as Program
+      organization = profiles?.organization ?? null
+    }
 
     const { data: { user } } = await supabase.auth.getUser()
     userId = user?.id ?? null
@@ -97,6 +103,12 @@ export default async function ProgramDetailPage({
             <h1 className="text-2xl font-bold text-gray-900 leading-tight mb-3">
               {program.title}
             </h1>
+            {organization && (
+              <p className="text-sm text-gray-500 mb-3 flex items-center gap-1">
+                <span>🏢</span>
+                <span>{organization}</span>
+              </p>
+            )}
             {program.tags && program.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {program.tags.map((tag) => (
