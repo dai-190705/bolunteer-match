@@ -32,6 +32,19 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/caredent/login')
 
+  // パブリッシャー（profiles登録済み）でなければマイページへリダイレクト
+  try {
+    const supabase = await createClient()
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle()
+    if (!profile) redirect('/caredent/mypage')
+  } catch {
+    redirect('/caredent/mypage')
+  }
+
   try {
     const supabase = await createClient()
     const { data: programs } = await supabase
