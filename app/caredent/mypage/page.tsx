@@ -126,7 +126,7 @@ export default async function MyPage() {
       </section>
 
       <div className="mt-10 text-center">
-        <Link href="/" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+        <Link href="/caredent" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
           ボランティアを探す →
         </Link>
       </div>
