@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { Program } from '@/types'
 
+const PAGE_SIZE = 20
+
 function formatDeadline(deadline: string | null) {
   if (!deadline) return null
   const d = new Date(deadline)
@@ -24,19 +26,24 @@ const CATEGORIES = ['1day', '中期', '長期'] as const
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; q?: string }>
+  searchParams: Promise<{ category?: string; q?: string; page?: string }>
 }) {
-  const { category, q } = await searchParams
+  const { category, q, page: pageParam } = await searchParams
+  const page = Math.max(1, parseInt(pageParam ?? '1', 10) || 1)
+
   let programList: Program[] = []
+  let totalCount = 0
 
   try {
     const supabase = await createClient()
+    const from = (page - 1) * PAGE_SIZE
+    const to = from + PAGE_SIZE - 1
 
     let query = supabase
       .from('programs')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('published', true)
-      .order('created_at', { ascending: false })
+      .order('deadline', { ascending: true, nullsFirst: false })
 
     if (category && CATEGORIES.includes(category as typeof CATEGORIES[number])) {
       query = query.eq('category', category)
@@ -46,10 +53,25 @@ export default async function Home({
       query = query.ilike('title', `%${q}%`)
     }
 
-    const { data: programs } = await query
+    query = query.range(from, to)
+
+    const { data: programs, count } = await query
     programList = (programs as Program[]) ?? []
+    totalCount = count ?? 0
   } catch {
     // DB接続エラーは無視して空リストを表示
+  }
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+
+  // ページネーションリンク生成ヘルパー
+  function buildHref(p: number) {
+    const params = new URLSearchParams()
+    if (category) params.set('category', category)
+    if (q) params.set('q', q)
+    if (p > 1) params.set('page', String(p))
+    const qs = params.toString()
+    return qs ? `/caredent?${qs}` : '/caredent'
   }
 
   return (
@@ -57,7 +79,7 @@ export default async function Home({
       {/* ヒーローバー */}
       <div style={{ backgroundColor: '#4592c0' }} className="px-4 pt-5 pb-4">
         {/* 検索バー */}
-        <form method="GET" action="/" className="relative">
+        <form method="GET" action="/caredent" className="relative">
           <input
             type="text"
             name="q"
@@ -65,6 +87,7 @@ export default async function Home({
             placeholder="キーワードで検索"
             className="w-full bg-white rounded-xl px-4 py-3 pl-10 text-sm text-gray-700 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60"
           />
+          {category && <input type="hidden" name="category" value={category} />}
           <svg
             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
             fill="none"
@@ -78,7 +101,7 @@ export default async function Home({
         {/* カテゴリタブ */}
         <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
           <Link
-            href={q ? `/?q=${encodeURIComponent(q)}` : '/'}
+            href={q ? `/caredent?q=${encodeURIComponent(q)}` : '/caredent'}
             className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
               !category
                 ? 'bg-white text-[#4592c0] shadow-sm'
@@ -90,7 +113,7 @@ export default async function Home({
           {CATEGORIES.map((cat) => (
             <Link
               key={cat}
-              href={`/?category=${encodeURIComponent(cat)}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              href={`/caredent?category=${encodeURIComponent(cat)}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
               className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 category === cat
                   ? 'bg-white text-[#4592c0] shadow-sm'
@@ -106,9 +129,12 @@ export default async function Home({
       {/* 件数バー */}
       <div className="px-4 py-3 flex items-center justify-between bg-white border-b border-gray-100">
         <span className="text-sm text-gray-500">
-          <span className="font-semibold text-gray-800">{programList.length}</span> 件のプログラム
+          <span className="font-semibold text-gray-800">{totalCount}</span> 件のプログラム
+          {totalPages > 1 && (
+            <span className="ml-2 text-gray-400">（{page} / {totalPages} ページ）</span>
+          )}
         </span>
-        <span className="text-xs text-gray-400">新着順</span>
+        <span className="text-xs text-gray-400">締切順</span>
       </div>
 
       {/* カードグリッド */}
@@ -197,6 +223,82 @@ export default async function Home({
           </div>
         )}
       </div>
+
+      {/* ページネーション */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 px-4 py-6">
+          {/* 前へ */}
+          {page > 1 ? (
+            <Link
+              href={buildHref(page - 1)}
+              className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              前へ
+            </Link>
+          ) : (
+            <span className="flex items-center gap-1 px-4 py-2 bg-gray-50 border border-gray-100 rounded-lg text-sm text-gray-300 cursor-not-allowed">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              前へ
+            </span>
+          )}
+
+          {/* ページ番号 */}
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
+              // 最初・最後・現在±1のページのみ表示
+              if (p === 1 || p === totalPages || Math.abs(p - page) <= 1) {
+                return (
+                  <Link
+                    key={p}
+                    href={buildHref(p)}
+                    className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+                      p === page
+                        ? 'bg-[#4592c0] text-white shadow-sm'
+                        : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {p}
+                  </Link>
+                )
+              }
+              // 省略記号（連続してない場合のみ）
+              if (p === page - 2 || p === page + 2) {
+                return (
+                  <span key={p} className="w-6 text-center text-gray-400 text-sm">
+                    …
+                  </span>
+                )
+              }
+              return null
+            })}
+          </div>
+
+          {/* 次へ */}
+          {page < totalPages ? (
+            <Link
+              href={buildHref(page + 1)}
+              className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
+            >
+              次へ
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          ) : (
+            <span className="flex items-center gap-1 px-4 py-2 bg-gray-50 border border-gray-100 rounded-lg text-sm text-gray-300 cursor-not-allowed">
+              次へ
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          )}
+        </div>
+      )}
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
