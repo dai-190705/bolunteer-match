@@ -39,10 +39,13 @@ export default async function Home({
     const from = (page - 1) * PAGE_SIZE
     const to = from + PAGE_SIZE - 1
 
+    const now = new Date().toISOString()
+
     let query = supabase
       .from('programs')
       .select('*', { count: 'exact' })
       .eq('published', true)
+      .or(`deadline.is.null,deadline.gte.${now}`)
       .order('deadline', { ascending: true, nullsFirst: false })
 
     if (category && CATEGORIES.includes(category as typeof CATEGORIES[number])) {
