@@ -2,24 +2,15 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { Application } from '@/types'
-import CancelButton from './CancelButton'
 
-const CATEGORY_COLORS: Record<string, string> = {
-  '1day': 'bg-blue-100 text-blue-800',
-  中期: 'bg-green-100 text-green-800',
-  長期: 'bg-orange-100 text-orange-800',
-}
-
-function formatDeadline(deadline: string | null) {
-  if (!deadline) return null
-  const d = new Date(deadline)
-  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
+type StudentProfile = {
+  last_name: string | null
+  first_name: string | null
+  nickname: string | null
+  user_handle: string | null
 }
 
 export default async function MyPage() {
-  let applications: Application[] = []
-  let diaryApplicationIds: Set<string> = new Set()
-
   let user = null
   try {
     const supabase = await createClient()
@@ -31,188 +22,144 @@ export default async function MyPage() {
 
   if (!user) redirect('/caredent/login')
 
+  // プロフィール取得
+  let profile: StudentProfile | null = null
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('student_profiles')
+      .select('last_name, first_name, nickname, user_handle')
+      .eq('id', user.id)
+      .maybeSingle()
+    profile = data as StudentProfile | null
+  } catch {
+    // ignore
+  }
+
+  // 応募・参加状況を取得
+  let applications: Application[] = []
   try {
     const supabase = await createClient()
     const { data } = await supabase
       .from('applications')
-      .select('*, programs(*)')
+      .select('id, status')
       .eq('student_id', user.id)
-      .order('applied_at', { ascending: false })
     applications = (data as Application[]) ?? []
   } catch {
     // ignore
   }
 
-  // 日記が既に書かれている応募IDを取得
+  const completed = applications.filter((a) => a.status === 'completed')
+  const totalCount = applications.length
+
+  // 記事未執筆の参加済みボランティア件数を算出
+  let unwrittenCount = 0
   try {
     const supabase = await createClient()
-    const completedIds = applications.filter((a) => a.status === 'completed').map((a) => a.id)
+    const completedIds = completed.map((a) => a.id)
     if (completedIds.length > 0) {
       const { data: diaries } = await supabase
         .from('diary_entries')
         .select('application_id')
         .in('application_id', completedIds)
-      diaryApplicationIds = new Set((diaries ?? []).map((d) => d.application_id))
+      const writtenIds = new Set((diaries ?? []).map((d) => d.application_id))
+      unwrittenCount = completedIds.filter((id) => !writtenIds.has(id)).length
     }
   } catch {
     // ignore
   }
 
-  const applied = applications.filter((a) => a.status === 'applied')
-  const completed = applications.filter((a) => a.status === 'completed')
+  const meta = user.user_metadata ?? {}
+  const displayName =
+    profile?.nickname ||
+    [profile?.last_name, profile?.first_name].filter(Boolean).join(' ') ||
+    (meta.nickname as string) ||
+    [meta.last_name, meta.first_name].filter(Boolean).join(' ') ||
+    'ゲスト'
+  const handle = profile?.user_handle || (meta.user_handle as string) || null
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10 pb-32">
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">マイページ</h1>
-          <p className="text-sm text-gray-500 mt-1">{user.email}</p>
+    <div className="max-w-2xl mx-auto px-4 py-10 pb-20">
+      {/* プロフィールヘッダー */}
+      <div className="flex flex-col items-center text-center">
+        {/* アバター（初期アイコン） */}
+        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#4592c0] to-[#6db3d8] flex items-center justify-center shadow-md ring-4 ring-white">
+          <svg className="w-14 h-14 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z" />
+          </svg>
         </div>
+
+        {/* 氏名・ハンドル */}
+        <h1 className="mt-4 text-xl font-bold text-gray-900">{displayName}</h1>
+        {handle && <p className="text-sm text-gray-400 mt-0.5">@{handle}</p>}
+
+        {/* プロフィール編集ボタン */}
         <Link
           href="/caredent/mypage/profile"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-gray-200 shadow-sm text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:shadow transition-all"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
           </svg>
-          プロフィール編集
+          プロフィールを編集
         </Link>
       </div>
 
-      {/* 応募中 */}
-      <section className="mb-10">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>
-          応募中のボランティア
-          <span className="text-sm font-normal text-gray-400">({applied.length}件)</span>
-        </h2>
-
-        {applied.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-400 text-sm">
-            現在応募中のボランティアはありません
+      {/* 記事執筆を促すバナー（未執筆がある場合のみ） */}
+      {unwrittenCount > 0 && (
+        <Link
+          href="/caredent/log"
+          className="mt-8 block rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 p-5 hover:shadow-md active:scale-[0.99] transition-all"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-gray-900">
+                未執筆の記事が{unwrittenCount}件あります
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                参加したボランティアの記事を書いて、活動を記録しましょう
+              </p>
+            </div>
+            <svg className="w-5 h-5 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {applied.map((app) => (
-              <ApplicationCard key={app.id} app={app} />
-            ))}
-          </div>
-        )}
-      </section>
+        </Link>
+      )}
 
-      {/* 参加済み */}
-      <section>
-        <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-gray-400"></span>
-          過去に参加済みボランティア
-          <span className="text-sm font-normal text-gray-400">({completed.length}件)</span>
-        </h2>
-
-        {completed.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-400 text-sm">
-            参加済みのボランティアはありません
+      {/* メニュー */}
+      <div className="mt-8 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <Link
+          href="/caredent/log"
+          className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex-shrink-0 w-9 h-9 rounded-full bg-[#e8f4fc] flex items-center justify-center">
+            <svg className="w-5 h-5 text-[#4592c0]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {completed.map((app) => (
-              <CompletedCard
-                key={app.id}
-                app={app}
-                hasDiary={diaryApplicationIds.has(app.id)}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* 画面下固定フッター */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent pt-8 pb-5 px-4">
-        <div className="max-w-3xl mx-auto">
-          <Link
-            href="/caredent"
-            className="block w-full py-4 rounded-full bg-[#4592c0] hover:bg-[#3a7ea8] active:scale-[0.98] text-white text-base font-bold text-center shadow-lg transition-all"
-          >
-            ボランティアを探す
-          </Link>
-        </div>
+          <span className="flex-1 font-semibold text-gray-900 text-sm">応募・参加したボランティア</span>
+          <span className="text-sm text-gray-400">{totalCount}</span>
+          <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
       </div>
-    </div>
-  )
-}
 
-function ApplicationCard({ app }: { app: Application }) {
-  const program = app.programs
-  if (!program) return null
-
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow flex items-start justify-between gap-4">
-      <Link href={`/caredent/programs/${program.id}`} className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1 flex-wrap">
-          {program.category && (
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}>
-              {program.category}
-            </span>
-          )}
-        </div>
-        <p className="font-semibold text-gray-900 text-sm leading-snug">{program.title}</p>
-        {program.deadline && (
-          <p className="text-xs text-gray-500 mt-1">締切: {formatDeadline(program.deadline)}</p>
-        )}
-      </Link>
-
-      <CancelButton applicationId={app.id} />
-    </div>
-  )
-}
-
-function CompletedCard({ app, hasDiary }: { app: Application; hasDiary: boolean }) {
-  const program = app.programs
-  if (!program) return null
-
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-start justify-between gap-4">
-      <Link href={`/caredent/programs/${program.id}`} className="flex-1 min-w-0 opacity-60 hover:opacity-80 transition-opacity">
-        <div className="flex items-center gap-2 mb-1 flex-wrap">
-          {program.category && (
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}>
-              {program.category}
-            </span>
-          )}
-          <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-600">
-            参加済み
-          </span>
-        </div>
-        <p className="font-semibold text-gray-900 text-sm leading-snug">{program.title}</p>
-        {program.deadline && (
-          <p className="text-xs text-gray-500 mt-1">締切: {formatDeadline(program.deadline)}</p>
-        )}
-      </Link>
-
-      {/* 記事ボタン */}
-      <Link
-        href={`/caredent/mypage/diary/${app.id}`}
-        className={`flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-          hasDiary
-            ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
-            : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200'
-        }`}
-      >
-        {hasDiary ? (
-          <>
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            記事を編集
-          </>
-        ) : (
-          <>
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-            記事を書く
-          </>
-        )}
-      </Link>
+      {/* ボランティアを探す */}
+      <div className="mt-8">
+        <Link
+          href="/caredent"
+          className="block w-full py-4 rounded-full bg-[#4592c0] hover:bg-[#3a7ea8] active:scale-[0.98] text-white text-base font-bold text-center shadow-lg transition-all"
+        >
+          ボランティアを探す
+        </Link>
+      </div>
     </div>
   )
 }

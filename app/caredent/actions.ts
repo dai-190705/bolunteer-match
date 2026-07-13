@@ -49,5 +49,5 @@ export async function cancelApplication(applicationId: string) {
     return
   }
 
-  revalidatePath('/caredent/mypage')
+  revalidatePath('/caredent/log')
 }

@@ -43,8 +43,8 @@ export default async function DiaryPage({
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <a
-        href="/caredent/mypage"
-        aria-label="マイページに戻る"
+        href="/caredent/log"
+        aria-label="一覧に戻る"
         className="inline-flex items-center justify-center w-11 h-11 mb-6 bg-white rounded-full shadow-md hover:shadow-lg active:scale-95 text-gray-700 hover:text-gray-900 transition-all"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
