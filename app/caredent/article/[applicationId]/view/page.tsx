@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import { createClient } from '@/utils/supabase/server'
 import { parseContent, Block } from '../blocks'
 import AuthorAvatar from '../../../components/AuthorAvatar'
+import LikeButton from './LikeButton'
+import CommentSection from './CommentSection'
 
 async function getArticle(applicationId: string) {
   const supabase = await createClient()
@@ -108,6 +110,16 @@ export default async function PublicArticlePage({
   const blocks = diary.content ? parseContent(diary.content) : []
   const authorName = author?.nickname || (author?.user_handle ? `@${author.user_handle}` : '執筆者')
 
+  // 現在のユーザーといいね初期件数を取得
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: likeRow } = await supabase
+    .from('article_like_counts')
+    .select('like_count')
+    .eq('application_id', applicationId)
+    .maybeSingle()
+  const initialLikeCount = Number(likeRow?.like_count ?? 0)
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <article>
@@ -151,6 +163,16 @@ export default async function PublicArticlePage({
           )}
         </div>
       </article>
+
+      {/* いいね */}
+      <div className="mt-10 flex justify-center">
+        <LikeButton applicationId={applicationId} userId={user?.id ?? null} initialCount={initialLikeCount} />
+      </div>
+
+      {/* コメント */}
+      <div className="mt-8 pt-8 border-t border-gray-200">
+        <CommentSection applicationId={applicationId} currentUserId={user?.id ?? null} />
+      </div>
 
       {/* フッター導線 */}
       <div className="mt-12 pt-8 border-t border-gray-200 text-center">
