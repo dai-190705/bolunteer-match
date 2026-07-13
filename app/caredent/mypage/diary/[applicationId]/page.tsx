@@ -52,9 +52,9 @@ export default async function DiaryPage({
         </svg>
       </a>
 
-      <div className="mb-8">
-        <p className="text-xs font-medium text-indigo-600 uppercase tracking-wide mb-1">体験日記</p>
-        <h1 className="text-2xl font-bold text-gray-900">{programTitle}</h1>
+      <div className="mb-6 pb-5 border-b border-gray-200">
+        <p className="text-xs font-medium text-[#4592c0] uppercase tracking-wide mb-1">記事</p>
+        <h1 className="text-3xl font-bold text-gray-900 leading-snug">{programTitle}</h1>
       </div>
 
       <DiaryForm
