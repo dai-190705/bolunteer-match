@@ -62,7 +62,7 @@ export default async function MyPage() {
   const completed = applications.filter((a) => a.status === 'completed')
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="max-w-3xl mx-auto px-4 py-10 pb-32">
       <div className="mb-8 flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">マイページ</h1>
@@ -125,10 +125,16 @@ export default async function MyPage() {
         )}
       </section>
 
-      <div className="mt-10 text-center">
-        <Link href="/caredent" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
-          ボランティアを探す →
-        </Link>
+      {/* 画面下固定フッター */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent pt-8 pb-5 px-4">
+        <div className="max-w-3xl mx-auto">
+          <Link
+            href="/caredent"
+            className="block w-full py-4 rounded-full bg-[#4592c0] hover:bg-[#3a7ea8] active:scale-[0.98] text-white text-base font-bold text-center shadow-lg transition-all"
+          >
+            ボランティアを探す
+          </Link>
+        </div>
       </div>
     </div>
   )
