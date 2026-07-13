@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import { Block, genId, serializeBlocks, parseContent, blocksFromLegacy } from './blocks'
 
 type DiaryEntry = {
   id: string
@@ -11,107 +12,14 @@ type DiaryEntry = {
   learned: string | null
   next_challenge: string | null
   content: string | null
+  title: string | null
+  is_public: boolean | null
 }
 
 type Props = {
   applicationId: string
   studentId: string
   initialDiary: DiaryEntry | null
-}
-
-// ─── ブロックモデル ───────────────────────────────
-type Block =
-  | { id: string; type: 'heading'; text: string }
-  | { id: string; type: 'paragraph'; text: string }
-  | { id: string; type: 'image'; url: string }
-  | { id: string; type: 'bullet'; items: string[] }
-  | { id: string; type: 'numbered'; items: string[] }
-
-function genId() {
-  return Math.random().toString(36).slice(2, 10)
-}
-
-// ブロック → マークダウン
-function serializeBlocks(blocks: Block[]): string {
-  const parts: string[] = []
-  for (const b of blocks) {
-    if (b.type === 'heading' && b.text.trim()) parts.push(`## ${b.text.trim()}`)
-    else if (b.type === 'paragraph' && b.text.trim()) parts.push(b.text.trim())
-    else if (b.type === 'image' && b.url) parts.push(`![記事画像](${b.url})`)
-    else if (b.type === 'bullet' && b.items.some((i) => i.trim()))
-      parts.push(b.items.filter((i) => i.trim()).map((i) => `- ${i.trim()}`).join('\n'))
-    else if (b.type === 'numbered' && b.items.some((i) => i.trim()))
-      parts.push(b.items.filter((i) => i.trim()).map((i, idx) => `${idx + 1}. ${i.trim()}`).join('\n'))
-  }
-  return parts.join('\n\n')
-}
-
-// マークダウン → ブロック
-function parseContent(md: string): Block[] {
-  const blocks: Block[] = []
-  const lines = md.split('\n')
-  let para: string[] = []
-  let list: { type: 'bullet' | 'numbered'; items: string[] } | null = null
-
-  const flushPara = () => {
-    if (para.length) {
-      blocks.push({ id: genId(), type: 'paragraph', text: para.join('\n') })
-      para = []
-    }
-  }
-  const flushList = () => {
-    if (list) {
-      blocks.push({ id: genId(), type: list.type, items: list.items })
-      list = null
-    }
-  }
-
-  for (const line of lines) {
-    const imageMatch = line.match(/^!\[[^\]]*\]\((.+)\)\s*$/)
-    const headingMatch = line.match(/^##\s+(.*)$/)
-    const bulletMatch = line.match(/^-\s+(.*)$/)
-    const numberedMatch = line.match(/^\d+\.\s+(.*)$/)
-
-    if (headingMatch) {
-      flushPara(); flushList()
-      blocks.push({ id: genId(), type: 'heading', text: headingMatch[1] })
-    } else if (imageMatch) {
-      flushPara(); flushList()
-      blocks.push({ id: genId(), type: 'image', url: imageMatch[1] })
-    } else if (bulletMatch) {
-      flushPara()
-      if (list?.type !== 'bullet') { flushList(); list = { type: 'bullet', items: [] } }
-      list.items.push(bulletMatch[1])
-    } else if (numberedMatch) {
-      flushPara()
-      if (list?.type !== 'numbered') { flushList(); list = { type: 'numbered', items: [] } }
-      list.items.push(numberedMatch[1])
-    } else if (line.trim() === '') {
-      flushPara(); flushList()
-    } else {
-      flushList()
-      para.push(line)
-    }
-  }
-  flushPara(); flushList()
-  return blocks
-}
-
-// 旧形式（learned / next_challenge / image_urls）からブロックへ変換
-function blocksFromLegacy(diary: DiaryEntry): Block[] {
-  const blocks: Block[] = []
-  for (const url of diary.image_urls ?? []) {
-    blocks.push({ id: genId(), type: 'image', url })
-  }
-  if (diary.learned?.trim()) {
-    blocks.push({ id: genId(), type: 'heading', text: 'このボランティアで学んだこと' })
-    blocks.push({ id: genId(), type: 'paragraph', text: diary.learned.trim() })
-  }
-  if (diary.next_challenge?.trim()) {
-    blocks.push({ id: genId(), type: 'heading', text: '次にやってみたいと感じたこと' })
-    blocks.push({ id: genId(), type: 'paragraph', text: diary.next_challenge.trim() })
-  }
-  return blocks
 }
 
 function initialBlocks(diary: DiaryEntry | null): Block[] {
@@ -123,7 +31,7 @@ function initialBlocks(diary: DiaryEntry | null): Block[] {
   return [{ id: genId(), type: 'paragraph', text: '' }]
 }
 
-// ─── 自動リサイズ textarea ───────────────────────
+// 自動リサイズ textarea
 function AutoTextarea({
   value,
   onChange,
@@ -158,7 +66,6 @@ function AutoTextarea({
   )
 }
 
-// ─── メイン ──────────────────────────────────────
 const BLOCK_MENU: { type: Block['type']; label: string; icon: string; desc: string }[] = [
   { type: 'heading', label: '見出し', icon: 'T', desc: '大きな文字の見出し' },
   { type: 'paragraph', label: '本文', icon: '¶', desc: 'ふつうの文章' },
@@ -167,17 +74,22 @@ const BLOCK_MENU: { type: Block['type']; label: string; icon: string; desc: stri
   { type: 'numbered', label: '番号付きリスト', icon: '1.', desc: '「1. 2. 3.」の順番リスト' },
 ]
 
-export default function DiaryForm({ applicationId, studentId, initialDiary }: Props) {
+export default function ArticleForm({ applicationId, studentId, initialDiary }: Props) {
+  const [title, setTitle] = useState(initialDiary?.title ?? '')
   const [blocks, setBlocks] = useState<Block[]>(() => initialBlocks(initialDiary))
+  const [isPublic, setIsPublic] = useState<boolean>(initialDiary?.is_public ?? false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focusId, setFocusId] = useState<string | null>(null)
   const [uploadingId, setUploadingId] = useState<string | null>(null)
-  const [saving, setSaving] = useState(false)
+  const [saving, setSaving] = useState<'private' | 'public' | null>(null)
   const [savedMessage, setSavedMessage] = useState<string | null>(null)
+  const [publicUrl, setPublicUrl] = useState<string | null>(
+    initialDiary?.is_public ? `/caredent/article/${applicationId}/view` : null
+  )
+  const [copied, setCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  // メニュー外クリックで閉じる
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
@@ -195,7 +107,6 @@ export default function DiaryForm({ applicationId, studentId, initialDiary }: Pr
           ? { id, type, items: [''] }
           : { id, type, text: '' }
     setBlocks((prev) => {
-      // 末尾が空の本文ブロックなら置き換える
       const last = prev[prev.length - 1]
       if (last && last.type === 'paragraph' && !last.text.trim() && type !== 'paragraph') {
         return [...prev.slice(0, -1), block]
@@ -249,19 +160,23 @@ export default function DiaryForm({ applicationId, studentId, initialDiary }: Pr
     }
   }
 
-  async function handleSave() {
-    setSaving(true)
+  async function handleSave(makePublic: boolean) {
+    setSaving(makePublic ? 'public' : 'private')
     setError(null)
     setSavedMessage(null)
     try {
       const supabase = createClient()
       const content = serializeBlocks(blocks)
-      const imageUrls = blocks.filter((b): b is Extract<Block, { type: 'image' }> => b.type === 'image' && !!b.url).map((b) => b.url)
+      const imageUrls = blocks
+        .filter((b): b is Extract<Block, { type: 'image' }> => b.type === 'image' && !!b.url)
+        .map((b) => b.url)
       const payload = {
         application_id: applicationId,
         student_id: studentId,
+        title: title.trim() || null,
         content,
         image_urls: imageUrls,
+        is_public: makePublic,
         updated_at: new Date().toISOString(),
       }
 
@@ -273,23 +188,50 @@ export default function DiaryForm({ applicationId, studentId, initialDiary }: Pr
         if (error) throw error
       }
 
-      setSavedMessage('保存しました！')
-      setTimeout(() => setSavedMessage(null), 3000)
+      setIsPublic(makePublic)
+      if (makePublic) {
+        setPublicUrl(`/caredent/article/${applicationId}/view`)
+        setSavedMessage('公開しました！')
+      } else {
+        setPublicUrl(null)
+        setSavedMessage('非公開で保存しました')
+      }
+      setTimeout(() => setSavedMessage(null), 4000)
     } catch (e) {
       setError('保存に失敗しました。もう一度お試しください。')
       console.error(e)
     } finally {
-      setSaving(false)
+      setSaving(null)
+    }
+  }
+
+  async function copyPublicUrl() {
+    if (!publicUrl) return
+    const full = `${window.location.origin}${publicUrl}`
+    try {
+      await navigator.clipboard.writeText(full)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // ignore
     }
   }
 
   return (
     <div>
+      {/* タイトル */}
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="タイトルを入力"
+        className="w-full bg-transparent text-3xl font-bold text-gray-900 placeholder-gray-300 focus:outline-none mb-6"
+      />
+
       {/* エディタ本体 */}
       <div className="space-y-1">
         {blocks.map((block, idx) => (
           <div key={block.id} className="group relative">
-            {/* ブロック操作（ホバー時に右側に表示） */}
             <div className="absolute -right-1 top-1 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-10">
               <button
                 type="button"
@@ -370,25 +312,56 @@ export default function DiaryForm({ applicationId, studentId, initialDiary }: Pr
         </div>
       )}
 
-      {/* 保存 */}
-      <div className="mt-10 flex items-center gap-4">
+      {/* 公開URL（公開中のとき表示） */}
+      {isPublic && publicUrl && (
+        <div className="mt-8 p-4 rounded-xl bg-green-50 border border-green-200">
+          <p className="text-sm font-semibold text-green-800 flex items-center gap-1.5">
+            <span>🌐</span> この記事は公開中です
+          </p>
+          <p className="text-xs text-green-700 mt-1">下記URLを知っている人は誰でも閲覧できます</p>
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              readOnly
+              value={typeof window !== 'undefined' ? `${window.location.origin}${publicUrl}` : publicUrl}
+              className="flex-1 min-w-0 px-3 py-2 text-xs bg-white border border-green-200 rounded-lg text-gray-600"
+            />
+            <button
+              type="button"
+              onClick={copyPublicUrl}
+              className="flex-shrink-0 px-3 py-2 text-xs font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              {copied ? 'コピー済' : 'コピー'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 保存ボタン */}
+      <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <button
           type="button"
-          onClick={handleSave}
-          disabled={saving || uploadingId !== null}
-          className="px-8 py-3 bg-[#4592c0] text-white font-bold rounded-full hover:bg-[#3a7ea8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm shadow"
+          onClick={() => handleSave(false)}
+          disabled={saving !== null || uploadingId !== null}
+          className="flex-1 px-6 py-3 bg-white border border-gray-300 text-gray-700 font-bold rounded-full hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm shadow-sm"
         >
-          {saving ? '保存中...' : '記事を保存する'}
+          {saving === 'private' ? '保存中...' : '非公開で保存'}
         </button>
-        {savedMessage && (
-          <span className="text-sm text-green-600 font-medium">✓ {savedMessage}</span>
-        )}
+        <button
+          type="button"
+          onClick={() => handleSave(true)}
+          disabled={saving !== null || uploadingId !== null}
+          className="flex-1 px-6 py-3 bg-[#4592c0] text-white font-bold rounded-full hover:bg-[#3a7ea8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm shadow"
+        >
+          {saving === 'public' ? '公開中...' : '公開して保存'}
+        </button>
       </div>
+      {savedMessage && (
+        <p className="mt-3 text-sm text-green-600 font-medium text-center sm:text-left">✓ {savedMessage}</p>
+      )}
     </div>
   )
 }
 
-// ─── 各ブロックの表示 ────────────────────────────
 function BlockView({
   block,
   autoFocus,
@@ -460,7 +433,6 @@ function BlockView({
     )
   }
 
-  // bullet / numbered リスト
   const isBullet = block.type === 'bullet'
   return (
     <div className="py-1.5 space-y-1">

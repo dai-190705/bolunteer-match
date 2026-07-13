@@ -189,7 +189,7 @@ function CompletedCard({ app, hasDiary }: { app: Application; hasDiary: boolean 
 
       {/* 記事ボタン */}
       <Link
-        href={`/caredent/mypage/diary/${app.id}`}
+        href={`/caredent/article/${app.id}`}
         className={`flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
           hasDiary
             ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'

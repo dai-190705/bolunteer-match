@@ -1,8 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import DiaryForm from './DiaryForm'
+import ArticleForm from './ArticleForm'
 
-export default async function DiaryPage({
+export default async function ArticleEditPage({
   params,
 }: {
   params: Promise<{ applicationId: string }>
@@ -31,7 +31,7 @@ export default async function DiaryPage({
 
   if (!application) notFound()
 
-  // 既存の日記があれば取得
+  // 既存の記事があれば取得
   const { data: diary } = await supabase
     .from('diary_entries')
     .select('*')
@@ -53,11 +53,11 @@ export default async function DiaryPage({
       </a>
 
       <div className="mb-6 pb-5 border-b border-gray-200">
-        <p className="text-xs font-medium text-[#4592c0] uppercase tracking-wide mb-1">記事</p>
-        <h1 className="text-3xl font-bold text-gray-900 leading-snug">{programTitle}</h1>
+        <p className="text-xs font-medium text-[#4592c0] tracking-wide mb-1">参加したボランティア</p>
+        <h2 className="text-lg font-bold text-gray-700 leading-snug">{programTitle}</h2>
       </div>
 
-      <DiaryForm
+      <ArticleForm
         applicationId={applicationId}
         studentId={user.id}
         initialDiary={diary ?? null}
