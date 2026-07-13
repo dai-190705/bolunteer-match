@@ -188,10 +188,10 @@ function CompletedCard({ app, hasDiary }: { app: Application; hasDiary: boolean 
         )}
       </Link>
 
-      {/* 体験日記ボタン */}
+      {/* 記事ボタン */}
       <Link
         href={`/caredent/mypage/diary/${app.id}`}
-        className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+        className={`flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
           hasDiary
             ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
             : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200'
@@ -199,17 +199,17 @@ function CompletedCard({ app, hasDiary }: { app: Application; hasDiary: boolean 
       >
         {hasDiary ? (
           <>
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-            日記を編集
+            記事を編集
           </>
         ) : (
           <>
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
-            日記を書く
+            記事を書く
           </>
         )}
       </Link>
