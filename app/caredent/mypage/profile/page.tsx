@@ -41,9 +41,12 @@ export default async function ProfilePage() {
     <div className="max-w-2xl mx-auto px-4 py-10">
       <a
         href="/caredent/mypage"
-        className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 mb-6 transition-colors"
+        aria-label="マイページに戻る"
+        className="inline-flex items-center justify-center w-11 h-11 mb-6 bg-white rounded-full shadow-md hover:shadow-lg active:scale-95 text-gray-700 hover:text-gray-900 transition-all"
       >
-        ← マイページに戻る
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
       </a>
 
       <div className="mb-8">
