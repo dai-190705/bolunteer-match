@@ -1,7 +1,9 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { createClient } from '@/utils/supabase/server'
 import { parseContent, Block } from '../blocks'
+import AuthorAvatar from '../../../components/AuthorAvatar'
 
 async function getArticle(applicationId: string) {
   const supabase = await createClient()
@@ -9,7 +11,7 @@ async function getArticle(applicationId: string) {
   // 公開記事のみ取得（RLS: is_public = true は誰でも閲覧可）
   const { data: diary } = await supabase
     .from('diary_entries')
-    .select('title, content, is_public, application_id, updated_at')
+    .select('title, content, is_public, application_id, student_id, updated_at')
     .eq('application_id', applicationId)
     .eq('is_public', true)
     .maybeSingle()
@@ -27,7 +29,18 @@ async function getArticle(applicationId: string) {
   if (Array.isArray(programs)) programTitle = programs[0]?.title ?? ''
   else programTitle = programs?.title ?? ''
 
-  return { diary, programTitle }
+  // 執筆者の公開プロフィール（ニックネーム・ハンドルのみ）
+  let author: { id: string; nickname: string | null; user_handle: string | null } | null = null
+  if (diary.student_id) {
+    const { data: authorData } = await supabase
+      .from('author_public_profiles')
+      .select('id, nickname, user_handle')
+      .eq('id', diary.student_id)
+      .maybeSingle()
+    author = authorData ?? null
+  }
+
+  return { diary, programTitle, author }
 }
 
 export async function generateMetadata({
@@ -91,8 +104,9 @@ export default async function PublicArticlePage({
 
   if (!article) notFound()
 
-  const { diary, programTitle } = article
+  const { diary, programTitle, author } = article
   const blocks = diary.content ? parseContent(diary.content) : []
+  const authorName = author?.nickname || (author?.user_handle ? `@${author.user_handle}` : '執筆者')
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
@@ -109,6 +123,22 @@ export default async function PublicArticlePage({
           </h1>
           {diary.updated_at && (
             <p className="text-sm text-gray-400 mt-3">{formatDate(diary.updated_at)}</p>
+          )}
+
+          {/* 執筆者 */}
+          {author && (
+            <Link
+              href={`/caredent/profile/${author.id}`}
+              className="mt-4 inline-flex items-center gap-3 rounded-full pr-4 hover:bg-gray-50 transition-colors -ml-0.5"
+            >
+              <AuthorAvatar size={40} />
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-gray-900 leading-tight">{authorName}</span>
+                {author.user_handle && (
+                  <span className="block text-xs text-gray-400 leading-tight">@{author.user_handle}</span>
+                )}
+              </span>
+            </Link>
           )}
         </header>
 
