@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useRef } from 'react'
 import { Program } from '@/types'
 import { createClient } from '@/utils/supabase/client'
@@ -270,12 +271,12 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
         >
           {loading ? '保存中...' : submitLabel}
         </button>
-        <a
+        <Link
           href="/caredent/dashboard"
           className="flex-1 sm:flex-none px-8 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors text-sm text-center"
         >
           キャンセル
-        </a>
+        </Link>
       </div>
     </form>
   )

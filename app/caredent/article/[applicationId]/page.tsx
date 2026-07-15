@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import ArticleForm from './ArticleForm'
@@ -42,7 +43,7 @@ export default async function ArticleEditPage({
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <a
+      <Link
         href="/caredent/log"
         aria-label="一覧に戻る"
         className="inline-flex items-center justify-center w-11 h-11 mb-6 bg-white rounded-full shadow-md hover:shadow-lg active:scale-95 text-gray-700 hover:text-gray-900 transition-all"
@@ -50,7 +51,7 @@ export default async function ArticleEditPage({
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-      </a>
+      </Link>
 
       <div className="mb-6 pb-5 border-b border-gray-200">
         <p className="text-xs font-medium text-[#4592c0] tracking-wide mb-1">参加したボランティア</p>

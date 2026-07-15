@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import ProfileForm from './ProfileForm'
@@ -41,7 +42,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <a
+      <Link
         href="/caredent/mypage"
         aria-label="マイページに戻る"
         className="inline-flex items-center justify-center w-11 h-11 mb-6 bg-white rounded-full shadow-md hover:shadow-lg active:scale-95 text-gray-700 hover:text-gray-900 transition-all"
@@ -49,7 +50,7 @@ export default async function ProfilePage() {
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-      </a>
+      </Link>
 
       <div className="mb-8">
         <p className="text-xs font-medium text-indigo-600 uppercase tracking-wide mb-1">アカウント設定</p>
