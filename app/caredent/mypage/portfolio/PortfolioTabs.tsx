@@ -21,7 +21,7 @@ export type ArticleItem = {
   isPublic: boolean
 }
 
-type PortfolioValue = { title: string; description: string }
+type PortfolioValue = { title: string }
 
 type Profile = {
   name: string
@@ -335,37 +335,6 @@ function ProfilePanel({ profile }: { profile: Profile }) {
         </div>
       )}
 
-      {/* 大切にしていること */}
-      {hasValues && (
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#e8f4fc] flex items-center justify-center">
-              <svg className="w-5 h-5 text-[#4592c0]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            </div>
-            <h3 className="text-base font-bold text-gray-900">大切にしていること</h3>
-          </div>
-          <div className="space-y-3">
-            {profile.values.map((v, i) => (
-              <div key={i} className="flex items-start gap-3 rounded-xl border border-gray-100 p-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#eaf4fa] flex items-center justify-center">
-                  <svg className="w-5 h-5 text-[#4592c0]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    {VALUE_ICONS[i % VALUE_ICONS.length]}
-                  </svg>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900">{v.title}</p>
-                  {v.description && (
-                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed whitespace-pre-wrap">{v.description}</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* 自己PR */}
       {hasPr && (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
@@ -378,6 +347,33 @@ function ProfilePanel({ profile }: { profile: Profile }) {
             <h3 className="text-base font-bold text-gray-900">自己PR</h3>
           </div>
           <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{profile.selfPr}</p>
+        </div>
+      )}
+
+      {/* 大切にしていること */}
+      {hasValues && (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#e8f4fc] flex items-center justify-center">
+              <svg className="w-5 h-5 text-[#4592c0]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            </div>
+            <h3 className="text-base font-bold text-gray-900">大切にしていること</h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {profile.values.map((v, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1.5 text-sm px-3.5 py-2 rounded-full font-semibold bg-[#eaf4fa] text-[#4592c0]"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  {VALUE_ICONS[i % VALUE_ICONS.length]}
+                </svg>
+                {v.title}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 

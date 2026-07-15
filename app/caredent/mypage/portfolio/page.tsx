@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/server'
 import AuthorAvatar from '../../components/AuthorAvatar'
 import PortfolioTabs, { type TimelineItem, type ArticleItem } from './PortfolioTabs'
 
-type PortfolioValue = { title: string; description: string }
+type PortfolioValue = { title: string }
 
 type StudentProfile = {
   last_name: string | null

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
-export type PortfolioValue = { title: string; description: string }
+export type PortfolioValue = { title: string }
 
 type Initial = {
   catchphrase: string
@@ -17,7 +17,7 @@ type Initial = {
 const MAX_CATCH = 40
 const MAX_DESC = 400
 const MAX_PR = 600
-const MAX_VALUE_DESC = 120
+const MAX_VALUE_TITLE = 30
 const MAX_TAGS = 10
 
 export default function ProfileEditForm({
@@ -42,7 +42,7 @@ export default function ProfileEditForm({
     setValues((prev) => prev.map((v, idx) => (idx === i ? { ...v, ...patch } : v)))
   }
   function addValue() {
-    setValues((prev) => [...prev, { title: '', description: '' }])
+    setValues((prev) => [...prev, { title: '' }])
   }
   function removeValue(i: number) {
     setValues((prev) => prev.filter((_, idx) => idx !== i))
@@ -68,8 +68,8 @@ export default function ProfileEditForm({
       const supabase = createClient()
       // 空の「大切にしていること」は除外
       const cleanValues = values
-        .map((v) => ({ title: v.title.trim(), description: v.description.trim() }))
-        .filter((v) => v.title || v.description)
+        .map((v) => ({ title: v.title.trim() }))
+        .filter((v) => v.title)
 
       const { error } = await supabase
         .from('student_profiles')
@@ -123,48 +123,6 @@ export default function ProfileEditForm({
         </p>
       </section>
 
-      {/* 大切にしていること */}
-      <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h2 className="text-base font-bold text-gray-900 mb-1">大切にしていること</h2>
-        <p className="text-xs text-gray-400 mb-4">価値観や信念を、タイトルと短い説明で追加できます。</p>
-        <div className="space-y-3">
-          {values.map((v, i) => (
-            <div key={i} className="rounded-xl border border-gray-200 p-4 relative">
-              <button
-                type="button"
-                onClick={() => removeValue(i)}
-                aria-label="削除"
-                className="absolute top-2.5 right-2.5 w-7 h-7 flex items-center justify-center rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors text-sm"
-              >
-                ✕
-              </button>
-              <input
-                type="text"
-                value={v.title}
-                onChange={(e) => updateValue(i, { title: e.target.value.slice(0, 30) })}
-                placeholder="タイトル（例: 地域への誇り）"
-                className="w-full pr-8 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#4592c0] focus:border-transparent transition mb-2"
-              />
-              <textarea
-                value={v.description}
-                onChange={(e) => updateValue(i, { description: e.target.value.slice(0, MAX_VALUE_DESC) })}
-                maxLength={MAX_VALUE_DESC}
-                rows={2}
-                placeholder="説明（例: 地元や地方都市の魅力を再発見し、誇りを持てる社会を目指す。）"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4592c0] focus:border-transparent transition resize-y"
-              />
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addValue}
-            className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-400 hover:border-[#4592c0] hover:text-[#4592c0] transition-colors text-sm font-semibold"
-          >
-            ＋ 項目を追加する
-          </button>
-        </div>
-      </section>
-
       {/* 自己PR */}
       <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         <h2 className="text-base font-bold text-gray-900 mb-1">自己PR</h2>
@@ -180,6 +138,40 @@ export default function ProfileEditForm({
         <p className={`text-xs text-right mt-1 ${selfPr.length >= MAX_PR ? 'text-red-500' : 'text-gray-400'}`}>
           {selfPr.length} / {MAX_PR}
         </p>
+      </section>
+
+      {/* 大切にしていること */}
+      <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 className="text-base font-bold text-gray-900 mb-1">大切にしていること</h2>
+        <p className="text-xs text-gray-400 mb-4">価値観や信念をタイトルだけで追加できます。</p>
+        <div className="space-y-2">
+          {values.map((v, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input
+                type="text"
+                value={v.title}
+                onChange={(e) => updateValue(i, { title: e.target.value.slice(0, MAX_VALUE_TITLE) })}
+                placeholder="例: 地域への誇り"
+                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#4592c0] focus:border-transparent transition"
+              />
+              <button
+                type="button"
+                onClick={() => removeValue(i)}
+                aria-label="削除"
+                className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addValue}
+            className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-400 hover:border-[#4592c0] hover:text-[#4592c0] transition-colors text-sm font-semibold"
+          >
+            ＋ 項目を追加する
+          </button>
+        </div>
       </section>
 
       {/* 興味タグ */}

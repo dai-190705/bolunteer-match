@@ -23,7 +23,7 @@ export default async function PortfolioProfileEditPage() {
 
   const rawValues = (data?.portfolio_values ?? []) as unknown
   const values: PortfolioValue[] = Array.isArray(rawValues)
-    ? (rawValues as PortfolioValue[]).map((v) => ({ title: v?.title ?? '', description: v?.description ?? '' }))
+    ? (rawValues as PortfolioValue[]).map((v) => ({ title: v?.title ?? '' }))
     : []
 
   return (
