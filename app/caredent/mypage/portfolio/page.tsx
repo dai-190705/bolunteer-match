@@ -3,6 +3,8 @@ import { createClient } from '@/utils/supabase/server'
 import AuthorAvatar from '../../components/AuthorAvatar'
 import PortfolioTabs, { type TimelineItem, type ArticleItem } from './PortfolioTabs'
 
+type PortfolioValue = { title: string; description: string }
+
 type StudentProfile = {
   last_name: string | null
   first_name: string | null
@@ -12,6 +14,11 @@ type StudentProfile = {
   grade: string | null
   avatar_url: string | null
   school_public: boolean
+  catchphrase: string | null
+  catchphrase_description: string | null
+  self_pr: string | null
+  interest_tags: string[] | null
+  portfolio_values: PortfolioValue[] | null
 }
 
 type ProgramLite = {
@@ -59,7 +66,7 @@ export default async function PortfolioPage() {
   // プロフィール
   const { data: profileData } = await supabase
     .from('student_profiles')
-    .select('last_name, first_name, nickname, user_handle, school, grade, avatar_url, school_public')
+    .select('last_name, first_name, nickname, user_handle, school, grade, avatar_url, school_public, catchphrase, catchphrase_description, self_pr, interest_tags, portfolio_values')
     .eq('id', user.id)
     .maybeSingle()
   const profile = (profileData as StudentProfile | null) ?? null
@@ -184,6 +191,11 @@ export default async function PortfolioPage() {
           school: visibleSchool ?? null,
           grade: profile?.grade ?? null,
           nickname: profile?.nickname ?? null,
+          catchphrase: profile?.catchphrase ?? null,
+          catchphraseDescription: profile?.catchphrase_description ?? null,
+          selfPr: profile?.self_pr ?? null,
+          interestTags: profile?.interest_tags ?? [],
+          values: profile?.portfolio_values ?? [],
         }}
       />
     </div>

@@ -21,12 +21,19 @@ export type ArticleItem = {
   isPublic: boolean
 }
 
+type PortfolioValue = { title: string; description: string }
+
 type Profile = {
   name: string
   nickname: string | null
   handle: string | null
   school: string | null
   grade: string | null
+  catchphrase: string | null
+  catchphraseDescription: string | null
+  selfPr: string | null
+  interestTags: string[]
+  values: PortfolioValue[]
 }
 
 type Tab = 'profile' | 'history' | 'articles'
@@ -267,26 +274,133 @@ function ArticlesPanel({ articles }: { articles: ArticleItem[] }) {
   )
 }
 
+const VALUE_ICONS = [
+  // 旗・山（誇り）
+  <path key="0" strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 2H21l-3 6 3 6h-8.5l-1-2H5a2 2 0 00-2 2zm9-13.5V9" />,
+  // 人（つながり）
+  <path key="1" strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />,
+  // ロケット（挑戦）
+  <path key="2" strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />,
+]
+
 function ProfilePanel({ profile }: { profile: Profile }) {
-  const rows: { label: string; value: string | null }[] = [
-    { label: 'ニックネーム', value: profile.nickname },
-    { label: 'ユーザーID', value: profile.handle ? `@${profile.handle}` : null },
-    { label: '所属学校', value: profile.school },
-    { label: '学年', value: profile.grade },
-  ]
+  const hasCatch = !!(profile.catchphrase || profile.catchphraseDescription)
+  const hasValues = profile.values.length > 0
+  const hasPr = !!profile.selfPr
+  const hasTags = profile.interestTags.length > 0
+  const isEmpty = !hasCatch && !hasValues && !hasPr && !hasTags
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm divide-y divide-gray-100">
-      {rows.map((r) => (
-        <div key={r.label} className="flex items-center gap-4 px-5 py-4">
-          <span className="w-24 flex-shrink-0 text-xs font-medium text-gray-500">{r.label}</span>
-          <span className="text-sm text-gray-900">{r.value || '—'}</span>
-        </div>
-      ))}
-      <div className="px-5 py-4">
-        <Link href="/caredent/mypage/profile" className="text-sm font-semibold text-[#4592c0] hover:underline">
-          プロフィールを編集 →
+    <div className="space-y-5">
+      {/* 編集ボタン */}
+      <div className="flex justify-end">
+        <Link
+          href="/caredent/mypage/portfolio/profile"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:shadow transition-all"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          </svg>
+          プロフィールを編集
         </Link>
       </div>
+
+      {isEmpty && (
+        <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center">
+          <div className="text-4xl mb-3">✨</div>
+          <p className="text-sm font-semibold text-gray-700 mb-1">プロフィールを充実させましょう</p>
+          <p className="text-xs text-gray-400">キャッチコピーや自己PRを設定して、あなたらしさを伝えましょう。</p>
+        </div>
+      )}
+
+      {/* キャッチコピー */}
+      {hasCatch && (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#e8f4fc] flex items-center justify-center">
+              <svg className="w-5 h-5 text-[#4592c0]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9.5 5H6a2 2 0 00-2 2v3.5a2 2 0 002 2h1.5a.5.5 0 01.5.5v.5a2 2 0 01-2 2H5v2h1a4 4 0 004-4V7a2 2 0 00-.5-2zm9 0H15a2 2 0 00-2 2v3.5a2 2 0 002 2h1.5a.5.5 0 01.5.5v.5a2 2 0 01-2 2H14v2h1a4 4 0 004-4V7a2 2 0 00-.5-2z" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-bold text-gray-500">キャッチコピー</h3>
+          </div>
+          {profile.catchphrase && (
+            <p className="text-xl font-bold text-[#4592c0] leading-snug">{profile.catchphrase}</p>
+          )}
+          {profile.catchphraseDescription && (
+            <p className="text-sm text-gray-700 leading-relaxed mt-3 pt-3 border-t border-dashed border-gray-200 whitespace-pre-wrap">
+              {profile.catchphraseDescription}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* 大切にしていること */}
+      {hasValues && (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#e8f4fc] flex items-center justify-center">
+              <svg className="w-5 h-5 text-[#4592c0]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            </div>
+            <h3 className="text-base font-bold text-gray-900">大切にしていること</h3>
+          </div>
+          <div className="space-y-3">
+            {profile.values.map((v, i) => (
+              <div key={i} className="flex items-start gap-3 rounded-xl border border-gray-100 p-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#eaf4fa] flex items-center justify-center">
+                  <svg className="w-5 h-5 text-[#4592c0]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    {VALUE_ICONS[i % VALUE_ICONS.length]}
+                  </svg>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-gray-900">{v.title}</p>
+                  {v.description && (
+                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed whitespace-pre-wrap">{v.description}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 自己PR */}
+      {hasPr && (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#e8f4fc] flex items-center justify-center">
+              <svg className="w-5 h-5 text-[#4592c0]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </div>
+            <h3 className="text-base font-bold text-gray-900">自己PR</h3>
+          </div>
+          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{profile.selfPr}</p>
+        </div>
+      )}
+
+      {/* 興味タグ */}
+      {hasTags && (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#e8f4fc] flex items-center justify-center">
+              <svg className="w-5 h-5 text-[#4592c0]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 8V3a2 2 0 012-2z" />
+              </svg>
+            </div>
+            <h3 className="text-base font-bold text-gray-900">興味タグ</h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {profile.interestTags.map((tag) => (
+              <span key={tag} className="text-sm px-3 py-1.5 rounded-full font-medium bg-[#eaf4fa] text-[#4592c0]">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
