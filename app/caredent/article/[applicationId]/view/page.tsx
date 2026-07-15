@@ -140,7 +140,7 @@ export default async function PublicArticlePage({
           {/* 執筆者 */}
           {author && (
             <Link
-              href={`/caredent/${author.id}`}
+              href={`/caredent/${author.user_handle || author.id}`}
               className="mt-4 inline-flex items-center gap-3 rounded-full pr-4 hover:bg-gray-50 transition-colors -ml-0.5"
             >
               <AuthorAvatar size={40} />

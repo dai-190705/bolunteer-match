@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
@@ -50,23 +50,41 @@ function truncate(text: string | null | undefined, n: number) {
   return t.length > n ? t.slice(0, n) + '…' : t
 }
 
-async function getProfile(userId: string): Promise<PublicProfile | null> {
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+async function getProfile(handle: string): Promise<PublicProfile | null> {
   const supabase = await createClient()
-  const { data } = await supabase
+  const cols =
+    'id, nickname, user_handle, avatar_url, school, grade, catchphrase, catchphrase_description, self_pr, interest_tags, portfolio_values'
+
+  // まずユーザーハンドルで検索
+  const { data: byHandle } = await supabase
     .from('author_public_profiles')
-    .select('id, nickname, user_handle, avatar_url, school, grade, catchphrase, catchphrase_description, self_pr, interest_tags, portfolio_values')
-    .eq('id', userId)
+    .select(cols)
+    .eq('user_handle', handle)
     .maybeSingle()
-  return (data as PublicProfile | null) ?? null
+  if (byHandle) return byHandle as PublicProfile
+
+  // 旧URL互換：UUIDならIDで検索
+  if (UUID_RE.test(handle)) {
+    const { data: byId } = await supabase
+      .from('author_public_profiles')
+      .select(cols)
+      .eq('id', handle)
+      .maybeSingle()
+    if (byId) return byId as PublicProfile
+  }
+
+  return null
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ userId: string }>
+  params: Promise<{ handle: string }>
 }): Promise<Metadata> {
-  const { userId } = await params
-  const profile = await getProfile(userId)
+  const { handle } = await params
+  const profile = await getProfile(handle)
   if (!profile) return { title: 'ポートフォリオが見つかりません | Caredent' }
   const name = profile.nickname || (profile.user_handle ? `@${profile.user_handle}` : '学生')
   return {
@@ -78,22 +96,30 @@ export async function generateMetadata({
 export default async function PublicPortfolioPage({
   params,
 }: {
-  params: Promise<{ userId: string }>
+  params: Promise<{ handle: string }>
 }) {
-  const { userId } = await params
+  const { handle } = await params
 
-  const profile = await getProfile(userId)
+  const profile = await getProfile(handle)
   if (!profile) notFound()
+
+  // UUIDでアクセスされたがハンドルがある場合は、ハンドルURLへ正規化
+  if (handle !== profile.user_handle && profile.user_handle) {
+    redirect(`/caredent/${profile.user_handle}`)
+  }
+
+  const studentId = profile.id
+  const urlKey = profile.user_handle || profile.id
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const isOwner = user?.id === userId
+  const isOwner = user?.id === studentId
 
   // 参加済みボランティア
   const { data: appsData } = await supabase
     .from('applications')
     .select('id, applied_at, status, programs(title, category, tags, description, target)')
-    .eq('student_id', userId)
+    .eq('student_id', studentId)
     .eq('status', 'completed')
     .order('applied_at', { ascending: false })
 
@@ -101,7 +127,7 @@ export default async function PublicPortfolioPage({
   const { data: actsData } = await supabase
     .from('portfolio_activities')
     .select('id, application_id, title, description, activity_date')
-    .eq('student_id', userId)
+    .eq('student_id', studentId)
   const acts = (actsData ?? []) as ActivityRow[]
   const overrideMap = new Map(
     acts.filter((a) => a.application_id).map((a) => [a.application_id as string, a.description ?? ''])
@@ -112,7 +138,7 @@ export default async function PublicPortfolioPage({
   const { data: diaryData } = await supabase
     .from('diary_entries')
     .select('application_id, title, updated_at, is_public, applications(programs(title))')
-    .eq('student_id', userId)
+    .eq('student_id', studentId)
     .order('updated_at', { ascending: false })
   const articleIds = new Set((diaryData ?? []).map((d) => (d as { application_id: string }).application_id))
 
@@ -190,7 +216,7 @@ export default async function PublicPortfolioPage({
             Caredent
           </Link>
         )}
-        <ShareButton path={`/caredent/${userId}`} />
+        <ShareButton path={`/caredent/${urlKey}`} />
       </div>
 
       {/* ヘッダーカード */}

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 
-// 公開プロフィールは /caredent/[userId] に統合。旧URLはリダイレクト。
+// 公開プロフィールは /caredent/[handle] に統合。旧URLはリダイレクト。
 export default async function LegacyProfileRedirect({
   params,
 }: {

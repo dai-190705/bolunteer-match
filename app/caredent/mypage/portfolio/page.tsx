@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
-// ポートフォリオは公開ページ /caredent/[userId] に統合。自分のIDへリダイレクト。
+// ポートフォリオは公開ページ /caredent/[handle] に統合。自分のハンドルへリダイレクト。
 export default async function PortfolioRedirect() {
   let user = null
   try {
@@ -13,5 +13,19 @@ export default async function PortfolioRedirect() {
   }
 
   if (!user) redirect('/caredent/login')
-  redirect(`/caredent/${user.id}`)
+
+  let handle: string | null = null
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('student_profiles')
+      .select('user_handle')
+      .eq('id', user.id)
+      .maybeSingle()
+    handle = (data?.user_handle as string | null) ?? null
+  } catch {
+    // ignore
+  }
+
+  redirect(`/caredent/${handle || user.id}`)
 }
