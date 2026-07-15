@@ -4,13 +4,13 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 export type TimelineItem = {
-  kind: 'volunteer' | 'article' | 'project'
+  kind: 'volunteer' | 'custom'
   date: string
   title: string
   description: string
   tags: string[]
   applicationId?: string
-  isPublic?: boolean
+  hasArticle: boolean
 }
 
 export type ArticleItem = {
@@ -35,17 +35,6 @@ const KIND_STYLE: Record<
   TimelineItem['kind'],
   { label: string; dot: string; badge: string; chip: string; icon: React.ReactNode }
 > = {
-  project: {
-    label: 'プロジェクト参加',
-    dot: 'bg-[#4592c0]',
-    badge: 'bg-sky-100 text-sky-700',
-    chip: 'bg-sky-50 text-sky-600',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-  },
   volunteer: {
     label: 'ボランティア活動',
     dot: 'bg-emerald-500',
@@ -57,20 +46,21 @@ const KIND_STYLE: Record<
       </svg>
     ),
   },
-  article: {
-    label: '記事執筆',
-    dot: 'bg-violet-500',
-    badge: 'bg-violet-100 text-violet-700',
-    chip: 'bg-violet-50 text-violet-600',
+  custom: {
+    label: 'イベント・活動',
+    dot: 'bg-[#4592c0]',
+    badge: 'bg-sky-100 text-sky-700',
+    chip: 'bg-sky-50 text-sky-600',
     icon: (
       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
     ),
   },
 }
 
 function ymOf(iso: string) {
+  if (!iso) return { year: '', month: '' }
   const d = new Date(iso)
   return { year: `${d.getFullYear()}年`, month: `${d.getMonth() + 1}月` }
 }
@@ -138,15 +128,24 @@ function HistoryPanel({ timeline }: { timeline: TimelineItem[] }) {
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h.01M12 12h.01M9 16h6" />
           </svg>
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <h2 className="text-lg font-bold text-gray-900">活動履歴</h2>
-          <p className="text-sm text-gray-500">これまでの参加活動やプロジェクト、執筆記事を時系列でご紹介します。</p>
+          <p className="text-sm text-gray-500">参加した活動やイベントを時系列でご紹介します。</p>
         </div>
+        <Link
+          href="/caredent/mypage/portfolio/edit"
+          className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:shadow transition-all"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          </svg>
+          活動履歴を編集
+        </Link>
       </div>
 
       {timeline.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center text-gray-400 text-sm">
-          まだ活動履歴がありません。ボランティアに参加して記録を残しましょう。
+          まだ活動履歴がありません。ボランティアに参加するか、活動を追加しましょう。
         </div>
       ) : (
         <div className="relative pl-3">
@@ -158,17 +157,24 @@ function HistoryPanel({ timeline }: { timeline: TimelineItem[] }) {
               const { year, month } = ymOf(item.date)
               const card = (
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex-1 min-w-0">
-                  <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full mb-2 ${style.badge}`}>
-                    {style.icon}
-                    {style.label}
-                  </span>
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${style.badge}`}>
+                      {style.icon}
+                      {style.label}
+                    </span>
+                    {item.hasArticle && (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-violet-50 text-violet-600">
+                        📝 記事あり
+                      </span>
+                    )}
+                  </div>
                   <h3 className="text-base font-bold text-gray-900 leading-snug">{item.title}</h3>
                   {item.description && (
-                    <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{item.description}</p>
+                    <p className="text-sm text-gray-600 mt-1.5 leading-relaxed whitespace-pre-wrap">{item.description}</p>
                   )}
                   {item.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-3">
-                      {item.tags.slice(0, 3).map((tag) => (
+                      {item.tags.map((tag) => (
                         <span key={tag} className={`text-xs px-2 py-0.5 rounded-full font-medium ${style.chip}`}>
                           {tag}
                         </span>
@@ -188,8 +194,11 @@ function HistoryPanel({ timeline }: { timeline: TimelineItem[] }) {
                       {month}
                     </div>
                   </div>
-                  {item.kind === 'article' && item.applicationId ? (
-                    <Link href={`/caredent/article/${item.applicationId}`} className="flex-1 min-w-0 active:scale-[0.99] transition-transform">
+                  {item.hasArticle && item.applicationId ? (
+                    <Link
+                      href={`/caredent/article/${item.applicationId}`}
+                      className="flex-1 min-w-0 active:scale-[0.99] transition-transform"
+                    >
                       {card}
                     </Link>
                   ) : (
@@ -211,13 +220,13 @@ function HistoryPanel({ timeline }: { timeline: TimelineItem[] }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-gray-900">もっと活動を記録しよう</p>
-          <p className="text-xs text-gray-500 mt-0.5">ボランティアに参加して記事を書くと、活動が自動で追加されます。</p>
+          <p className="text-xs text-gray-500 mt-0.5">新しい活動やイベントを追加して、あなたの経験を可視化しましょう。</p>
         </div>
         <Link
-          href="/caredent"
+          href="/caredent/mypage/portfolio/edit"
           className="flex-shrink-0 inline-flex items-center gap-1 px-4 py-2.5 rounded-full bg-[#4592c0] text-white text-sm font-bold hover:bg-[#3a7ea8] transition-colors"
         >
-          ＋ 活動を探す
+          ＋ 活動を追加
         </Link>
       </div>
     </div>

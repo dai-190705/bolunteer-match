@@ -20,6 +20,14 @@ type ProgramLite = {
   target: string | null
 }
 
+type ActivityRow = {
+  id: string
+  application_id: string | null
+  title: string | null
+  description: string | null
+  activity_date: string | null
+}
+
 function pickProgram(p: unknown): ProgramLite | null {
   if (!p) return null
   const v = Array.isArray(p) ? p[0] : p
@@ -54,7 +62,7 @@ export default async function PortfolioPage() {
     .maybeSingle()
   const profile = (profileData as StudentProfile | null) ?? null
 
-  // 参加済みボランティア
+  // 参加済みボランティア（Caredent経由の自動挿入分）
   const { data: appsData } = await supabase
     .from('applications')
     .select('id, applied_at, status, programs(title, category, tags, description, target)')
@@ -62,49 +70,55 @@ export default async function PortfolioPage() {
     .eq('status', 'completed')
     .order('applied_at', { ascending: false })
 
-  // 記事
+  // 活動履歴（概要の上書き＋任意イベント）
+  const { data: actsData } = await supabase
+    .from('portfolio_activities')
+    .select('id, application_id, title, description, activity_date')
+    .eq('student_id', user.id)
+  const acts = (actsData ?? []) as ActivityRow[]
+  const overrideMap = new Map(
+    acts.filter((a) => a.application_id).map((a) => [a.application_id as string, a.description ?? ''])
+  )
+  const customActs = acts.filter((a) => !a.application_id)
+
+  // 記事（記事一覧タブ＋活動→記事リンク判定用）
   const { data: diaryData } = await supabase
     .from('diary_entries')
-    .select('application_id, title, content, updated_at, is_public, applications(programs(title, tags))')
+    .select('application_id, title, updated_at, is_public, applications(programs(title))')
     .eq('student_id', user.id)
     .order('updated_at', { ascending: false })
+  const articleIds = new Set((diaryData ?? []).map((d) => (d as { application_id: string }).application_id))
 
-  // タイムライン（ボランティア＋記事）を統合
+  // タイムライン（Caredentイベント＋任意イベントのみ。記事は載せない）
   const timeline: TimelineItem[] = []
 
   for (const app of appsData ?? []) {
-    const program = pickProgram((app as { programs?: unknown }).programs)
+    const row = app as { id: string; applied_at: string; programs?: unknown }
+    const program = pickProgram(row.programs)
+    const override = overrideMap.get(row.id)
     timeline.push({
       kind: 'volunteer',
-      date: (app as { applied_at: string }).applied_at,
+      date: row.applied_at,
       title: program?.title ?? 'ボランティア活動',
-      description: truncate(program?.description ?? program?.target, 90),
-      tags: program?.tags ?? [],
+      description: override || truncate(program?.description ?? program?.target, 100),
+      tags: (program?.tags ?? []).slice(0, 3),
+      applicationId: row.id,
+      hasArticle: articleIds.has(row.id),
     })
   }
 
-  for (const d of diaryData ?? []) {
-    const row = d as {
-      application_id: string
-      title: string | null
-      content: string | null
-      updated_at: string | null
-      is_public: boolean | null
-      applications?: { programs?: unknown } | null
-    }
-    const program = pickProgram(row.applications?.programs)
+  for (const act of customActs) {
     timeline.push({
-      kind: 'article',
-      date: row.updated_at ?? new Date().toISOString(),
-      title: row.title || program?.title || '無題の記事',
-      description: truncate(row.content, 90),
-      tags: ['記事', ...(pickProgram(row.applications?.programs)?.tags ?? [])].slice(0, 3),
-      applicationId: row.application_id,
-      isPublic: !!row.is_public,
+      kind: 'custom',
+      date: act.activity_date ?? '',
+      title: act.title ?? '活動',
+      description: act.description ?? '',
+      tags: [],
+      hasArticle: false,
     })
   }
 
-  timeline.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  timeline.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime())
 
   // 記事一覧タブ用
   const articles: ArticleItem[] = (diaryData ?? []).map((d) => {
@@ -124,8 +138,8 @@ export default async function PortfolioPage() {
     }
   })
 
-  const fullName = [profile?.last_name, profile?.first_name].filter(Boolean).join(' ')
-  const displayName = fullName || profile?.nickname || 'ゲスト'
+  const meta = user.user_metadata ?? {}
+  const displayName = profile?.nickname || (meta.nickname as string) || 'ゲスト'
   const subtitle = [profile?.school, profile?.grade].filter(Boolean).join(' / ')
 
   return (
@@ -157,7 +171,7 @@ export default async function PortfolioPage() {
         </div>
       </div>
 
-      {/* タブ＋パネル（下部の角丸カードは client 側で継続） */}
+      {/* タブ＋パネル */}
       <PortfolioTabs
         timeline={timeline}
         articles={articles}
