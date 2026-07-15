@@ -10,6 +10,8 @@ type StudentProfile = {
   user_handle: string | null
   school: string | null
   grade: string | null
+  avatar_url: string | null
+  school_public: boolean
 }
 
 type ProgramLite = {
@@ -57,7 +59,7 @@ export default async function PortfolioPage() {
   // プロフィール
   const { data: profileData } = await supabase
     .from('student_profiles')
-    .select('last_name, first_name, nickname, user_handle, school, grade')
+    .select('last_name, first_name, nickname, user_handle, school, grade, avatar_url, school_public')
     .eq('id', user.id)
     .maybeSingle()
   const profile = (profileData as StudentProfile | null) ?? null
@@ -140,7 +142,8 @@ export default async function PortfolioPage() {
 
   const meta = user.user_metadata ?? {}
   const displayName = profile?.nickname || (meta.nickname as string) || 'ゲスト'
-  const subtitle = [profile?.school, profile?.grade].filter(Boolean).join(' / ')
+  const visibleSchool = profile?.school_public ? profile?.school : null
+  const subtitle = [visibleSchool, profile?.grade].filter(Boolean).join(' / ')
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -166,7 +169,7 @@ export default async function PortfolioPage() {
             )}
           </div>
           <div className="flex-shrink-0 ring-4 ring-white/80 rounded-full shadow-lg">
-            <AuthorAvatar size={104} />
+            <AuthorAvatar size={104} imageUrl={profile?.avatar_url} />
           </div>
         </div>
       </div>
@@ -178,7 +181,7 @@ export default async function PortfolioPage() {
         profile={{
           name: displayName,
           handle: profile?.user_handle ?? null,
-          school: profile?.school ?? null,
+          school: visibleSchool ?? null,
           grade: profile?.grade ?? null,
           nickname: profile?.nickname ?? null,
         }}

@@ -1,5 +1,23 @@
-// 執筆者の初期アイコン（アバター未設定のためデフォルト表示）
-export default function AuthorAvatar({ size = 40 }: { size?: number }) {
+// 執筆者のアイコン（画像未設定時はデフォルトのシルエットを表示）
+export default function AuthorAvatar({
+  size = 40,
+  imageUrl,
+}: {
+  size?: number
+  imageUrl?: string | null
+}) {
+  if (imageUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={imageUrl}
+        alt=""
+        className="rounded-full object-cover flex-shrink-0 bg-gray-100"
+        style={{ width: size, height: size }}
+      />
+    )
+  }
+
   return (
     <div
       className="rounded-full bg-gradient-to-br from-[#4592c0] to-[#6db3d8] flex items-center justify-center flex-shrink-0"

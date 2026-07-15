@@ -10,7 +10,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from('student_profiles')
-    .select('last_name, first_name, last_name_kana, first_name_kana, school, user_handle, nickname')
+    .select('last_name, first_name, last_name_kana, first_name_kana, school, user_handle, nickname, avatar_url, school_public')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -27,6 +27,8 @@ export default async function ProfilePage() {
       school: (meta.school as string) ?? '',
       user_handle: (meta.user_handle as string) ?? null,
       nickname: (meta.nickname as string) ?? null,
+      avatar_url: null,
+      school_public: true,
     }
     // DBに作成（応募者詳細等でも名前が表示されるように）
     await supabase.from('student_profiles').upsert({
