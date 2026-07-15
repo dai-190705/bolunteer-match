@@ -151,7 +151,7 @@ export default async function MyPage() {
         </Link>
 
         <Link
-          href="/caredent/mypage/portfolio"
+          href={`/caredent/${user.id}`}
           className="flex items-center gap-4 px-5 py-4 border-t border-gray-100 hover:bg-gray-50 transition-colors"
         >
           <div className="flex-shrink-0 w-9 h-9 rounded-full bg-[#e8f4fc] flex items-center justify-center">

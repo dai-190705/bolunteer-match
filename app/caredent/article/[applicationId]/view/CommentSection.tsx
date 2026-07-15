@@ -141,13 +141,13 @@ export default function CommentSection({
         <ul className="space-y-4">
           {comments.map((c) => (
             <li key={c.id} className="flex items-start gap-3">
-              <Link href={`/caredent/profile/${c.author_id}`} className="flex-shrink-0" aria-label="プロフィールを見る">
+              <Link href={`/caredent/${c.author_id}`} className="flex-shrink-0" aria-label="プロフィールを見る">
                 <AuthorAvatar size={36} />
               </Link>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/caredent/profile/${c.author_id}`}
+                    href={`/caredent/${c.author_id}`}
                     className="text-sm font-semibold text-gray-900 hover:underline"
                   >
                     {nameOf(c.author_id)}

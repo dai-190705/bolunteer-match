@@ -140,7 +140,7 @@ export default async function PublicArticlePage({
           {/* 執筆者 */}
           {author && (
             <Link
-              href={`/caredent/profile/${author.id}`}
+              href={`/caredent/${author.id}`}
               className="mt-4 inline-flex items-center gap-3 rounded-full pr-4 hover:bg-gray-50 transition-colors -ml-0.5"
             >
               <AuthorAvatar size={40} />
@@ -177,12 +177,12 @@ export default async function PublicArticlePage({
       {/* フッター導線 */}
       <div className="mt-12 pt-8 border-t border-gray-200 text-center">
         <p className="text-sm text-gray-500 mb-3">この記事は Caredent の活動記録です</p>
-        <a
+        <Link
           href="/caredent"
           className="inline-block px-6 py-3 rounded-full bg-[#4592c0] hover:bg-[#3a7ea8] text-white text-sm font-bold shadow transition-colors"
         >
           Caredent でボランティアを探す
-        </a>
+        </Link>
       </div>
     </div>
   )
