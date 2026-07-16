@@ -30,6 +30,8 @@ export type Program = {
   capacity: number | null
   location_type: 'venue' | 'online' | null
   location: string | null
-  schedule_type: 'date' | 'anytime' | null
+  schedule_type: 'single' | 'range' | 'multiple' | 'anytime' | null
   event_date: string | null
+  event_end_date: string | null
+  event_dates: string[] | null
 }

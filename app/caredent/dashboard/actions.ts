@@ -29,7 +29,16 @@ export async function createProgram(formData: FormData) {
   const locationType = (formData.get('location_type') as string) || null
   const location = locationType === 'venue' ? (formData.get('location') as string) || null : null
   const scheduleType = (formData.get('schedule_type') as string) || null
-  const eventDate = scheduleType === 'date' ? (formData.get('event_date') as string) || null : null
+  const eventDate =
+    scheduleType === 'single' || scheduleType === 'range'
+      ? (formData.get('event_date') as string) || null
+      : null
+  const eventEndDate =
+    scheduleType === 'range' ? (formData.get('event_end_date') as string) || null : null
+  const eventDatesRaw = scheduleType === 'multiple' ? (formData.get('event_dates') as string) || '' : ''
+  const eventDates = eventDatesRaw
+    ? eventDatesRaw.split(',').map((d) => d.trim()).filter(Boolean)
+    : null
 
   const { error } = await supabase.from('programs').insert({
     title: formData.get('title') as string,
@@ -49,6 +58,8 @@ export async function createProgram(formData: FormData) {
     location,
     schedule_type: scheduleType,
     event_date: eventDate,
+    event_end_date: eventEndDate,
+    event_dates: eventDates,
   })
 
   if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
@@ -83,7 +94,16 @@ export async function updateProgram(id: string, formData: FormData) {
   const locationType = (formData.get('location_type') as string) || null
   const location = locationType === 'venue' ? (formData.get('location') as string) || null : null
   const scheduleType = (formData.get('schedule_type') as string) || null
-  const eventDate = scheduleType === 'date' ? (formData.get('event_date') as string) || null : null
+  const eventDate =
+    scheduleType === 'single' || scheduleType === 'range'
+      ? (formData.get('event_date') as string) || null
+      : null
+  const eventEndDate =
+    scheduleType === 'range' ? (formData.get('event_end_date') as string) || null : null
+  const eventDatesRaw = scheduleType === 'multiple' ? (formData.get('event_dates') as string) || '' : ''
+  const eventDates = eventDatesRaw
+    ? eventDatesRaw.split(',').map((d) => d.trim()).filter(Boolean)
+    : null
 
   const { error } = await supabase
     .from('programs')
@@ -104,6 +124,8 @@ export async function updateProgram(id: string, formData: FormData) {
       location,
       schedule_type: scheduleType,
       event_date: eventDate,
+      event_end_date: eventEndDate,
+      event_dates: eventDates,
     })
     .eq('id', id)
     .eq('publisher_id', user.id)

@@ -38,10 +38,39 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
     program?.capacity != null ? String(program.capacity) : ''
   )
   const [locationType, setLocationType] = useState<string>(program?.location_type ?? 'venue')
-  const [scheduleType, setScheduleType] = useState<string>(program?.schedule_type ?? 'date')
+
+  // 開催日程（単日 / 期間 / 複数日程 / 随時募集）
+  const [scheduleType, setScheduleType] = useState<string>(program?.schedule_type ?? 'single')
+  const [singleDate, setSingleDate] = useState<string>(
+    !program?.schedule_type || program.schedule_type === 'single'
+      ? program?.event_date ?? ''
+      : ''
+  )
+  const [rangeStart, setRangeStart] = useState<string>(
+    program?.schedule_type === 'range' ? program?.event_date ?? '' : ''
+  )
+  const [rangeEnd, setRangeEnd] = useState<string>(program?.event_end_date ?? '')
+  const [multiDates, setMultiDates] = useState<string[]>(
+    program?.schedule_type === 'multiple' && program?.event_dates?.length
+      ? program.event_dates
+      : ['']
+  )
 
   function toggleAudience(a: string) {
     setAudiences((prev) => (prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a]))
+  }
+
+  function updateMultiDate(i: number, v: string) {
+    setMultiDates((prev) => prev.map((d, idx) => (idx === i ? v : d)))
+  }
+  function addMultiDate() {
+    setMultiDates((prev) => [...prev, ''])
+  }
+  function removeMultiDate(i: number) {
+    setMultiDates((prev) => {
+      const next = prev.filter((_, idx) => idx !== i)
+      return next.length ? next : ['']
+    })
   }
 
   const [bannerUrl, setBannerUrl] = useState<string>(program?.banner_image_url ?? '')
@@ -87,7 +116,25 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
     formData.set('location_type', locationType)
     if (locationType !== 'venue') formData.set('location', '')
     formData.set('schedule_type', scheduleType)
-    if (scheduleType !== 'date') formData.set('event_date', '')
+    // 日程タイプに応じて値をセット
+    if (scheduleType === 'single') {
+      formData.set('event_date', singleDate)
+      formData.set('event_end_date', '')
+      formData.set('event_dates', '')
+    } else if (scheduleType === 'range') {
+      formData.set('event_date', rangeStart)
+      formData.set('event_end_date', rangeEnd)
+      formData.set('event_dates', '')
+    } else if (scheduleType === 'multiple') {
+      formData.set('event_date', '')
+      formData.set('event_end_date', '')
+      formData.set('event_dates', multiDates.filter((d) => d).join(','))
+    } else {
+      // anytime
+      formData.set('event_date', '')
+      formData.set('event_end_date', '')
+      formData.set('event_dates', '')
+    }
     await action(formData)
     setLoading(false)
   }
@@ -294,37 +341,86 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
           開催日程
         </label>
-        <div className="flex flex-wrap gap-3 mb-2">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="schedule_type_radio"
-              value="date"
-              checked={scheduleType === 'date'}
-              onChange={() => setScheduleType('date')}
-              className="text-indigo-600 focus:ring-indigo-500"
-            />
-            <span className="text-sm text-gray-700">日付を入力</span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="schedule_type_radio"
-              value="anytime"
-              checked={scheduleType === 'anytime'}
-              onChange={() => setScheduleType('anytime')}
-              className="text-indigo-600 focus:ring-indigo-500"
-            />
-            <span className="text-sm text-gray-700">随時募集</span>
-          </label>
+        <div className="flex flex-wrap gap-x-4 gap-y-2 mb-3">
+          {[
+            { v: 'single', label: '単日' },
+            { v: 'range', label: '期間（何日〜何日）' },
+            { v: 'multiple', label: '複数日程' },
+            { v: 'anytime', label: '随時募集' },
+          ].map((opt) => (
+            <label key={opt.v} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="schedule_type_radio"
+                value={opt.v}
+                checked={scheduleType === opt.v}
+                onChange={() => setScheduleType(opt.v)}
+                className="text-indigo-600 focus:ring-indigo-500"
+              />
+              <span className="text-sm text-gray-700">{opt.label}</span>
+            </label>
+          ))}
         </div>
-        {scheduleType === 'date' && (
+
+        {/* 単日 */}
+        {scheduleType === 'single' && (
           <input
-            name="event_date"
             type="date"
-            defaultValue={program?.event_date ?? ''}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            value={singleDate}
+            onChange={(e) => setSingleDate(e.target.value)}
+            className="w-full sm:w-auto px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           />
+        )}
+
+        {/* 期間 */}
+        {scheduleType === 'range' && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <input
+              type="date"
+              value={rangeStart}
+              onChange={(e) => setRangeStart(e.target.value)}
+              className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+            <span className="text-sm text-gray-500">〜</span>
+            <input
+              type="date"
+              value={rangeEnd}
+              min={rangeStart || undefined}
+              onChange={(e) => setRangeEnd(e.target.value)}
+              className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+        )}
+
+        {/* 複数日程 */}
+        {scheduleType === 'multiple' && (
+          <div className="space-y-2">
+            {multiDates.map((d, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={d}
+                  onChange={(e) => updateMultiDate(i, e.target.value)}
+                  className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeMultiDate(i)}
+                  aria-label="削除"
+                  className="w-9 h-9 flex items-center justify-center rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addMultiDate}
+              className="inline-flex items-center gap-1 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-indigo-400 hover:text-indigo-500 transition-colors text-sm font-semibold"
+            >
+              ＋ 日程を追加
+            </button>
+          </div>
         )}
       </div>
 

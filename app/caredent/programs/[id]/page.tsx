@@ -9,6 +9,27 @@ function formatDeadline(deadline: string | null) {
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
 }
 
+function formatSchedule(program: Program): string | null {
+  switch (program.schedule_type) {
+    case 'anytime':
+      return '随時募集'
+    case 'range':
+      if (program.event_date && program.event_end_date) {
+        return `${formatDeadline(program.event_date)} 〜 ${formatDeadline(program.event_end_date)}`
+      }
+      return formatDeadline(program.event_date)
+    case 'multiple':
+      if (program.event_dates?.length) {
+        return program.event_dates.map((d) => formatDeadline(d)).join('、')
+      }
+      return null
+    case 'single':
+      return formatDeadline(program.event_date)
+    default:
+      return program.event_date ? formatDeadline(program.event_date) : null
+  }
+}
+
 const CATEGORY_COLORS: Record<string, string> = {
   '1day': 'bg-blue-100 text-blue-800',
   中期: 'bg-green-100 text-green-800',
@@ -139,14 +160,10 @@ export default async function ProgramDetailPage({
                 <dd className="text-sm text-gray-800">{program.target}</dd>
               </div>
             )}
-            {(program.schedule_type === 'anytime' || program.event_date) && (
+            {formatSchedule(program) && (
               <div>
                 <dt className="text-xs font-medium text-gray-500 mb-1">開催日程</dt>
-                <dd className="text-sm text-gray-800">
-                  {program.schedule_type === 'anytime'
-                    ? '随時募集'
-                    : formatDeadline(program.event_date)}
-                </dd>
+                <dd className="text-sm text-gray-800">{formatSchedule(program)}</dd>
               </div>
             )}
             {(program.location_type === 'online' || program.location) && (
