@@ -139,6 +139,24 @@ export default async function ProgramDetailPage({
                 <dd className="text-sm text-gray-800">{program.target}</dd>
               </div>
             )}
+            {(program.schedule_type === 'anytime' || program.event_date) && (
+              <div>
+                <dt className="text-xs font-medium text-gray-500 mb-1">開催日程</dt>
+                <dd className="text-sm text-gray-800">
+                  {program.schedule_type === 'anytime'
+                    ? '随時募集'
+                    : formatDeadline(program.event_date)}
+                </dd>
+              </div>
+            )}
+            {(program.location_type === 'online' || program.location) && (
+              <div>
+                <dt className="text-xs font-medium text-gray-500 mb-1">開催場所</dt>
+                <dd className="text-sm text-gray-800">
+                  {program.location_type === 'online' ? 'オンライン' : program.location}
+                </dd>
+              </div>
+            )}
             {program.deadline && (
               <div>
                 <dt className="text-xs font-medium text-gray-500 mb-1">応募締切</dt>

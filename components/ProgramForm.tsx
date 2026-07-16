@@ -12,11 +12,37 @@ type Props = {
 }
 
 const CATEGORIES = ['1day', '中期', '長期'] as const
+const AUDIENCES = ['小学生', '中学生', '高校生', '大学生', '社会人'] as const
+
+// 定員の選択肢（無制限 + 1〜30 + 40,50,100）
+const CAPACITY_OPTIONS = [
+  ...Array.from({ length: 30 }, (_, i) => i + 1),
+  40, 50, 100,
+]
+
+function parseAudiences(target: string | null | undefined): string[] {
+  if (!target) return []
+  return target
+    .split(/[・、,]/)
+    .map((s) => s.trim())
+    .filter((s) => (AUDIENCES as readonly string[]).includes(s))
+}
 
 export default function ProgramForm({ program, action, submitLabel }: Props) {
   const [published, setPublished] = useState(program?.published ?? false)
   const [loading, setLoading] = useState(false)
   const [category, setCategory] = useState<string>(program?.category ?? '')
+
+  const [audiences, setAudiences] = useState<string[]>(parseAudiences(program?.target))
+  const [capacity, setCapacity] = useState<string>(
+    program?.capacity != null ? String(program.capacity) : ''
+  )
+  const [locationType, setLocationType] = useState<string>(program?.location_type ?? 'venue')
+  const [scheduleType, setScheduleType] = useState<string>(program?.schedule_type ?? 'date')
+
+  function toggleAudience(a: string) {
+    setAudiences((prev) => (prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a]))
+  }
 
   const [bannerUrl, setBannerUrl] = useState<string>(program?.banner_image_url ?? '')
   const [bannerUploading, setBannerUploading] = useState(false)
@@ -56,6 +82,12 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
     formData.set('published', String(published))
     formData.set('banner_image_url', bannerUrl)
     formData.set('category', category)
+    formData.set('target', audiences.join('・'))
+    formData.set('capacity', capacity)
+    formData.set('location_type', locationType)
+    if (locationType !== 'venue') formData.set('location', '')
+    formData.set('schedule_type', scheduleType)
+    if (scheduleType !== 'date') formData.set('event_date', '')
     await action(formData)
     setLoading(false)
   }
@@ -158,20 +190,35 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            対象者
-          </label>
-          <input
-            name="target"
-            type="text"
-            defaultValue={program?.target ?? ''}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-            placeholder="例: 中学生・高校生"
-          />
+      {/* 対象者（複数選択） */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          対象者
+          <span className="ml-1 text-xs font-normal text-gray-400">（複数選択可）</span>
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {AUDIENCES.map((a) => {
+            const active = audiences.includes(a)
+            return (
+              <button
+                key={a}
+                type="button"
+                onClick={() => toggleAudience(a)}
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                  active
+                    ? 'bg-indigo-600 border-indigo-600 text-white'
+                    : 'bg-white border-gray-300 text-gray-600 hover:border-indigo-400'
+                }`}
+              >
+                {a}
+              </button>
+            )
+          })}
         </div>
+      </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* 応募締切 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             応募締切
@@ -184,20 +231,101 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
           />
         </div>
 
+        {/* 定員（選択制） */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             定員
-            <span className="ml-1 text-xs font-normal text-gray-400">（未入力で無制限）</span>
           </label>
-          <input
-            name="capacity"
-            type="number"
-            min={1}
-            defaultValue={program?.capacity ?? ''}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-            placeholder="例: 10"
-          />
+          <select
+            value={capacity}
+            onChange={(e) => setCapacity(e.target.value)}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+          >
+            <option value="">無制限</option>
+            {CAPACITY_OPTIONS.map((n) => (
+              <option key={n} value={n}>{n} 名</option>
+            ))}
+          </select>
         </div>
+      </div>
+
+      {/* 開催場所 */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          開催場所
+        </label>
+        <div className="flex flex-wrap gap-3 mb-2">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="location_type_radio"
+              value="venue"
+              checked={locationType === 'venue'}
+              onChange={() => setLocationType('venue')}
+              className="text-indigo-600 focus:ring-indigo-500"
+            />
+            <span className="text-sm text-gray-700">住所や場所を入力</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="location_type_radio"
+              value="online"
+              checked={locationType === 'online'}
+              onChange={() => setLocationType('online')}
+              className="text-indigo-600 focus:ring-indigo-500"
+            />
+            <span className="text-sm text-gray-700">オンライン</span>
+          </label>
+        </div>
+        {locationType === 'venue' && (
+          <input
+            name="location"
+            type="text"
+            defaultValue={program?.location ?? ''}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            placeholder="例: 大阪府堺市北区○○ / ○○会館"
+          />
+        )}
+      </div>
+
+      {/* 開催日程 */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          開催日程
+        </label>
+        <div className="flex flex-wrap gap-3 mb-2">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="schedule_type_radio"
+              value="date"
+              checked={scheduleType === 'date'}
+              onChange={() => setScheduleType('date')}
+              className="text-indigo-600 focus:ring-indigo-500"
+            />
+            <span className="text-sm text-gray-700">日付を入力</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="schedule_type_radio"
+              value="anytime"
+              checked={scheduleType === 'anytime'}
+              onChange={() => setScheduleType('anytime')}
+              className="text-indigo-600 focus:ring-indigo-500"
+            />
+            <span className="text-sm text-gray-700">随時募集</span>
+          </label>
+        </div>
+        {scheduleType === 'date' && (
+          <input
+            name="event_date"
+            type="date"
+            defaultValue={program?.event_date ?? ''}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+          />
+        )}
       </div>
 
       <div>

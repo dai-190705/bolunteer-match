@@ -28,4 +28,8 @@ export type Program = {
   cancel_policy: string | null
   notes: string | null
   capacity: number | null
+  location_type: 'venue' | 'online' | null
+  location: string | null
+  schedule_type: 'date' | 'anytime' | null
+  event_date: string | null
 }

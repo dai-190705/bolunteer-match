@@ -26,6 +26,11 @@ export async function createProgram(formData: FormData) {
   const capacityRaw = (formData.get('capacity') as string) || null
   const capacity = capacityRaw ? parseInt(capacityRaw, 10) : null
 
+  const locationType = (formData.get('location_type') as string) || null
+  const location = locationType === 'venue' ? (formData.get('location') as string) || null : null
+  const scheduleType = (formData.get('schedule_type') as string) || null
+  const eventDate = scheduleType === 'date' ? (formData.get('event_date') as string) || null : null
+
   const { error } = await supabase.from('programs').insert({
     title: formData.get('title') as string,
     description: formData.get('description') as string,
@@ -40,6 +45,10 @@ export async function createProgram(formData: FormData) {
     cancel_policy: (formData.get('cancel_policy') as string) || null,
     notes: (formData.get('notes') as string) || null,
     capacity,
+    location_type: locationType,
+    location,
+    schedule_type: scheduleType,
+    event_date: eventDate,
   })
 
   if (error) throw new Error('処理に失敗しました。もう一度お試しください。')
@@ -71,6 +80,11 @@ export async function updateProgram(id: string, formData: FormData) {
   const capacityRaw = (formData.get('capacity') as string) || null
   const capacity = capacityRaw ? parseInt(capacityRaw, 10) : null
 
+  const locationType = (formData.get('location_type') as string) || null
+  const location = locationType === 'venue' ? (formData.get('location') as string) || null : null
+  const scheduleType = (formData.get('schedule_type') as string) || null
+  const eventDate = scheduleType === 'date' ? (formData.get('event_date') as string) || null : null
+
   const { error } = await supabase
     .from('programs')
     .update({
@@ -86,6 +100,10 @@ export async function updateProgram(id: string, formData: FormData) {
       cancel_policy: (formData.get('cancel_policy') as string) || null,
       notes: (formData.get('notes') as string) || null,
       capacity,
+      location_type: locationType,
+      location,
+      schedule_type: scheduleType,
+      event_date: eventDate,
     })
     .eq('id', id)
     .eq('publisher_id', user.id)
