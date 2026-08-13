@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useRef } from 'react'
-import { Program } from '@/types'
+import { Program, ApplicationQuestion } from '@/types'
 import { createClient } from '@/utils/supabase/client'
 
 type Props = {
@@ -19,6 +19,19 @@ const CAPACITY_OPTIONS = [
   ...Array.from({ length: 30 }, (_, i) => i + 1),
   40, 50, 100,
 ]
+
+// 応募フォームの質問プリセット
+const QUESTION_PRESETS: { label: string; description: string }[] = [
+  { label: '志望動機', description: 'このボランティアに応募した理由や、どんなことをしたいかを書いてみよう' },
+  { label: '自己PR', description: '自分の強みや経験、アピールしたいことを自由に書いてみよう' },
+  { label: '参加可能な日程', description: '参加できる日程や時間帯を教えてください' },
+  { label: 'ボランティア経験', description: 'これまでのボランティア経験があれば教えてください' },
+  { label: '意気込み', description: '活動に向けた意気込みを教えてください' },
+]
+
+function genQuestionId() {
+  return 'q_' + Math.random().toString(36).slice(2, 10)
+}
 
 function parseAudiences(target: string | null | undefined): string[] {
   if (!target) return []
@@ -55,6 +68,38 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
       ? program.event_dates
       : ['']
   )
+
+  // 応募フォームの質問
+  const [questions, setQuestions] = useState<ApplicationQuestion[]>(
+    program?.application_questions?.length ? program.application_questions : []
+  )
+
+  function addQuestion(preset?: { label: string; description: string }) {
+    setQuestions((prev) => [
+      ...prev,
+      {
+        id: genQuestionId(),
+        label: preset?.label ?? '',
+        description: preset?.description ?? '',
+        required: false,
+      },
+    ])
+  }
+  function updateQuestion(i: number, patch: Partial<ApplicationQuestion>) {
+    setQuestions((prev) => prev.map((q, idx) => (idx === i ? { ...q, ...patch } : q)))
+  }
+  function removeQuestion(i: number) {
+    setQuestions((prev) => prev.filter((_, idx) => idx !== i))
+  }
+  function moveQuestion(i: number, dir: -1 | 1) {
+    setQuestions((prev) => {
+      const to = i + dir
+      if (to < 0 || to >= prev.length) return prev
+      const next = [...prev]
+      ;[next[i], next[to]] = [next[to], next[i]]
+      return next
+    })
+  }
 
   function toggleAudience(a: string) {
     setAudiences((prev) => (prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a]))
@@ -112,6 +157,15 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
     formData.set('published', String(published))
     formData.set('banner_image_url', bannerUrl)
     formData.set('banner_aspect_ratio', bannerAspectRatio)
+    // ラベル未入力の質問は除外して保存
+    formData.set(
+      'application_questions',
+      JSON.stringify(
+        questions
+          .filter((q) => q.label.trim())
+          .map((q) => ({ ...q, label: q.label.trim(), description: q.description.trim() }))
+      )
+    )
     formData.set('category', category)
     formData.set('target', audiences.join('・'))
     formData.set('capacity', capacity)
@@ -495,6 +549,102 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
           className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y"
           placeholder="例: 当日は動きやすい服装でお越しください。"
         />
+      </div>
+
+      {/* 応募フォームの質問 */}
+      <div className="border-t border-gray-200 pt-6">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          応募フォームの質問
+        </label>
+        <p className="text-xs text-gray-400 mb-4">
+          応募者に入力してもらう項目を設定します。設定しない場合、応募者は質問なしで応募できます。
+        </p>
+
+        {questions.length > 0 && (
+          <div className="space-y-3 mb-4">
+            {questions.map((q, i) => (
+              <div key={q.id} className="rounded-xl border border-gray-200 p-4 bg-gray-50">
+                <div className="flex items-start gap-2 mb-2">
+                  <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold mt-1.5">
+                    {i + 1}
+                  </span>
+                  <input
+                    type="text"
+                    value={q.label}
+                    onChange={(e) => updateQuestion(i, { label: e.target.value })}
+                    placeholder="質問（例: 志望動機）"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  />
+                  <div className="flex items-center gap-0.5 mt-1">
+                    <button
+                      type="button"
+                      onClick={() => moveQuestion(i, -1)}
+                      disabled={i === 0}
+                      aria-label="上へ"
+                      className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:text-gray-700 hover:bg-gray-200 disabled:opacity-30 text-xs"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveQuestion(i, 1)}
+                      disabled={i === questions.length - 1}
+                      aria-label="下へ"
+                      className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:text-gray-700 hover:bg-gray-200 disabled:opacity-30 text-xs"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeQuestion(i)}
+                      aria-label="削除"
+                      className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:text-red-500 hover:bg-red-50 text-xs"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  value={q.description}
+                  onChange={(e) => updateQuestion(i, { description: e.target.value })}
+                  placeholder="補足説明（任意）"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition mb-2"
+                />
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={q.required}
+                    onChange={(e) => updateQuestion(i, { required: e.target.checked })}
+                    className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                  />
+                  <span className="text-xs text-gray-600">必須の質問にする</span>
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* プリセットから追加 */}
+        <div className="flex flex-wrap gap-2 mb-2">
+          {QUESTION_PRESETS.map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              onClick={() => addQuestion(p)}
+              className="px-3 py-1.5 rounded-full border border-gray-300 text-xs font-medium text-gray-600 bg-white hover:border-indigo-400 hover:text-indigo-600 transition-colors"
+            >
+              ＋ {p.label}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => addQuestion()}
+          className="w-full py-2.5 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-indigo-400 hover:text-indigo-500 transition-colors text-sm font-semibold"
+        >
+          ＋ 自由に質問を追加
+        </button>
       </div>
 
       <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">

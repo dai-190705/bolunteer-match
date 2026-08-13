@@ -3,27 +3,37 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+import { ApplicationQuestion } from '@/types'
 
 type Props = {
   programId: string
   programTitle: string
   cancelPolicy: string | null
   notes: string | null
+  questions: ApplicationQuestion[]
 }
 
-export default function ApplyForm({ programId, programTitle, cancelPolicy, notes }: Props) {
+export default function ApplyForm({ programId, programTitle, cancelPolicy, notes, questions }: Props) {
   const router = useRouter()
-  const [motivation, setMotivation] = useState('')
-  const [selfPr, setSelfPr] = useState('')
+  const [answers, setAnswers] = useState<Record<string, string>>({})
   const [agreed, setAgreed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const hasPolicy = cancelPolicy || notes
+  const missingRequired = questions.some((q) => q.required && !answers[q.id]?.trim())
+
+  function setAnswer(id: string, value: string) {
+    setAnswers((prev) => ({ ...prev, [id]: value }))
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (hasPolicy && !agreed) return
+    if (missingRequired) {
+      setError('必須の質問に回答してください。')
+      return
+    }
 
     setLoading(true)
     setError(null)
@@ -36,11 +46,19 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
         return
       }
 
+      // 回答は answers に保存（旧カラムにも先頭2問を入れて互換維持）
+      const cleaned: Record<string, string> = {}
+      for (const q of questions) {
+        const v = answers[q.id]?.trim()
+        if (v) cleaned[q.id] = v
+      }
+
       const { error } = await supabase.from('applications').insert({
         program_id: programId,
         student_id: user.id,
-        motivation: motivation || null,
-        self_pr: selfPr || null,
+        answers: cleaned,
+        motivation: null,
+        self_pr: null,
       })
 
       if (error) {
@@ -63,37 +81,28 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
 
-      {/* 志望動機 */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h2 className="text-base font-semibold text-gray-900 mb-1">
-          💬 志望動機
-          <span className="ml-2 text-xs font-normal text-gray-400">任意</span>
-        </h2>
-        <p className="text-xs text-gray-400 mb-4">このボランティアに応募した理由や、どんなことをしたいかを書いてみよう</p>
-        <textarea
-          value={motivation}
-          onChange={(e) => setMotivation(e.target.value)}
-          rows={5}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y"
-          placeholder="例: 地域の子どもたちと関わる仕事に興味があり、このボランティアを通じて経験を積みたいと思いました。"
-        />
-      </div>
-
-      {/* 自己PR */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h2 className="text-base font-semibold text-gray-900 mb-1">
-          ✨ 自己PR
-          <span className="ml-2 text-xs font-normal text-gray-400">任意</span>
-        </h2>
-        <p className="text-xs text-gray-400 mb-4">自分の強みや経験、アピールしたいことを自由に書いてみよう</p>
-        <textarea
-          value={selfPr}
-          onChange={(e) => setSelfPr(e.target.value)}
-          rows={5}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y"
-          placeholder="例: 小学校からサッカーを続けており、チームワークを大切にすることが得意です。"
-        />
-      </div>
+      {/* パブリッシャーが設定した質問 */}
+      {questions.map((q) => (
+        <div key={q.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <h2 className="text-base font-semibold text-gray-900 mb-1">
+            {q.label}
+            <span
+              className={`ml-2 text-xs font-normal ${q.required ? 'text-red-500' : 'text-gray-400'}`}
+            >
+              {q.required ? '必須' : '任意'}
+            </span>
+          </h2>
+          {q.description && <p className="text-xs text-gray-400 mb-4">{q.description}</p>}
+          <textarea
+            value={answers[q.id] ?? ''}
+            onChange={(e) => setAnswer(q.id, e.target.value)}
+            rows={5}
+            required={q.required}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y"
+            placeholder="回答を入力してください"
+          />
+        </div>
+      ))}
 
       {/* キャンセルポリシー・注意事項 */}
       {hasPolicy && (
@@ -141,7 +150,7 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
 
       <button
         type="submit"
-        disabled={loading || (hasPolicy ? !agreed : false)}
+        disabled={loading || missingRequired || (hasPolicy ? !agreed : false)}
         className="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-base shadow-sm"
       >
         {loading ? '応募中...' : '応募を確定する →'}

@@ -22,6 +22,15 @@ export async function createProgram(formData: FormData) {
 
   const bannerImageUrl = (formData.get('banner_image_url') as string) || null
   const bannerAspectRatio = (formData.get('banner_aspect_ratio') as string) || '16:9'
+
+  const questionsRaw = (formData.get('application_questions') as string) || '[]'
+  let applicationQuestions: unknown[] = []
+  try {
+    const parsed = JSON.parse(questionsRaw)
+    if (Array.isArray(parsed)) applicationQuestions = parsed
+  } catch {
+    applicationQuestions = []
+  }
   const category = (formData.get('category') as string) || null
 
   const capacityRaw = (formData.get('capacity') as string) || null
@@ -52,6 +61,7 @@ export async function createProgram(formData: FormData) {
     publisher_id: user.id,
     banner_image_url: bannerImageUrl,
     banner_aspect_ratio: bannerAspectRatio,
+    application_questions: applicationQuestions,
     category,
     cancel_policy: (formData.get('cancel_policy') as string) || null,
     notes: (formData.get('notes') as string) || null,
@@ -89,6 +99,15 @@ export async function updateProgram(id: string, formData: FormData) {
 
   const bannerImageUrl = (formData.get('banner_image_url') as string) || null
   const bannerAspectRatio = (formData.get('banner_aspect_ratio') as string) || '16:9'
+
+  const questionsRaw = (formData.get('application_questions') as string) || '[]'
+  let applicationQuestions: unknown[] = []
+  try {
+    const parsed = JSON.parse(questionsRaw)
+    if (Array.isArray(parsed)) applicationQuestions = parsed
+  } catch {
+    applicationQuestions = []
+  }
   const category = (formData.get('category') as string) || null
 
   const capacityRaw = (formData.get('capacity') as string) || null
@@ -120,6 +139,7 @@ export async function updateProgram(id: string, formData: FormData) {
       published: formData.get('published') === 'true',
       banner_image_url: bannerImageUrl,
     banner_aspect_ratio: bannerAspectRatio,
+    application_questions: applicationQuestions,
       category,
       cancel_policy: (formData.get('cancel_policy') as string) || null,
       notes: (formData.get('notes') as string) || null,

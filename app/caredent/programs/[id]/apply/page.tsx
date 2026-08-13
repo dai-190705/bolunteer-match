@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
-import { Program } from '@/types'
+import { Program, ApplicationQuestion } from '@/types'
 import ApplyForm from './ApplyForm'
 
 export default async function ApplyPage({
@@ -19,7 +19,7 @@ export default async function ApplyPage({
   // プログラム取得
   const { data: program } = await supabase
     .from('programs')
-    .select('id, title, category, cancel_policy, notes, capacity')
+    .select('id, title, category, cancel_policy, notes, capacity, application_questions')
     .eq('id', id)
     .eq('published', true)
     .single()
@@ -68,6 +68,7 @@ export default async function ApplyPage({
         programTitle={program.title}
         cancelPolicy={program.cancel_policy ?? null}
         notes={program.notes ?? null}
+        questions={(program.application_questions as ApplicationQuestion[] | null) ?? []}
       />
     </div>
   )

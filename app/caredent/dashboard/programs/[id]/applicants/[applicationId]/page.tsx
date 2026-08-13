@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { ApplicationQuestion } from '@/types'
 import { markAsCompleted } from '@/app/caredent/dashboard/actions'
 
 function formatDate(dateStr: string) {
@@ -23,7 +24,7 @@ export default async function ApplicantDetailPage({
   // 自分のプログラムか確認
   const { data: program } = await supabase
     .from('programs')
-    .select('id, title')
+    .select('id, title, application_questions')
     .eq('id', id)
     .eq('publisher_id', user.id)
     .single()
@@ -55,6 +56,20 @@ export default async function ApplicantDetailPage({
     email = authUser?.email ?? ''
   } catch {
     // ignore
+  }
+
+  // 回答表示用（質問定義に沿って並べる。旧データは motivation / self_pr から補完）
+  const questions = (program.application_questions as ApplicationQuestion[] | null) ?? []
+  const answers = (app.answers as Record<string, string> | null) ?? {}
+  const answerItems: { label: string; value: string }[] = questions.map((q) => ({
+    label: q.label,
+    value: answers[q.id] ?? '',
+  }))
+  // 旧形式のみのデータ（answers が空）は従来の2項目を表示
+  if (Object.keys(answers).length === 0 && (app.motivation || app.self_pr)) {
+    answerItems.length = 0
+    if (app.motivation) answerItems.push({ label: '志望動機', value: app.motivation })
+    if (app.self_pr) answerItems.push({ label: '自己PR', value: app.self_pr })
   }
 
   const markAction = markAsCompleted.bind(null, app.id)
@@ -127,25 +142,23 @@ export default async function ApplicantDetailPage({
           </dl>
         </div>
 
-        {/* 志望動機 */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">💬 志望動機</h2>
-          {app.motivation ? (
-            <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">{app.motivation}</p>
-          ) : (
-            <p className="text-sm text-gray-400 italic">未記入</p>
-          )}
-        </div>
-
-        {/* 自己PR */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">✨ 自己PR</h2>
-          {app.self_pr ? (
-            <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">{app.self_pr}</p>
-          ) : (
-            <p className="text-sm text-gray-400 italic">未記入</p>
-          )}
-        </div>
+        {/* 応募フォームの回答 */}
+        {answerItems.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <p className="text-sm text-gray-400 italic">応募フォームの質問は設定されていません</p>
+          </div>
+        ) : (
+          answerItems.map((item) => (
+            <div key={item.label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+              <h2 className="text-sm font-semibold text-gray-500 tracking-wide mb-3">{item.label}</h2>
+              {item.value ? (
+                <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">{item.value}</p>
+              ) : (
+                <p className="text-sm text-gray-400 italic">未記入</p>
+              )}
+            </div>
+          ))
+        )}
 
         {/* 操作 */}
         {app.status === 'applied' && (

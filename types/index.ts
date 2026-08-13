@@ -1,3 +1,10 @@
+export type ApplicationQuestion = {
+  id: string
+  label: string
+  description: string
+  required: boolean
+}
+
 export type Application = {
   id: string
   program_id: string
@@ -7,6 +14,7 @@ export type Application = {
   completed_at: string | null
   motivation: string | null
   self_pr: string | null
+  answers: Record<string, string> | null
   // joined
   programs?: Program
 }
@@ -25,6 +33,7 @@ export type Program = {
   updated_at: string
   banner_image_url: string | null
   banner_aspect_ratio: '16:9' | '4:5' | null
+  application_questions: ApplicationQuestion[] | null
   category: '1day' | '中期' | '長期' | null
   cancel_policy: string | null
   notes: string | null
