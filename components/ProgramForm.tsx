@@ -74,6 +74,7 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
   }
 
   const [bannerUrl, setBannerUrl] = useState<string>(program?.banner_image_url ?? '')
+  const [bannerAspectRatio, setBannerAspectRatio] = useState<string>(program?.banner_aspect_ratio ?? '16:9')
   const [bannerUploading, setBannerUploading] = useState(false)
   const [bannerError, setBannerError] = useState<string | null>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
@@ -110,6 +111,7 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
     setLoading(true)
     formData.set('published', String(published))
     formData.set('banner_image_url', bannerUrl)
+    formData.set('banner_aspect_ratio', bannerAspectRatio)
     formData.set('category', category)
     formData.set('target', audiences.join('・'))
     formData.set('capacity', capacity)
@@ -141,12 +143,39 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
 
   return (
     <form action={handleSubmit} className="space-y-6">
-      {/* バナー画像（16:9） */}
+      {/* バナー画像 */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
           バナー画像
         </label>
-        <div className="relative w-full aspect-[16/9] bg-gray-100 rounded-lg border border-gray-200 overflow-hidden mb-3">
+
+        {/* アスペクト比選択 */}
+        <div className="flex gap-3 mb-3">
+          {(['16:9', '4:5'] as const).map((ratio) => (
+            <label key={ratio} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="banner_aspect_ratio_radio"
+                value={ratio}
+                checked={bannerAspectRatio === ratio}
+                onChange={() => setBannerAspectRatio(ratio)}
+                className="text-indigo-600 focus:ring-indigo-500"
+              />
+              <span className="text-sm text-gray-700">
+                {ratio}
+                <span className="text-gray-400 ml-1">
+                  ({ratio === '16:9' ? '横長' : '縦長'})
+                </span>
+              </span>
+            </label>
+          ))}
+        </div>
+
+        <div
+          className={`relative bg-gray-100 rounded-lg border border-gray-200 overflow-hidden mb-3 ${
+            bannerAspectRatio === '4:5' ? 'w-full max-w-xs aspect-[4/5]' : 'w-full aspect-[16/9]'
+          }`}
+        >
           {bannerUrl ? (
             <>
               <img
@@ -164,7 +193,7 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-              16:9 画像
+              {bannerAspectRatio} 画像
             </div>
           )}
         </div>

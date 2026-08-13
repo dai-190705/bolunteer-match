@@ -178,7 +178,11 @@ export default async function Home({
                   className="block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md active:scale-[0.98] transition-all"
                 >
                   {/* サムネイル */}
-                  <div className="relative w-full aspect-video bg-gray-100">
+                  <div
+                    className={`relative w-full bg-gray-100 ${
+                      program.banner_aspect_ratio === '4:5' ? 'aspect-[4/5]' : 'aspect-video'
+                    }`}
+                  >
                     {program.banner_image_url ? (
                       <img
                         src={program.banner_image_url}

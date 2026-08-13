@@ -112,13 +112,23 @@ export default async function ProgramDetailPage({
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {program.banner_image_url && (
-          <div className="w-full aspect-[16/9] overflow-hidden">
-            <img
-              src={program.banner_image_url}
-              alt={program.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          program.banner_aspect_ratio === '4:5' ? (
+            <div className="w-full max-w-sm mx-auto aspect-[4/5] overflow-hidden">
+              <img
+                src={program.banner_image_url}
+                alt={program.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="w-full aspect-[16/9] overflow-hidden">
+              <img
+                src={program.banner_image_url}
+                alt={program.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )
         )}
 
         <div className="p-8">
