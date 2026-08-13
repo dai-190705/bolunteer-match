@@ -80,7 +80,8 @@ export default async function Home({
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ヒーローバー */}
-      <div style={{ backgroundColor: '#4592c0' }} className="px-4 pt-5 pb-4">
+      <div style={{ backgroundColor: '#4592c0' }} className="pt-5 pb-4">
+        <div className="max-w-3xl mx-auto px-4">
         {/* 検索バー */}
         <form method="GET" action="/caredent" className="relative">
           <input
@@ -141,17 +142,20 @@ export default async function Home({
             </svg>
           </Link>
         </div>
+        </div>
       </div>
 
       {/* 件数バー */}
-      <div className="px-4 py-3 flex items-center justify-between bg-white border-b border-gray-100">
-        <span className="text-sm text-gray-500">
-          <span className="font-semibold text-gray-800">{totalCount}</span> 件のプログラム
-          {totalPages > 1 && (
-            <span className="ml-2 text-gray-400">（{page} / {totalPages} ページ）</span>
-          )}
-        </span>
-        <span className="text-xs text-gray-400">締切順</span>
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+          <span className="text-sm text-gray-500">
+            <span className="font-semibold text-gray-800">{totalCount}</span> 件のプログラム
+            {totalPages > 1 && (
+              <span className="ml-2 text-gray-400">（{page} / {totalPages} ページ）</span>
+            )}
+          </span>
+          <span className="text-xs text-gray-400">締切順</span>
+        </div>
       </div>
 
       {/* カードグリッド */}
@@ -163,7 +167,7 @@ export default async function Home({
             <p className="text-sm mt-1">条件を変えて検索してみてください</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-3xl mx-auto">
             {programList.map((program) => {
               const past = isDeadlinePast(program.deadline)
               const cat = program.category ? CATEGORY_LABELS[program.category] : null
@@ -201,20 +205,20 @@ export default async function Home({
                   </div>
 
                   {/* カード本文 */}
-                  <div className="p-3">
-                    <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 mb-1.5">
+                  <div className="p-4">
+                    <p className="text-base font-bold text-gray-900 leading-snug line-clamp-2 mb-2">
                       {program.title}
                     </p>
 
                     {cat && (
-                      <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-1.5 ${cat.bg} ${cat.color}`}>
+                      <span className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full mb-2 ${cat.bg} ${cat.color}`}>
                         {cat.label}
                       </span>
                     )}
 
                     {program.target && (
-                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                        <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-0.5">
+                        <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         <span className="line-clamp-1">{program.target}</span>
@@ -222,11 +226,11 @@ export default async function Home({
                     )}
 
                     {program.tags && program.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {program.tags.slice(0, 2).map((tag) => (
+                      <div className="flex flex-wrap gap-1.5 mt-2.5">
+                        {program.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
-                            className="text-[10px] bg-[#e8f4fc] text-[#4592c0] px-1.5 py-0.5 rounded-full font-medium"
+                            className="text-xs bg-[#e8f4fc] text-[#4592c0] px-2 py-0.5 rounded-full font-medium"
                           >
                             {tag}
                           </span>
