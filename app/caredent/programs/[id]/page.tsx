@@ -212,7 +212,7 @@ export default async function ProgramDetailPage({
               href={`/caredent/login?next=/caredent/programs/${id}/apply`}
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors text-base shadow-sm"
             >
-              応募するにはログインが必要です
+              応募
             </Link>
           ) : alreadyApplied ? (
             <button
