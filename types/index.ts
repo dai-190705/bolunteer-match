@@ -8,13 +8,17 @@ export type ApplicationQuestion = {
 export type Application = {
   id: string
   program_id: string
-  student_id: string
+  student_id: string | null
   status: 'applied' | 'completed'
   applied_at: string
   completed_at: string | null
   motivation: string | null
   self_pr: string | null
   answers: Record<string, string> | null
+  guest_name: string | null
+  guest_school: string | null
+  guest_age: number | null
+  guest_email: string | null
   // joined
   programs?: Program
 }

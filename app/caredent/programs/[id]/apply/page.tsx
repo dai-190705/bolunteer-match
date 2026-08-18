@@ -12,9 +12,8 @@ export default async function ApplyPage({
   const { id } = await params
   const supabase = await createClient()
 
-  // ログインチェック
+  // ログインは任意（未ログインでもゲストとして応募可能）
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect(`/caredent/login?next=/caredent/programs/${id}/apply`)
 
   // プログラム取得
   const { data: program } = await supabase
@@ -26,15 +25,17 @@ export default async function ApplyPage({
 
   if (!program) notFound()
 
-  // すでに応募済みなら詳細ページへ
-  const { data: existing } = await supabase
-    .from('applications')
-    .select('id')
-    .eq('program_id', id)
-    .eq('student_id', user.id)
-    .maybeSingle()
+  // ログイン済みで、すでに応募済みなら詳細ページへ
+  if (user) {
+    const { data: existing } = await supabase
+      .from('applications')
+      .select('id')
+      .eq('program_id', id)
+      .eq('student_id', user.id)
+      .maybeSingle()
 
-  if (existing) redirect(`/caredent/programs/${id}`)
+    if (existing) redirect(`/caredent/programs/${id}`)
+  }
 
   // 定員チェック
   if (program.capacity != null) {
@@ -69,6 +70,7 @@ export default async function ApplyPage({
         cancelPolicy={program.cancel_policy ?? null}
         notes={program.notes ?? null}
         questions={(program.application_questions as ApplicationQuestion[] | null) ?? []}
+        isLoggedIn={!!user}
       />
     </div>
   )

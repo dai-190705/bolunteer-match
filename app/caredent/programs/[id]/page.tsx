@@ -217,14 +217,7 @@ export default async function ProgramDetailPage({
           </div>
 
           {/* Apply button section */}
-          {!userId ? (
-            <Link
-              href={`/caredent/login?next=/caredent/programs/${id}/apply`}
-              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors text-base shadow-sm"
-            >
-              応募
-            </Link>
-          ) : alreadyApplied ? (
+          {alreadyApplied ? (
             <button
               disabled
               className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-gray-200 text-gray-500 font-semibold rounded-xl cursor-not-allowed text-base"
@@ -239,12 +232,19 @@ export default async function ProgramDetailPage({
               満員のため応募を締め切りました
             </button>
           ) : (
-            <Link
-              href={`/caredent/programs/${id}/apply`}
-              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors text-base shadow-sm"
-            >
-              応募する →
-            </Link>
+            <div>
+              <Link
+                href={`/caredent/programs/${id}/apply`}
+                className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors text-base shadow-sm"
+              >
+                応募する →
+              </Link>
+              {!userId && (
+                <p className="text-xs text-gray-400 mt-2">
+                  アカウントがなくても応募できます
+                </p>
+              )}
+            </div>
           )}
         </div>
       </div>

@@ -66,9 +66,9 @@ export default async function ApplicantsPage({
       .order('applied_at', { ascending: false })
 
     if (appData && appData.length > 0) {
-      const studentIds = appData.map((a) => a.student_id)
+      const studentIds = appData.map((a) => a.student_id).filter(Boolean) as string[]
 
-      // プロフィール取得
+      // プロフィール取得（ゲストのみの場合は空）
       const { data: profileData } = await supabase
         .from('student_profiles')
         .select('id, last_name, first_name, last_name_kana, first_name_kana, school')
@@ -85,8 +85,8 @@ export default async function ApplicantsPage({
 
       applications = appData.map((a) => ({
         ...a,
-        student_profiles: profileMap[a.student_id] ?? null,
-        email: emailMap[a.student_id] ?? '',
+        student_profiles: a.student_id ? profileMap[a.student_id] ?? null : null,
+        email: a.student_id ? emailMap[a.student_id] ?? '' : a.guest_email ?? '',
       })) as ApplicationWithProfile[]
     }
   } catch {
@@ -95,11 +95,14 @@ export default async function ApplicantsPage({
 
   // CSV用データ
   const csvData = applications.map((app) => ({
-    姓: app.student_profiles?.last_name ?? '',
-    名: app.student_profiles?.first_name ?? '',
+    氏名: app.student_profiles
+      ? `${app.student_profiles.last_name} ${app.student_profiles.first_name}`
+      : app.guest_name ?? '',
     姓カナ: app.student_profiles?.last_name_kana ?? '',
     名カナ: app.student_profiles?.first_name_kana ?? '',
-    所属学校: app.student_profiles?.school ?? '',
+    所属学校: app.student_profiles?.school ?? app.guest_school ?? '',
+    年齢: app.guest_age != null ? String(app.guest_age) : '',
+    応募方法: app.student_id ? 'アカウント' : 'ゲスト',
     メールアドレス: app.email ?? '',
     応募日時: formatDate(app.applied_at),
     ステータス: app.status === 'completed' ? '参加済み' : '応募中',
@@ -172,14 +175,19 @@ export default async function ApplicantsPage({
                             {profile.last_name_kana} {profile.first_name_kana}
                           </div>
                         </div>
+                      ) : app.guest_name ? (
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{app.guest_name}</div>
+                          <span className="inline-block mt-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 font-medium">
+                            ゲスト
+                          </span>
+                        </div>
                       ) : (
-                        <span className="text-xs text-gray-400 font-mono">
-                          {app.student_id.slice(0, 8)}...
-                        </span>
+                        <span className="text-xs text-gray-400">—</span>
                       )}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
-                      {profile?.school ?? '—'}
+                      {profile?.school ?? app.guest_school ?? '—'}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
                       {app.email || '—'}

@@ -41,21 +41,26 @@ export default async function ApplicantDetailPage({
 
   if (!app) notFound()
 
-  // 学生プロフィール取得
-  const { data: profile } = await supabase
-    .from('student_profiles')
-    .select('last_name, first_name, last_name_kana, first_name_kana, school, nickname, user_handle')
-    .eq('id', app.student_id)
-    .single()
+  // 学生プロフィール取得（ゲスト応募の場合は無し）
+  const isGuest = !app.student_id
+  const { data: profile } = isGuest
+    ? { data: null }
+    : await supabase
+        .from('student_profiles')
+        .select('last_name, first_name, last_name_kana, first_name_kana, school, nickname, user_handle')
+        .eq('id', app.student_id)
+        .maybeSingle()
 
-  // メールアドレス取得
-  let email = ''
-  try {
-    const adminClient = createAdminClient()
-    const { data: { user: authUser } } = await adminClient.auth.admin.getUserById(app.student_id)
-    email = authUser?.email ?? ''
-  } catch {
-    // ignore
+  // メールアドレス取得（ゲストは応募時の入力値）
+  let email = app.guest_email ?? ''
+  if (!isGuest) {
+    try {
+      const adminClient = createAdminClient()
+      const { data: { user: authUser } } = await adminClient.auth.admin.getUserById(app.student_id)
+      email = authUser?.email ?? ''
+    } catch {
+      // ignore
+    }
   }
 
   // 回答表示用（質問定義に沿って並べる。旧データは motivation / self_pr から補完）
@@ -87,8 +92,15 @@ export default async function ApplicantDetailPage({
         <div>
           <p className="text-xs font-medium text-indigo-600 uppercase tracking-wide mb-1">応募者詳細</p>
           <h1 className="text-2xl font-bold text-gray-900">
-            {profile ? `${profile.last_name} ${profile.first_name}` : '（名前未登録）'}
+            {profile
+              ? `${profile.last_name} ${profile.first_name}`
+              : app.guest_name || '（名前未登録）'}
           </h1>
+          {isGuest && (
+            <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 font-medium">
+              ゲスト応募（アカウントなし）
+            </span>
+          )}
           {profile && (
             <p className="text-sm text-gray-400 mt-0.5">
               {profile.last_name_kana} {profile.first_name_kana}
@@ -111,8 +123,14 @@ export default async function ApplicantDetailPage({
           <dl className="space-y-3">
             <div className="flex gap-4">
               <dt className="text-sm text-gray-500 w-28 flex-shrink-0">所属学校</dt>
-              <dd className="text-sm text-gray-900">{profile?.school || '—'}</dd>
+              <dd className="text-sm text-gray-900">{profile?.school || app.guest_school || '—'}</dd>
             </div>
+            {app.guest_age != null && (
+              <div className="flex gap-4">
+                <dt className="text-sm text-gray-500 w-28 flex-shrink-0">年齢</dt>
+                <dd className="text-sm text-gray-900">{app.guest_age} 歳</dd>
+              </div>
+            )}
             <div className="flex gap-4">
               <dt className="text-sm text-gray-500 w-28 flex-shrink-0">メールアドレス</dt>
               <dd className="text-sm text-gray-900">{email || '—'}</dd>
