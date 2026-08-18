@@ -169,7 +169,6 @@ export default async function Home({
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-3xl mx-auto">
             {programList.map((program) => {
-              const past = isDeadlinePast(program.deadline)
               const cat = program.category ? CATEGORY_LABELS[program.category] : null
               return (
                 <Link
@@ -177,36 +176,43 @@ export default async function Home({
                   href={`/caredent/programs/${program.id}`}
                   className="block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md active:scale-[0.98] transition-all"
                 >
-                  {/* サムネイル */}
-                  <div
-                    className={`relative w-full bg-gray-100 ${
-                      program.banner_aspect_ratio === '4:5' ? 'aspect-[4/5]' : 'aspect-video'
-                    }`}
-                  >
-                    {program.banner_image_url ? (
-                      <img
-                        src={program.banner_image_url}
-                        alt={program.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-gray-300 text-4xl">🌱</span>
-                      </div>
-                    )}
-                    {/* 締切バッジ */}
-                    {program.deadline && (
+                  {/* サムネイル（スマホ=4:5 / PC=16:9、無い方はもう一方で代替） */}
+                  {(() => {
+                    const wide = program.banner_image_url || program.banner_image_tall_url
+                    const tall = program.banner_image_tall_url || program.banner_image_url
+                    const past = isDeadlinePast(program.deadline)
+                    const badge = program.deadline && (
                       <span
                         className={`absolute top-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full ${
-                          past
-                            ? 'bg-gray-600/80 text-white'
-                            : 'bg-red-500/90 text-white'
+                          past ? 'bg-gray-600/80 text-white' : 'bg-red-500/90 text-white'
                         }`}
                       >
                         {past ? '締切済' : `〆${formatDeadline(program.deadline)}`}
                       </span>
-                    )}
-                  </div>
+                    )
+                    if (!wide && !tall) {
+                      return (
+                        <div className="relative w-full aspect-video bg-gray-100 flex items-center justify-center">
+                          <span className="text-gray-300 text-4xl">🌱</span>
+                          {badge}
+                        </div>
+                      )
+                    }
+                    return (
+                      <>
+                        {/* スマホ：4:5 */}
+                        <div className="relative w-full aspect-[4/5] bg-gray-100 sm:hidden">
+                          <img src={tall as string} alt={program.title} className="w-full h-full object-cover" />
+                          {badge}
+                        </div>
+                        {/* PC：16:9 */}
+                        <div className="relative w-full aspect-video bg-gray-100 hidden sm:block">
+                          <img src={wide as string} alt={program.title} className="w-full h-full object-cover" />
+                          {badge}
+                        </div>
+                      </>
+                    )
+                  })()}
 
                   {/* カード本文 */}
                   <div className="p-4">

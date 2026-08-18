@@ -109,25 +109,23 @@ export default async function ProgramDetailPage({
       </Link>
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        {program.banner_image_url && (
-          program.banner_aspect_ratio === '4:5' ? (
-            <div className="w-full max-w-sm mx-auto aspect-[4/5] overflow-hidden">
-              <img
-                src={program.banner_image_url}
-                alt={program.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ) : (
-            <div className="w-full aspect-[16/9] overflow-hidden">
-              <img
-                src={program.banner_image_url}
-                alt={program.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
+        {(() => {
+          const wide = program.banner_image_url || program.banner_image_tall_url
+          const tall = program.banner_image_tall_url || program.banner_image_url
+          if (!wide && !tall) return null
+          return (
+            <>
+              {/* スマホ：4:5 */}
+              <div className="w-full aspect-[4/5] overflow-hidden sm:hidden">
+                <img src={tall as string} alt={program.title} className="w-full h-full object-cover" />
+              </div>
+              {/* PC：16:9 */}
+              <div className="w-full aspect-[16/9] overflow-hidden hidden sm:block">
+                <img src={wide as string} alt={program.title} className="w-full h-full object-cover" />
+              </div>
+            </>
           )
-        )}
+        })()}
 
         <div className="p-8">
           <div className="mb-6">

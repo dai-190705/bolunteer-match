@@ -21,7 +21,7 @@ export async function createProgram(formData: FormData) {
   const deadline = (formData.get('deadline') as string) || null
 
   const bannerImageUrl = (formData.get('banner_image_url') as string) || null
-  const bannerAspectRatio = (formData.get('banner_aspect_ratio') as string) || '16:9'
+  const bannerImageTallUrl = (formData.get('banner_image_tall_url') as string) || null
 
   const questionsRaw = (formData.get('application_questions') as string) || '[]'
   let applicationQuestions: unknown[] = []
@@ -60,7 +60,7 @@ export async function createProgram(formData: FormData) {
     published: formData.get('published') === 'true',
     publisher_id: user.id,
     banner_image_url: bannerImageUrl,
-    banner_aspect_ratio: bannerAspectRatio,
+    banner_image_tall_url: bannerImageTallUrl,
     application_questions: applicationQuestions,
     category,
     cancel_policy: (formData.get('cancel_policy') as string) || null,
@@ -98,7 +98,7 @@ export async function updateProgram(id: string, formData: FormData) {
   const deadline = (formData.get('deadline') as string) || null
 
   const bannerImageUrl = (formData.get('banner_image_url') as string) || null
-  const bannerAspectRatio = (formData.get('banner_aspect_ratio') as string) || '16:9'
+  const bannerImageTallUrl = (formData.get('banner_image_tall_url') as string) || null
 
   const questionsRaw = (formData.get('application_questions') as string) || '[]'
   let applicationQuestions: unknown[] = []
@@ -138,7 +138,7 @@ export async function updateProgram(id: string, formData: FormData) {
       tags: tags.length > 0 ? tags : null,
       published: formData.get('published') === 'true',
       banner_image_url: bannerImageUrl,
-    banner_aspect_ratio: bannerAspectRatio,
+    banner_image_tall_url: bannerImageTallUrl,
     application_questions: applicationQuestions,
       category,
       cancel_policy: (formData.get('cancel_policy') as string) || null,

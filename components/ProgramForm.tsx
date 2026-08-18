@@ -118,23 +118,24 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
     })
   }
 
+  // バナー画像：16:9（PC用）と 4:5（スマホ用）の2枚
   const [bannerUrl, setBannerUrl] = useState<string>(program?.banner_image_url ?? '')
-  const [bannerAspectRatio, setBannerAspectRatio] = useState<string>(program?.banner_aspect_ratio ?? '16:9')
-  const [bannerUploading, setBannerUploading] = useState(false)
+  const [bannerTallUrl, setBannerTallUrl] = useState<string>(program?.banner_image_tall_url ?? '')
+  const [uploadingSlot, setUploadingSlot] = useState<'wide' | 'tall' | null>(null)
   const [bannerError, setBannerError] = useState<string | null>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
+  const bannerTallInputRef = useRef<HTMLInputElement>(null)
 
-  async function handleBannerChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const bannerUploading = uploadingSlot !== null
 
-    setBannerUploading(true)
+  async function uploadBanner(slot: 'wide' | 'tall', file: File) {
+    setUploadingSlot(slot)
     setBannerError(null)
 
     try {
       const supabase = createClient()
       const ext = file.name.split('.').pop() ?? 'png'
-      const filename = `banner-${Date.now()}.${ext}`
+      const filename = `banner-${slot}-${Date.now()}.${ext}`
 
       const { error: uploadError } = await supabase.storage
         .from('banners')
@@ -146,9 +147,10 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
       }
 
       const { data } = supabase.storage.from('banners').getPublicUrl(filename)
-      setBannerUrl(data.publicUrl)
+      if (slot === 'wide') setBannerUrl(data.publicUrl)
+      else setBannerTallUrl(data.publicUrl)
     } finally {
-      setBannerUploading(false)
+      setUploadingSlot(null)
     }
   }
 
@@ -156,7 +158,7 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
     setLoading(true)
     formData.set('published', String(published))
     formData.set('banner_image_url', bannerUrl)
-    formData.set('banner_aspect_ratio', bannerAspectRatio)
+    formData.set('banner_image_tall_url', bannerTallUrl)
     // ラベル未入力の質問は除外して保存
     formData.set(
       'application_questions',
@@ -197,74 +199,90 @@ export default function ProgramForm({ program, action, submitLabel }: Props) {
 
   return (
     <form action={handleSubmit} className="space-y-6">
-      {/* バナー画像 */}
+      {/* バナー画像（PC用16:9 / スマホ用4:5） */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           バナー画像
         </label>
+        <p className="text-xs text-gray-400 mb-4">
+          PCでは16:9、スマホでは4:5が表示されます。片方だけの登録でも、もう一方の端末にはその画像が表示されます。
+        </p>
 
-        {/* アスペクト比選択 */}
-        <div className="flex gap-3 mb-3">
-          {(['16:9', '4:5'] as const).map((ratio) => (
-            <label key={ratio} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="banner_aspect_ratio_radio"
-                value={ratio}
-                checked={bannerAspectRatio === ratio}
-                onChange={() => setBannerAspectRatio(ratio)}
-                className="text-indigo-600 focus:ring-indigo-500"
-              />
-              <span className="text-sm text-gray-700">
-                {ratio}
-                <span className="text-gray-400 ml-1">
-                  ({ratio === '16:9' ? '横長' : '縦長'})
-                </span>
-              </span>
-            </label>
-          ))}
-        </div>
-
-        <div
-          className={`relative bg-gray-100 rounded-lg border border-gray-200 overflow-hidden mb-3 ${
-            bannerAspectRatio === '4:5' ? 'w-full max-w-xs aspect-[4/5]' : 'w-full aspect-[16/9]'
-          }`}
-        >
-          {bannerUrl ? (
-            <>
-              <img
-                src={bannerUrl}
-                alt="バナープレビュー"
-                className="w-full h-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => { setBannerUrl(''); if (bannerInputRef.current) bannerInputRef.current.value = '' }}
-                className="absolute top-2 right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-gray-500 hover:text-red-500 shadow text-xs border border-gray-200"
-              >
-                ✕
-              </button>
-            </>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-              {bannerAspectRatio} 画像
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* 16:9（PC用） */}
+          <div>
+            <p className="text-xs font-semibold text-gray-600 mb-2">
+              16:9（PC用）
+            </p>
+            <div className="relative w-full aspect-[16/9] bg-gray-100 rounded-lg border border-gray-200 overflow-hidden mb-2">
+              {bannerUrl ? (
+                <>
+                  <img src={bannerUrl} alt="16:9 バナープレビュー" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => { setBannerUrl(''); if (bannerInputRef.current) bannerInputRef.current.value = '' }}
+                    className="absolute top-2 right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-gray-500 hover:text-red-500 shadow text-xs border border-gray-200"
+                  >
+                    ✕
+                  </button>
+                </>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                  16:9 画像
+                </div>
+              )}
             </div>
-          )}
+            <input
+              ref={bannerInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadBanner('wide', f) }}
+              disabled={bannerUploading}
+              className="block w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
+            />
+            {uploadingSlot === 'wide' && (
+              <p className="text-xs text-indigo-500 mt-1">アップロード中...</p>
+            )}
+          </div>
+
+          {/* 4:5（スマホ用） */}
+          <div>
+            <p className="text-xs font-semibold text-gray-600 mb-2">
+              4:5（スマホ用）
+            </p>
+            <div className="relative w-full max-w-[200px] aspect-[4/5] bg-gray-100 rounded-lg border border-gray-200 overflow-hidden mb-2">
+              {bannerTallUrl ? (
+                <>
+                  <img src={bannerTallUrl} alt="4:5 バナープレビュー" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => { setBannerTallUrl(''); if (bannerTallInputRef.current) bannerTallInputRef.current.value = '' }}
+                    className="absolute top-2 right-2 bg-white rounded-full w-6 h-6 flex items-center justify-center text-gray-500 hover:text-red-500 shadow text-xs border border-gray-200"
+                  >
+                    ✕
+                  </button>
+                </>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                  4:5 画像
+                </div>
+              )}
+            </div>
+            <input
+              ref={bannerTallInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadBanner('tall', f) }}
+              disabled={bannerUploading}
+              className="block w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
+            />
+            {uploadingSlot === 'tall' && (
+              <p className="text-xs text-indigo-500 mt-1">アップロード中...</p>
+            )}
+          </div>
         </div>
-        <input
-          ref={bannerInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={handleBannerChange}
-          disabled={bannerUploading}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
-        />
-        {bannerUploading && (
-          <p className="text-xs text-indigo-500 mt-1">アップロード中...</p>
-        )}
-        {bannerError && (
-          <p className="text-xs text-red-500 mt-1">{bannerError}</p>
-        )}
+
+        {bannerError && <p className="text-xs text-red-500 mt-2">{bannerError}</p>}
       </div>
 
       {/* カテゴリ */}
