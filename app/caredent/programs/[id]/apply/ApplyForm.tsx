@@ -89,13 +89,15 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
         if (error.code === '23505') {
           setError('すでにこのボランティアに応募済みです。')
         } else {
+          console.error('application insert failed:', error)
           throw error
         }
         return
       }
 
       router.push(`/caredent/programs/${programId}?applied=1`)
-    } catch {
+    } catch (e) {
+      console.error('application error:', e)
       setError('応募に失敗しました。もう一度お試しください。')
     } finally {
       setLoading(false)
