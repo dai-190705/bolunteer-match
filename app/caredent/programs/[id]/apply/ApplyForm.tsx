@@ -106,7 +106,7 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
         }
       }
 
-      router.push(`/caredent/programs/${programId}?applied=1`)
+      router.push(`/caredent/programs/${programId}/apply/complete`)
     } catch (e) {
       console.error('application error:', e)
       setError('応募に失敗しました。もう一度お試しください。')
