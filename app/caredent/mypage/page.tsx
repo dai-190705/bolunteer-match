@@ -2,12 +2,14 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { Application } from '@/types'
+import AuthorAvatar from '../components/AuthorAvatar'
 
 type StudentProfile = {
   last_name: string | null
   first_name: string | null
   nickname: string | null
   user_handle: string | null
+  avatar_url: string | null
 }
 
 export default async function MyPage() {
@@ -28,7 +30,7 @@ export default async function MyPage() {
     const supabase = await createClient()
     const { data } = await supabase
       .from('student_profiles')
-      .select('last_name, first_name, nickname, user_handle')
+      .select('last_name, first_name, nickname, user_handle, avatar_url')
       .eq('id', user.id)
       .maybeSingle()
     profile = data as StudentProfile | null
@@ -83,10 +85,8 @@ export default async function MyPage() {
       {/* プロフィールヘッダー */}
       <div className="flex flex-col items-center text-center">
         {/* アバター（初期アイコン） */}
-        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-[#4592c0] to-[#6db3d8] flex items-center justify-center shadow-md ring-4 ring-white">
-          <svg className="w-14 h-14 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z" />
-          </svg>
+        <div className="rounded-full shadow-md ring-4 ring-white">
+          <AuthorAvatar size={112} imageUrl={profile?.avatar_url} />
         </div>
 
         {/* 氏名・ハンドル */}

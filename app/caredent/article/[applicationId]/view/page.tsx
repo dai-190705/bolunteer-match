@@ -32,11 +32,11 @@ async function getArticle(applicationId: string) {
   else programTitle = programs?.title ?? ''
 
   // 執筆者の公開プロフィール（ニックネーム・ハンドルのみ）
-  let author: { id: string; nickname: string | null; user_handle: string | null } | null = null
+  let author: { id: string; nickname: string | null; user_handle: string | null; avatar_url: string | null } | null = null
   if (diary.student_id) {
     const { data: authorData } = await supabase
       .from('author_public_profiles')
-      .select('id, nickname, user_handle')
+      .select('id, nickname, user_handle, avatar_url')
       .eq('id', diary.student_id)
       .maybeSingle()
     author = authorData ?? null
@@ -143,7 +143,7 @@ export default async function PublicArticlePage({
               href={`/caredent/${author.user_handle || author.id}`}
               className="mt-4 inline-flex items-center gap-3 rounded-full pr-4 hover:bg-gray-50 transition-colors -ml-0.5"
             >
-              <AuthorAvatar size={40} />
+              <AuthorAvatar size={40} imageUrl={author.avatar_url} />
               <span className="min-w-0">
                 <span className="block text-sm font-semibold text-gray-900 leading-tight">{authorName}</span>
                 {author.user_handle && (
@@ -152,6 +152,11 @@ export default async function PublicArticlePage({
               </span>
             </Link>
           )}
+
+          {/* いいね */}
+          <div className="mt-5">
+            <LikeButton applicationId={applicationId} userId={user?.id ?? null} initialCount={initialLikeCount} />
+          </div>
         </header>
 
         {/* 本文 */}
@@ -163,11 +168,6 @@ export default async function PublicArticlePage({
           )}
         </div>
       </article>
-
-      {/* いいね */}
-      <div className="mt-10 flex justify-center">
-        <LikeButton applicationId={applicationId} userId={user?.id ?? null} initialCount={initialLikeCount} />
-      </div>
 
       {/* コメント */}
       <div className="mt-8 pt-8 border-t border-gray-200">

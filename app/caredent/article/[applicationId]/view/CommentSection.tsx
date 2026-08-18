@@ -12,7 +12,7 @@ type Comment = {
   created_at: string
 }
 
-type ProfileMap = Record<string, { nickname: string | null; user_handle: string | null }>
+type ProfileMap = Record<string, { nickname: string | null; user_handle: string | null; avatar_url: string | null }>
 
 function formatDateTime(iso: string) {
   const d = new Date(iso)
@@ -47,10 +47,10 @@ export default function CommentSection({
     if (ids.length > 0) {
       const { data: profs } = await supabase
         .from('author_public_profiles')
-        .select('id, nickname, user_handle')
+        .select('id, nickname, user_handle, avatar_url')
         .in('id', ids)
       const map: ProfileMap = {}
-      for (const p of profs ?? []) map[p.id] = { nickname: p.nickname, user_handle: p.user_handle }
+      for (const p of profs ?? []) map[p.id] = { nickname: p.nickname, user_handle: p.user_handle, avatar_url: p.avatar_url }
       setProfiles(map)
     }
     setLoading(false)
@@ -146,7 +146,7 @@ export default function CommentSection({
           {comments.map((c) => (
             <li key={c.id} className="flex items-start gap-3">
               <Link href={profileHref(c.author_id)} className="flex-shrink-0" aria-label="プロフィールを見る">
-                <AuthorAvatar size={36} />
+                <AuthorAvatar size={36} imageUrl={profiles[c.author_id]?.avatar_url} />
               </Link>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
