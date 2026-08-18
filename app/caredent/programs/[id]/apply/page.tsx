@@ -39,11 +39,8 @@ export default async function ApplyPage({
 
   // 定員チェック
   if (program.capacity != null) {
-    const { count } = await supabase
-      .from('applications')
-      .select('id', { count: 'exact', head: true })
-      .eq('program_id', id)
-    if ((count ?? 0) >= program.capacity) redirect(`/caredent/programs/${id}`)
+    const { data: countData } = await supabase.rpc('get_applicant_count', { p_program_id: id })
+    if (Number(countData ?? 0) >= program.capacity) redirect(`/caredent/programs/${id}`)
   }
 
   return (

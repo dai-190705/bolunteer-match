@@ -168,3 +168,144 @@ export async function notifyNewPublisherApplication({
     console.error('Failed to send notification email:', err)
   }
 }
+
+function formatDateJa(d: string | null) {
+  if (!d) return ''
+  const dt = new Date(d)
+  return `${dt.getFullYear()}年${dt.getMonth() + 1}月${dt.getDate()}日`
+}
+
+function formatProgramSchedule(p: {
+  schedule_type: string | null
+  event_date: string | null
+  event_end_date: string | null
+  event_dates: string[] | null
+}): string {
+  switch (p.schedule_type) {
+    case 'anytime':
+      return '随時募集'
+    case 'range':
+      return p.event_date && p.event_end_date
+        ? `${formatDateJa(p.event_date)} 〜 ${formatDateJa(p.event_end_date)}`
+        : formatDateJa(p.event_date)
+    case 'multiple':
+      return (p.event_dates ?? []).map(formatDateJa).filter(Boolean).join('、')
+    default:
+      return formatDateJa(p.event_date)
+  }
+}
+
+/**
+ * ゲスト応募の完了メールを応募者へ送信する。
+ * クライアントから渡された宛先をそのまま信用せず、
+ * 実際に応募レコードが存在する場合のみ送信する（迷惑メール送信の防止）。
+ */
+export async function notifyGuestApplicationReceived({
+  programId,
+  email,
+}: {
+  programId: string
+  email: string
+}) {
+  if (!process.env.RESEND_API_KEY) return
+
+  try {
+    const { createAdminClient } = await import('@/utils/supabase/admin')
+    const admin = createAdminClient()
+
+    // 応募実体の確認（ゲスト応募のみ）
+    const { data: application } = await admin
+      .from('applications')
+      .select('id, guest_name, guest_email, program_id')
+      .eq('program_id', programId)
+      .is('student_id', null)
+      .ilike('guest_email', email)
+      .maybeSingle()
+
+    if (!application?.guest_email) return
+
+    const { data: program } = await admin
+      .from('programs')
+      .select('title, schedule_type, event_date, event_end_date, event_dates, location_type, location, cancel_policy, notes')
+      .eq('id', programId)
+      .single()
+
+    if (!program) return
+
+    const schedule = formatProgramSchedule(program)
+    const place =
+      program.location_type === 'online' ? 'オンライン' : program.location ?? ''
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.nocsy.me'
+
+    const detailRow = (label: string, value: string) =>
+      value
+        ? `<tr style="border-bottom: 1px solid #f3f4f6;">
+             <td style="padding: 12px 8px 12px 0; color: #9ca3af; width: 110px; vertical-align: top;">${label}</td>
+             <td style="padding: 12px 0; color: #111827;">${value}</td>
+           </tr>`
+        : ''
+
+    await resend.emails.send({
+      from: 'Caredent <no-reply@nocsy.me>',
+      to: application.guest_email,
+      subject: `【Caredent】応募を受け付けました：${program.title}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #f9fafb;">
+          <div style="background: white; border-radius: 16px; padding: 32px; border: 1px solid #e5e7eb;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <span style="font-size: 24px; font-weight: 800; color: #4592c0;">Caredent</span>
+            </div>
+
+            <h2 style="color: #111827; font-size: 20px; margin: 0 0 16px;">応募を受け付けました 🎉</h2>
+
+            <p style="color: #6b7280; font-size: 14px; line-height: 1.8; margin: 0 0 24px;">
+              ${application.guest_name ?? ''} 様<br /><br />
+              下記のボランティアへのご応募ありがとうございます。<br />
+              担当者からの連絡をお待ちください。
+            </p>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;">
+              ${detailRow('ボランティア', program.title)}
+              ${detailRow('開催日程', schedule)}
+              ${detailRow('開催場所', place)}
+            </table>
+
+            ${
+              program.cancel_policy || program.notes
+                ? `<div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                     <p style="margin: 0 0 8px; font-size: 13px; font-weight: 700; color: #92400e;">ご確認ください</p>
+                     ${
+                       program.cancel_policy
+                         ? `<p style="margin: 0 0 8px; font-size: 13px; color: #b45309; line-height: 1.7; white-space: pre-wrap;">${program.cancel_policy}</p>`
+                         : ''
+                     }
+                     ${
+                       program.notes
+                         ? `<p style="margin: 0; font-size: 13px; color: #b45309; line-height: 1.7; white-space: pre-wrap;">${program.notes}</p>`
+                         : ''
+                     }
+                   </div>`
+                : ''
+            }
+
+            <div style="background: #f3f4f6; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+              <p style="margin: 0 0 10px; font-size: 13px; color: #4b5563; line-height: 1.7;">
+                アカウントを作成すると、応募状況の確認や活動記事の作成ができます。
+              </p>
+              <a href="${appUrl}/caredent/signup" style="display: inline-block; background: #4592c0; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700;">
+                アカウントを作成する →
+              </a>
+            </div>
+
+            <p style="margin: 24px 0 0; color: #9ca3af; font-size: 12px; text-align: center;">
+              このメールはCaredentのシステムから自動送信されています。
+            </p>
+          </div>
+        </div>
+      `,
+    })
+  } catch (err) {
+    // メール送信に失敗しても応募自体は成立させる
+    console.error('Failed to send guest application email:', err)
+  }
+}

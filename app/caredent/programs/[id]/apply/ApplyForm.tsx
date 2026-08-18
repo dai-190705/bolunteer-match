@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { ApplicationQuestion } from '@/types'
+import { notifyGuestApplicationReceived } from '@/app/actions/notify'
 
 type Props = {
   programId: string
@@ -93,6 +94,16 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
           throw error
         }
         return
+      }
+
+      // ゲスト応募は入力されたメールアドレスへ完了メールを送る
+      if (!user) {
+        try {
+          await notifyGuestApplicationReceived({ programId, email: guestEmail.trim() })
+        } catch (mailErr) {
+          // メール送信失敗は応募成立を妨げない
+          console.error('confirmation mail failed:', mailErr)
+        }
       }
 
       router.push(`/caredent/programs/${programId}?applied=1`)

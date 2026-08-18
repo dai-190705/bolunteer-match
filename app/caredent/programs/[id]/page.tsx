@@ -73,11 +73,9 @@ export default async function ProgramDetailPage({
     userId = user?.id ?? null
 
     if (program) {
-      const { count } = await supabase
-        .from('applications')
-        .select('id', { count: 'exact', head: true })
-        .eq('program_id', id)
-      applicantCount = count ?? 0
+      // 件数のみ取得（応募者の個人情報は読ませない）
+      const { data: countData } = await supabase.rpc('get_applicant_count', { p_program_id: id })
+      applicantCount = Number(countData ?? 0)
     }
 
     if (userId && program) {
