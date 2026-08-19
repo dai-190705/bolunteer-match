@@ -290,7 +290,7 @@ export async function notifyGuestApplicationReceived({
 
             <div style="background: #f3f4f6; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
               <p style="margin: 0 0 10px; font-size: 13px; color: #4b5563; line-height: 1.7;">
-                アカウントを作成すると、応募状況の確認や活動記事の作成ができます。
+                アカウントを作成すると、応募状況の確認やポートフォリオの作成ができます。
               </p>
               <a href="${appUrl}/caredent/signup" style="display: inline-block; background: #4592c0; color: white; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700;">
                 アカウントを作成する →

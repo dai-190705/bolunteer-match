@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { ApplicationQuestion } from '@/types'
 import { notifyGuestApplicationReceived } from '@/app/actions/notify'
+import PrivacyConsent from '../../../components/PrivacyConsent'
 
 type Props = {
   programId: string
@@ -28,11 +29,13 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
   const [guestSchool, setGuestSchool] = useState('')
   const [guestAge, setGuestAge] = useState('')
   const [guestEmail, setGuestEmail] = useState('')
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false)
 
   const hasPolicy = cancelPolicy || notes
   const missingRequired = questions.some((q) => q.required && !answers[q.id]?.trim())
   const missingGuestInfo =
     !isLoggedIn && (!guestName.trim() || !guestSchool.trim() || !guestAge.trim() || !guestEmail.trim())
+  const missingPrivacyConsent = !isLoggedIn && !agreedToPrivacy
 
   function setAnswer(id: string, value: string) {
     setAnswers((prev) => ({ ...prev, [id]: value }))
@@ -43,6 +46,10 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
     if (hasPolicy && !agreed) return
     if (missingGuestInfo) {
       setError('応募者情報をすべて入力してください。')
+      return
+    }
+    if (missingPrivacyConsent) {
+      setError('プライバシーポリシーに同意してください。')
       return
     }
     if (missingRequired) {
@@ -131,7 +138,7 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-bold text-indigo-900">アカウントをお持ちの方はログインがおすすめ</p>
                 <p className="text-xs text-indigo-700 mt-1 leading-relaxed">
-                  ログインすると入力を省略でき、応募状況の確認や活動記事の作成ができます。
+                  ログインすると入力を省略でき、応募状況の確認やポートフォリオの作成ができます。
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
                   <Link
@@ -213,6 +220,8 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
               </div>
             </div>
           </div>
+
+          <PrivacyConsent agreed={agreedToPrivacy} onAgreedChange={setAgreedToPrivacy} />
         </>
       )}
 
@@ -285,7 +294,7 @@ export default function ApplyForm({ programId, programTitle, cancelPolicy, notes
 
       <button
         type="submit"
-        disabled={loading || missingRequired || missingGuestInfo || (hasPolicy ? !agreed : false)}
+        disabled={loading || missingRequired || missingGuestInfo || missingPrivacyConsent || (hasPolicy ? !agreed : false)}
         className="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-base shadow-sm"
       >
         {loading ? '応募中...' : '応募を確定する →'}
