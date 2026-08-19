@@ -18,7 +18,6 @@ function formatDeadline(deadline: string | null) {
 
 export default async function LogPage() {
   let applications: Application[] = []
-  let diaryApplicationIds: Set<string> = new Set()
 
   let user = null
   try {
@@ -39,21 +38,6 @@ export default async function LogPage() {
       .eq('student_id', user.id)
       .order('applied_at', { ascending: false })
     applications = (data as Application[]) ?? []
-  } catch {
-    // ignore
-  }
-
-  // 日記が既に書かれている応募IDを取得
-  try {
-    const supabase = await createClient()
-    const completedIds = applications.filter((a) => a.status === 'completed').map((a) => a.id)
-    if (completedIds.length > 0) {
-      const { data: diaries } = await supabase
-        .from('diary_entries')
-        .select('application_id')
-        .in('application_id', completedIds)
-      diaryApplicationIds = new Set((diaries ?? []).map((d) => d.application_id))
-    }
   } catch {
     // ignore
   }
@@ -114,11 +98,7 @@ export default async function LogPage() {
         ) : (
           <div className="space-y-3">
             {completed.map((app) => (
-              <CompletedCard
-                key={app.id}
-                app={app}
-                hasDiary={diaryApplicationIds.has(app.id)}
-              />
+              <CompletedCard key={app.id} app={app} />
             ))}
           </div>
         )}
@@ -164,13 +144,13 @@ function ApplicationCard({ app }: { app: Application }) {
   )
 }
 
-function CompletedCard({ app, hasDiary }: { app: Application; hasDiary: boolean }) {
+function CompletedCard({ app }: { app: Application }) {
   const program = app.programs
   if (!program) return null
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-start justify-between gap-4">
-      <Link href={`/caredent/programs/${program.id}`} className="flex-1 min-w-0 opacity-60 hover:opacity-80 transition-opacity">
+    <div className="bg-white rounded-xl border border-gray-200 p-5">
+      <Link href={`/caredent/programs/${program.id}`} className="block opacity-70 hover:opacity-100 transition-opacity">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
           {program.category && (
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[program.category] ?? ''}`}>
@@ -184,32 +164,6 @@ function CompletedCard({ app, hasDiary }: { app: Application; hasDiary: boolean 
         <p className="font-semibold text-gray-900 text-sm leading-snug">{program.title}</p>
         {program.deadline && (
           <p className="text-xs text-gray-500 mt-1">締切: {formatDeadline(program.deadline)}</p>
-        )}
-      </Link>
-
-      {/* 記事ボタン */}
-      <Link
-        href={`/caredent/article/${app.id}`}
-        className={`flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-          hasDiary
-            ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
-            : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200'
-        }`}
-      >
-        {hasDiary ? (
-          <>
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            記事を編集
-          </>
-        ) : (
-          <>
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-            記事を書く
-          </>
         )}
       </Link>
     </div>

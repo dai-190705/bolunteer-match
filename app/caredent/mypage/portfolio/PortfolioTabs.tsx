@@ -10,15 +10,6 @@ export type TimelineItem = {
   description: string
   tags: string[]
   applicationId?: string
-  hasArticle: boolean
-}
-
-export type ArticleItem = {
-  applicationId: string
-  title: string
-  program: string
-  date: string
-  isPublic: boolean
 }
 
 type PortfolioValue = { title: string }
@@ -36,7 +27,7 @@ type Profile = {
   values: PortfolioValue[]
 }
 
-type Tab = 'profile' | 'history' | 'articles'
+type Tab = 'profile' | 'history'
 
 const KIND_STYLE: Record<
   TimelineItem['kind'],
@@ -72,20 +63,12 @@ function ymOf(iso: string) {
   return { year: `${d.getFullYear()}年`, month: `${d.getMonth() + 1}月` }
 }
 
-function dateLabel(iso: string) {
-  if (!iso) return ''
-  const d = new Date(iso)
-  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
-}
-
 export default function PortfolioTabs({
   timeline,
-  articles,
   profile,
   editable = false,
 }: {
   timeline: TimelineItem[]
-  articles: ArticleItem[]
   profile: Profile
   editable?: boolean
 }) {
@@ -94,7 +77,6 @@ export default function PortfolioTabs({
   const tabs: { id: Tab; label: string }[] = [
     { id: 'profile', label: 'プロフィール' },
     { id: 'history', label: '活動履歴' },
-    { id: 'articles', label: '記事一覧' },
   ]
 
   return (
@@ -121,7 +103,6 @@ export default function PortfolioTabs({
 
       <div className="mt-6">
         {tab === 'history' && <HistoryPanel timeline={timeline} editable={editable} />}
-        {tab === 'articles' && <ArticlesPanel articles={articles} editable={editable} />}
         {tab === 'profile' && <ProfilePanel profile={profile} editable={editable} />}
       </div>
     </>
@@ -173,11 +154,6 @@ function HistoryPanel({ timeline, editable }: { timeline: TimelineItem[]; editab
                       {style.icon}
                       {style.label}
                     </span>
-                    {item.hasArticle && (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-violet-50 text-violet-600">
-                        📝 記事あり
-                      </span>
-                    )}
                   </div>
                   <h3 className="text-base font-bold text-gray-900 leading-snug">{item.title}</h3>
                   {item.description && (
@@ -205,16 +181,7 @@ function HistoryPanel({ timeline, editable }: { timeline: TimelineItem[]; editab
                       {month}
                     </div>
                   </div>
-                  {item.hasArticle && item.applicationId ? (
-                    <Link
-                      href={`/caredent/article/${item.applicationId}`}
-                      className="flex-1 min-w-0 active:scale-[0.99] transition-transform"
-                    >
-                      {card}
-                    </Link>
-                  ) : (
-                    card
-                  )}
+                  {card}
                 </div>
               )
             })}
@@ -242,42 +209,6 @@ function HistoryPanel({ timeline, editable }: { timeline: TimelineItem[]; editab
           </Link>
         </div>
       )}
-    </div>
-  )
-}
-
-function ArticlesPanel({ articles, editable }: { articles: ArticleItem[]; editable: boolean }) {
-  if (articles.length === 0) {
-    return (
-      <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center text-gray-400 text-sm">
-        {editable ? 'まだ記事がありません。参加したボランティアの記事を書いてみましょう。' : 'まだ公開された記事はありません。'}
-      </div>
-    )
-  }
-  return (
-    <div className="space-y-3">
-      {articles.map((a) => (
-        <Link
-          key={a.applicationId}
-          href={`/caredent/article/${a.applicationId}`}
-          className="block bg-white rounded-2xl border border-gray-200 shadow-sm p-5 hover:shadow-md active:scale-[0.99] transition-all"
-        >
-          {a.program && <p className="text-xs text-[#4592c0] font-medium mb-1">🏢 {a.program}</p>}
-          <div className="flex items-center gap-2">
-            <p className="flex-1 font-bold text-gray-900 leading-snug">{a.title}</p>
-            {editable && (
-              <span
-                className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${
-                  a.isPublic ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                }`}
-              >
-                {a.isPublic ? '公開' : '非公開'}
-              </span>
-            )}
-          </div>
-          {a.date && <p className="text-xs text-gray-400 mt-1">{dateLabel(a.date)}</p>}
-        </Link>
-      ))}
     </div>
   )
 }

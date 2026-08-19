@@ -51,25 +51,7 @@ export default async function MyPage() {
     // ignore
   }
 
-  const completed = applications.filter((a) => a.status === 'completed')
   const totalCount = applications.length
-
-  // 記事未執筆の参加済みボランティア件数を算出
-  let unwrittenCount = 0
-  try {
-    const supabase = await createClient()
-    const completedIds = completed.map((a) => a.id)
-    if (completedIds.length > 0) {
-      const { data: diaries } = await supabase
-        .from('diary_entries')
-        .select('application_id')
-        .in('application_id', completedIds)
-      const writtenIds = new Set((diaries ?? []).map((d) => d.application_id))
-      unwrittenCount = completedIds.filter((id) => !writtenIds.has(id)).length
-    }
-  } catch {
-    // ignore
-  }
 
   const meta = user.user_metadata ?? {}
   const displayName =
@@ -104,33 +86,6 @@ export default async function MyPage() {
           プロフィールを編集
         </Link>
       </div>
-
-      {/* 記事執筆を促すバナー（未執筆がある場合のみ） */}
-      {unwrittenCount > 0 && (
-        <Link
-          href="/caredent/log"
-          className="mt-8 block rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 p-5 hover:shadow-md active:scale-[0.99] transition-all"
-        >
-          <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-gray-900">
-                未執筆の記事が{unwrittenCount}件あります
-              </p>
-              <p className="text-xs text-gray-500 mt-0.5">
-                参加したボランティアの記事を書いて、活動を記録しましょう
-              </p>
-            </div>
-            <svg className="w-5 h-5 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Link>
-      )}
 
       {/* メニュー */}
       <div className="mt-8 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">

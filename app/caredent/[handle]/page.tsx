@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import AuthorAvatar from '../components/AuthorAvatar'
-import PortfolioTabs, { type TimelineItem, type ArticleItem } from '../mypage/portfolio/PortfolioTabs'
+import PortfolioTabs, { type TimelineItem } from '../mypage/portfolio/PortfolioTabs'
 import ShareButton from './ShareButton'
 
 type PortfolioValue = { title: string }
@@ -134,14 +134,6 @@ export default async function PublicPortfolioPage({
   )
   const customActs = acts.filter((a) => !a.application_id)
 
-  // 記事（本人なら全件・他者は公開のみ = RLSで自動制御）
-  const { data: diaryData } = await supabase
-    .from('diary_entries')
-    .select('application_id, title, updated_at, is_public, applications(programs(title))')
-    .eq('student_id', studentId)
-    .order('updated_at', { ascending: false })
-  const articleIds = new Set((diaryData ?? []).map((d) => (d as { application_id: string }).application_id))
-
   // タイムライン
   const timeline: TimelineItem[] = []
   for (const app of appsData ?? []) {
@@ -155,7 +147,6 @@ export default async function PublicPortfolioPage({
       description: override || truncate(program?.description ?? program?.target, 100),
       tags: (program?.tags ?? []).slice(0, 3),
       applicationId: row.id,
-      hasArticle: articleIds.has(row.id),
     })
   }
   for (const act of customActs) {
@@ -165,28 +156,9 @@ export default async function PublicPortfolioPage({
       title: act.title ?? '活動',
       description: act.description ?? '',
       tags: [],
-      hasArticle: false,
     })
   }
   timeline.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime())
-
-  // 記事一覧
-  const articles: ArticleItem[] = (diaryData ?? []).map((d) => {
-    const row = d as {
-      application_id: string
-      title: string | null
-      updated_at: string | null
-      is_public: boolean | null
-      applications?: { programs?: unknown } | null
-    }
-    return {
-      applicationId: row.application_id,
-      title: row.title || pickProgram(row.applications?.programs)?.title || '無題の記事',
-      program: pickProgram(row.applications?.programs)?.title ?? '',
-      date: row.updated_at ?? '',
-      isPublic: !!row.is_public,
-    }
-  })
 
   const displayName = profile.nickname || (profile.user_handle ? `@${profile.user_handle}` : '学生')
   const subtitle = [profile.school, profile.grade].filter(Boolean).join(' / ')
@@ -240,7 +212,6 @@ export default async function PublicPortfolioPage({
 
       <PortfolioTabs
         timeline={timeline}
-        articles={articles}
         editable={isOwner}
         profile={{
           name: displayName,

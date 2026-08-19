@@ -18,7 +18,7 @@ export type CustomActivity = {
   description: string
 }
 
-const MAX_DESC = 300
+const MAX_DESC = 400
 
 function dateLabel(iso: string) {
   if (!iso) return ''
@@ -40,7 +40,7 @@ function DescriptionTextarea({
         onChange={(e) => onChange(e.target.value.slice(0, MAX_DESC))}
         rows={3}
         maxLength={MAX_DESC}
-        placeholder="活動の概要を入力（例: 受付対応やコース案内を担当しました）"
+        placeholder="実際にやった活動や学びを入力（例: 受付対応やコース案内を担当し、来場者への声かけの工夫を学びました）"
         className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#4592c0] focus:border-transparent transition resize-y"
       />
       <p className={`text-xs mt-1 text-right ${value.length >= MAX_DESC ? 'text-red-500' : 'text-gray-400'}`}>
@@ -165,7 +165,7 @@ export default function EditForm({
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
           Caredentで参加した活動
         </h2>
-        <p className="text-xs text-gray-400 mb-4">参加記録から自動で追加されています。概要だけ編集できます。</p>
+        <p className="text-xs text-gray-400 mb-4">参加記録から自動で追加されています。実際にやった活動や学びを入力できます（400字以内）。</p>
 
         {auto.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-400 text-sm">
