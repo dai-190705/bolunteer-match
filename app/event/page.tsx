@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
-import { getUpcomingEvents, getPastEvents, formatEventDate, type NocsyEvent } from './events'
+import { getUpcomingEvents, getPastEvents, formatEventDate, truncateDescription, type NocsyEvent } from './events'
 
 export const metadata: Metadata = {
   title: '探究イベント | NOCSY',
@@ -23,7 +23,10 @@ function EventCard({ event, past = false }: { event: NocsyEvent; past?: boolean 
       className={`border border-gray-200 bg-white ${past ? 'opacity-70' : ''}`}
     >
       {event.imageUrl && (
-        <div className="w-full bg-gray-50 flex justify-center border-b border-gray-100">
+        <Link
+          href={`/event/${event.id}`}
+          className="block w-full bg-gray-50 flex justify-center border-b border-gray-100 hover:opacity-90 transition-opacity"
+        >
           {/* チラシは縦長のことが多いため、切り取らず全体を表示する */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -31,7 +34,7 @@ function EventCard({ event, past = false }: { event: NocsyEvent; past?: boolean 
             alt={event.title}
             className="max-h-[560px] w-auto max-w-full object-contain"
           />
-        </div>
+        </Link>
       )}
 
       <div className="p-6 md:p-8">
@@ -46,9 +49,11 @@ function EventCard({ event, past = false }: { event: NocsyEvent; past?: boolean 
           <span className="text-sm text-gray-500">{formatEventDate(event)}</span>
         </div>
 
-        <h3 className="text-xl md:text-2xl font-bold leading-snug mb-4">{event.title}</h3>
+        <Link href={`/event/${event.id}`} className="hover:opacity-70 transition-opacity">
+          <h3 className="text-xl md:text-2xl font-bold leading-snug mb-4">{event.title}</h3>
+        </Link>
 
-        <p className="text-gray-700 leading-relaxed mb-6 whitespace-pre-wrap">{event.description}</p>
+        <p className="text-gray-700 leading-relaxed mb-6">{truncateDescription(event.description)}</p>
 
         {(event.time || event.place || event.target || event.fee) && (
           <dl className="border-t border-gray-100 pt-4 mb-6 space-y-2 text-sm">
@@ -78,6 +83,13 @@ function EventCard({ event, past = false }: { event: NocsyEvent; past?: boolean 
             )}
           </dl>
         )}
+
+        <Link
+          href={`/event/${event.id}`}
+          className="inline-block text-sm font-medium text-gray-900 underline underline-offset-4 hover:text-gray-600 transition-colors mb-6"
+        >
+          詳細を見る →
+        </Link>
 
         {!past &&
           (event.applyUrl ? (

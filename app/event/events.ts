@@ -99,3 +99,15 @@ export function formatEventDate(e: NocsyEvent): string {
   }
   return e.endDate ? `${f(e.date)} 〜 ${f(e.endDate)}` : f(e.date)
 }
+
+/** id からイベントを1件取得する（詳細ページ用） */
+export function getEventById(id: string): NocsyEvent | undefined {
+  return EVENTS.find((e) => e.id === id)
+}
+
+/** 一覧カード用に説明文を短く切り詰める（詳細ページで全文を読ませるため） */
+export function truncateDescription(description: string, maxLength = 120): string {
+  const singleLine = description.replace(/\n+/g, ' ').trim()
+  if (singleLine.length <= maxLength) return singleLine
+  return singleLine.slice(0, maxLength) + '…'
+}
