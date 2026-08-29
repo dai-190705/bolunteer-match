@@ -43,6 +43,7 @@ export const EVENTS: NocsyEvent[] = [
     target: '小学生',
     fee: '4,000円（お1人につき）',
     imageUrl: '/events/kodomo-omiseyasan-fes.png',
+    applyUrl: 'https://forms.gle/SaEjeu7aXRxkxGiQA',
     description: `小学生がお金とビジネスの感覚を学べるイベント「こどもお店屋さんフェス」の第1回です。
 
 チラシに記載された5つの商品から好きな商品を選び、自分だけのお店をデザインします。イベント内の架空の通貨を使って販売を行い、金銭感覚を学びます。学生メンターが1対1でつくので、お子様のペースに合わせて進められます。
