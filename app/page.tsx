@@ -126,6 +126,14 @@ export default function NOCSYHomePage() {
                   中高生・大学生が実社会の課題に直接触れられる探究イベントを企画・開催しています。地域のお祭りや企業との共創プロジェクトなど、教室の外にある「本物の現場」を舞台に、企画から運営までを学生自身が担う機会を用意。参加者は多様な大人や仲間と関わりながら、自分の関心の輪郭を掴み、次の一歩を見つけていきます。学校・企業・自治体のみなさまとの共催も行っています。
                 </p>
 
+                <div className="mb-8">
+                  <img
+                    src="/services/event.png"
+                    alt="探究イベントの開催"
+                    className="w-full object-contain"
+                  />
+                </div>
+
                 <Link
                   href="/event"
                   className="inline-block border border-gray-900 text-gray-900 px-8 py-3 text-sm font-medium hover:bg-gray-900 hover:text-white transition-colors"
