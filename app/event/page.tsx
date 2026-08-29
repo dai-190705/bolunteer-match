@@ -23,9 +23,14 @@ function EventCard({ event, past = false }: { event: NocsyEvent; past?: boolean 
       className={`border border-gray-200 bg-white ${past ? 'opacity-70' : ''}`}
     >
       {event.imageUrl && (
-        <div className="w-full aspect-[16/9] overflow-hidden bg-gray-100">
+        <div className="w-full bg-gray-50 flex justify-center border-b border-gray-100">
+          {/* チラシは縦長のことが多いため、切り取らず全体を表示する */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover" />
+          <img
+            src={event.imageUrl}
+            alt={event.title}
+            className="max-h-[560px] w-auto max-w-full object-contain"
+          />
         </div>
       )}
 
@@ -45,8 +50,14 @@ function EventCard({ event, past = false }: { event: NocsyEvent; past?: boolean 
 
         <p className="text-gray-700 leading-relaxed mb-6 whitespace-pre-wrap">{event.description}</p>
 
-        {(event.place || event.target) && (
+        {(event.time || event.place || event.target || event.fee) && (
           <dl className="border-t border-gray-100 pt-4 mb-6 space-y-2 text-sm">
+            {event.time && (
+              <div className="flex gap-4">
+                <dt className="text-gray-400 w-16 flex-shrink-0">時間</dt>
+                <dd className="text-gray-700">{event.time}</dd>
+              </div>
+            )}
             {event.place && (
               <div className="flex gap-4">
                 <dt className="text-gray-400 w-16 flex-shrink-0">会場</dt>
@@ -57,6 +68,12 @@ function EventCard({ event, past = false }: { event: NocsyEvent; past?: boolean 
               <div className="flex gap-4">
                 <dt className="text-gray-400 w-16 flex-shrink-0">対象</dt>
                 <dd className="text-gray-700">{event.target}</dd>
+              </div>
+            )}
+            {event.fee && (
+              <div className="flex gap-4">
+                <dt className="text-gray-400 w-16 flex-shrink-0">参加費</dt>
+                <dd className="text-gray-700">{event.fee}</dd>
               </div>
             )}
           </dl>
