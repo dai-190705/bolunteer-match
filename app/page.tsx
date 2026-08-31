@@ -141,6 +141,32 @@ export default function NOCSYHomePage() {
                   開催イベント一覧へ →
                 </Link>
               </div>
+
+              {/* 03 NOCSY塾 */}
+              <div className="mt-20 pt-16 border-t border-gray-200">
+                <p className="text-sm text-gray-400 font-mono mb-3">03</p>
+                <h2 className="text-2xl md:text-3xl font-bold mb-6 leading-tight">
+                  総合型選抜対策専門塾「NOCSY塾」
+                </h2>
+                <p className="text-gray-700 leading-relaxed mb-8">
+                  オンラインで総合型選抜対策を行う専門塾を運営しています。NOCSYが提携するボランティア・探究プログラムを駆使し、志望理由書を書く前の課外活動の段階から手厚くサポートするのが特徴。総合型選抜の実績がある大学生メンターがマンツーマンで指導し、月額1.5万円からの安心低価格で、自分の言葉で語れる合格ストーリーづくりを支援します。
+                </p>
+
+                <div className="mb-8">
+                  <img
+                    src="/nocsy-juku/hero.png"
+                    alt="総合型選抜対策専門塾 NOCSY塾"
+                    className="w-full object-contain"
+                  />
+                </div>
+
+                <Link
+                  href="/nocsy-juku"
+                  className="inline-block border border-gray-900 text-gray-900 px-8 py-3 text-sm font-medium hover:bg-gray-900 hover:text-white transition-colors"
+                >
+                  NOCSY塾サービスページへ →
+                </Link>
+              </div>
             </div>
           </div>
         </div>
