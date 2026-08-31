@@ -174,19 +174,18 @@ export default function NocsyJukuPage() {
             </p>
           </div>
 
-          {/* 他社比較画像スペース */}
+          {/* 他社比較表 */}
           <div className="mb-12">
-            {/*
-              比較画像が用意できたら public/nocsy-juku/comparison.png に置いて、
-              下の placeholder を <img src="/nocsy-juku/comparison.png" ... /> に差し替え
-            */}
-            <div
-              className="w-full aspect-[16/9] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-2 bg-white"
-              style={{ borderColor: `${NAVY}33`, color: `${NAVY}66` }}
-            >
-              <span className="text-3xl">📊</span>
-              <p className="text-sm font-medium">他社との料金比較（画像準備中）</p>
+            <div className="rounded-2xl overflow-hidden bg-white shadow-sm border" style={{ borderColor: `${NAVY}1A` }}>
+              <img
+                src="/nocsy-juku/comparison.png"
+                alt="NOCSY塾と他社（A塾・B塾・C塾）の授業料・入会金・課外活動サポート・講師の比較表"
+                className="w-full object-contain"
+              />
             </div>
+            <p className="mt-3 text-xs text-center" style={{ color: `${NAVY}80` }}>
+              ※ 各社の公開情報をもとに作成
+            </p>
           </div>
 
           <div className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border" style={{ borderColor: `${GREEN}55` }}>
