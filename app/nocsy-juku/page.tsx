@@ -68,7 +68,7 @@ function LineButton({ label, large = false }: { label: string; large?: boolean }
       href={LINE_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center gap-2 font-bold text-white hover:opacity-90 transition-opacity ${
+      className={`inline-flex items-center justify-center gap-2 rounded-full font-bold text-white shadow-md hover:opacity-90 hover:shadow-lg transition-all ${
         large ? 'px-10 py-4 text-base' : 'px-6 py-3 text-sm'
       }`}
       style={{ backgroundColor: '#06C755' }}
