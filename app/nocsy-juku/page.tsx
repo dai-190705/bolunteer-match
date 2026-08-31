@@ -28,42 +28,38 @@ const FEATURES = [
     num: '01',
     title: 'オンラインで全国どこからでも受講可能',
     body: '授業・面談はすべてオンラインで完結。通塾の移動時間はゼロで、部活や学校生活と両立しながら、全国どこからでも総合型選抜対策を進められます。',
-    icon: '💻',
   },
   {
     num: '02',
     title: '総合型選抜の実績があるメンターが指導',
     body: '実際に総合型選抜を突破した大学生メンターが、自身の経験をもとにリアルな指導を行います。「合格者だから知っている」出願書類や面接のポイントを、マンツーマンで伝えます。',
-    icon: '🎓',
   },
   {
     num: '03',
     title: '課外活動の段階から手厚いサポート',
     body: '志望理由書を書く前の「課外活動・フィールドワーク」の段階から伴走するのがNOCSY塾の最大の特徴。NOCSYが提携するボランティア・探究プログラムを駆使して、あなただけの実体験を一緒に創ります。',
-    icon: '🔍',
+  },
+]
+
+/* 安さの理由 */
+const REASONS = [
+  {
+    num: '01',
+    title: '店舗を持たず、固定費を下げているから',
+    body: 'NOCSY塾は自前の校舎を持ちません。授業は既存の学習塾のスペースを活用したり、オンラインで実施することで、家賃などの固定費を大幅にカット。浮いたコストをそのまま受講料に還元しています。',
+  },
+  {
+    num: '02',
+    title: '支援データの収集を優先しているから',
+    body: 'NOCSYは、総合型選抜における「どんな課外活動が、どんな合格につながるのか」の支援データを集めている段階にあります。いまは利益よりも支援実績の確保を優先しているため、この価格でご提供できています。集まった知見は、これから受験に挑む後輩たちの指導に還元していきます。',
   },
 ]
 
 /* メンター（写真・紹介文はあとから追加） */
 const MENTORS: { name: string; title: string; body: string; photo: string | null }[] = [
-  {
-    name: 'Coming Soon',
-    title: 'メンター紹介',
-    body: '紹介文は近日公開予定です。',
-    photo: null,
-  },
-  {
-    name: 'Coming Soon',
-    title: 'メンター紹介',
-    body: '紹介文は近日公開予定です。',
-    photo: null,
-  },
-  {
-    name: 'Coming Soon',
-    title: 'メンター紹介',
-    body: '紹介文は近日公開予定です。',
-    photo: null,
-  },
+  { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
+  { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
+  { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
 ]
 
 function LineButton({ label, large = false }: { label: string; large?: boolean }) {
@@ -72,13 +68,22 @@ function LineButton({ label, large = false }: { label: string; large?: boolean }
       href={LINE_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-bold text-white shadow-md hover:opacity-90 hover:shadow-lg transition-all ${
+      className={`inline-flex items-center justify-center gap-2 font-bold text-white hover:opacity-90 transition-opacity ${
         large ? 'px-10 py-4 text-base' : 'px-6 py-3 text-sm'
       }`}
       style={{ backgroundColor: '#06C755' }}
     >
       {label}
     </a>
+  )
+}
+
+function SectionLabel({ en, ja }: { en: string; ja: string }) {
+  return (
+    <div className="text-center mb-14">
+      <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>{en}</p>
+      <h2 className="text-2xl md:text-3xl font-bold">{ja}</h2>
+    </div>
   )
 }
 
@@ -134,28 +139,15 @@ export default function NocsyJukuPage() {
       {/* ===== 1. NOCSY塾の特徴 ===== */}
       <section id="features" className="py-20 md:py-28 bg-white">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>FEATURES</p>
-            <h2 className="text-2xl md:text-3xl font-bold">NOCSY塾の特徴</h2>
-          </div>
+          <SectionLabel en="FEATURES" ja="NOCSY塾の特徴" />
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-px" style={{ backgroundColor: `${NAVY}1A` }}>
             {FEATURES.map((f) => (
-              <div
-                key={f.num}
-                className="rounded-2xl border bg-white p-8 shadow-sm hover:shadow-md transition-shadow"
-                style={{ borderColor: `${GREEN}55` }}
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <span
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
-                    style={{ backgroundColor: `${GREEN}22` }}
-                  >
-                    {f.icon}
-                  </span>
-                  <span className="font-mono font-bold text-sm" style={{ color: GREEN }}>{f.num}</span>
-                </div>
-                <h3 className="font-bold text-lg leading-snug mb-3">{f.title}</h3>
+              <div key={f.num} className="bg-white p-8">
+                <p className="font-mono font-bold text-sm mb-4" style={{ color: GREEN }}>{f.num}</p>
+                <h3 className="font-bold text-lg leading-snug mb-3 pb-3 border-b" style={{ borderColor: `${GREEN}66` }}>
+                  {f.title}
+                </h3>
                 <p className="text-sm leading-relaxed" style={{ color: `${NAVY}B3` }}>{f.body}</p>
               </div>
             ))}
@@ -175,8 +167,8 @@ export default function NocsyJukuPage() {
           </div>
 
           {/* 他社比較表 */}
-          <div className="mb-12">
-            <div className="rounded-2xl overflow-hidden bg-white shadow-sm border" style={{ borderColor: `${NAVY}1A` }}>
+          <div className="mb-14">
+            <div className="bg-white border" style={{ borderColor: `${NAVY}1A` }}>
               <img
                 src="/nocsy-juku/comparison.png"
                 alt="NOCSY塾と他社（A塾・B塾・C塾）の授業料・入会金・課外活動サポート・講師の比較表"
@@ -188,19 +180,20 @@ export default function NocsyJukuPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border" style={{ borderColor: `${GREEN}55` }}>
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <span
-                className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                style={{ backgroundColor: GREEN }}
+          <div className="space-y-6">
+            {REASONS.map((r) => (
+              <div
+                key={r.num}
+                className="bg-white p-8 md:p-10 border-l-4"
+                style={{ borderColor: GREEN }}
               >
-                A
-              </span>
-              固定費を徹底的に下げているから。
-            </h3>
-            <p className="leading-relaxed" style={{ color: `${NAVY}B3` }}>
-              NOCSY塾は自前の店舗（校舎）を持ちません。授業は既存の学習塾のスペースを活用したり、オンラインで実施することで、家賃などの固定費を大幅にカット。浮いたコストをそのまま受講料に還元することで、総合型選抜対策の専門塾でありながら、月額1.5万円からという価格を実現しています。
-            </p>
+                <p className="font-mono font-bold text-sm mb-3" style={{ color: GREEN }}>
+                  理由 {r.num}
+                </p>
+                <h3 className="font-bold text-lg mb-4">{r.title}</h3>
+                <p className="leading-relaxed" style={{ color: `${NAVY}B3` }}>{r.body}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -216,30 +209,20 @@ export default function NocsyJukuPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-8">
             {MENTORS.map((m, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border bg-white overflow-hidden shadow-sm"
-                style={{ borderColor: `${NAVY}1A` }}
-              >
+              <div key={i} className="border" style={{ borderColor: `${NAVY}1A` }}>
                 {/* 写真（あとから差し替え） */}
                 <div
-                  className="aspect-square flex items-center justify-center"
+                  className="aspect-[4/5] flex items-center justify-center"
                   style={{ backgroundColor: '#F5F9EE' }}
                 >
                   {m.photo ? (
                     <img src={m.photo} alt={m.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="flex flex-col items-center gap-2" style={{ color: `${NAVY}55` }}>
-                      <span
-                        className="w-20 h-20 rounded-full flex items-center justify-center text-4xl"
-                        style={{ backgroundColor: `${GREEN}33` }}
-                      >
-                        👤
-                      </span>
-                      <span className="text-xs font-medium">写真準備中</span>
-                    </div>
+                    <span className="text-xs font-medium tracking-widest" style={{ color: `${NAVY}55` }}>
+                      写真準備中
+                    </span>
                   )}
                 </div>
                 <div className="p-6">
@@ -259,12 +242,9 @@ export default function NocsyJukuPage() {
           <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>CAMPAIGN</p>
           <h2 className="text-2xl md:text-3xl font-bold mb-10">早期申込キャンペーン</h2>
 
-          <div
-            className="rounded-3xl border p-10 md:p-14 bg-white/5"
-            style={{ borderColor: `${GREEN}66` }}
-          >
+          <div className="border p-10 md:p-14 bg-white/5" style={{ borderColor: `${GREEN}66` }}>
             <p
-              className="inline-block text-xs font-bold tracking-widest rounded-full px-4 py-1.5 mb-6"
+              className="inline-block text-xs font-bold tracking-widest px-4 py-1.5 mb-6"
               style={{ backgroundColor: GREEN, color: NAVY }}
             >
               期間限定
