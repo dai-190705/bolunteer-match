@@ -180,17 +180,15 @@ export default function NocsyJukuPage() {
             </p>
           </div>
 
-          <div className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-px" style={{ backgroundColor: `${NAVY}1A` }}>
             {REASONS.map((r) => (
-              <div
-                key={r.num}
-                className="bg-white p-8 md:p-10 border-l-4"
-                style={{ borderColor: GREEN }}
-              >
+              <div key={r.num} className="bg-white p-8 md:p-10">
                 <p className="font-mono font-bold text-sm mb-3" style={{ color: GREEN }}>
                   理由 {r.num}
                 </p>
-                <h3 className="font-bold text-lg mb-4">{r.title}</h3>
+                <h3 className="font-bold text-lg mb-4 pb-3 border-b" style={{ borderColor: `${GREEN}66` }}>
+                  {r.title}
+                </h3>
                 <p className="leading-relaxed" style={{ color: `${NAVY}B3` }}>{r.body}</p>
               </div>
             ))}
