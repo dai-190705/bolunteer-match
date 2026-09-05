@@ -240,7 +240,7 @@ export default function NocsyJukuPage() {
           <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>CAMPAIGN</p>
           <h2 className="text-2xl md:text-3xl font-bold mb-10">早期申込キャンペーン</h2>
 
-          <div className="border p-10 md:p-14 bg-white/5" style={{ borderColor: `${GREEN}66` }}>
+          <div className="p-10 md:p-14 bg-white/5">
             <p
               className="inline-block text-xs font-bold tracking-widest px-4 py-1.5 mb-6"
               style={{ backgroundColor: GREEN, color: NAVY }}
