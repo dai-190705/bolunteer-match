@@ -240,22 +240,20 @@ export default function NocsyJukuPage() {
           <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>CAMPAIGN</p>
           <h2 className="text-2xl md:text-3xl font-bold mb-10">早期申込キャンペーン</h2>
 
-          <div className="p-10 md:p-14 bg-white/5">
-            <p
-              className="inline-block text-xs font-bold tracking-widest px-4 py-1.5 mb-6"
-              style={{ backgroundColor: GREEN, color: NAVY }}
-            >
-              期間限定
-            </p>
-            <p className="text-xl md:text-2xl font-bold mb-2">
-              初月<span className="text-5xl md:text-6xl mx-1" style={{ color: GREEN }}>0</span>円
-            </p>
-            <p className="text-white/80 mb-8">で体験入塾できます</p>
-            <p className="text-sm text-white/60 leading-relaxed mb-8">
-              「総合型選抜、何から始めればいいかわからない」——まずは1ヶ月、NOCSY塾のサポートを無料で体験してみてください。
-            </p>
-            <LineButton label="公式LINEからキャンペーンに申し込む →" large />
-          </div>
+          <p
+            className="inline-block text-xs font-bold tracking-widest px-4 py-1.5 mb-6"
+            style={{ backgroundColor: GREEN, color: NAVY }}
+          >
+            期間限定
+          </p>
+          <p className="text-xl md:text-2xl font-bold mb-2">
+            初月<span className="text-5xl md:text-6xl mx-1" style={{ color: GREEN }}>0</span>円
+          </p>
+          <p className="text-white/80 mb-8">で体験入塾できます</p>
+          <p className="text-sm text-white/60 leading-relaxed mb-8">
+            「総合型選抜、何から始めればいいかわからない」——まずは1ヶ月、NOCSY塾のサポートを無料で体験してみてください。
+          </p>
+          <LineButton label="公式LINEからキャンペーンに申し込む →" large />
         </div>
       </section>
 
