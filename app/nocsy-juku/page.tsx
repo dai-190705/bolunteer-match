@@ -61,7 +61,7 @@ const MENTORS: { name: string; title: string; body: string; photo: string | null
     name: '安井大翔',
     title: '近畿大学総合社会学部1年',
     body: '高校時代から地域のボランティアやプログラムに参加し、地方創生を中心に活動。同じく高校時代に地域観光のマーケティング会社でインターンした実績あり。内部の総合型選抜入試で近畿大学総合社会学部環境・まちづくり系専攻に進学した。',
-    photo: null,
+    photo: '/nocsy-juku/mentors/yasui.jpg',
   },
   { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
   { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
