@@ -63,8 +63,6 @@ const MENTORS: { name: string; title: string; body: string; photo: string | null
     body: '高校時代から地域のボランティアやプログラムに参加し、地方創生を中心に活動。同じく高校時代に地域観光のマーケティング会社でインターンした実績あり。内部の総合型選抜入試で近畿大学総合社会学部環境・まちづくり系専攻に進学した。',
     photo: '/nocsy-juku/mentors/yasui.jpg',
   },
-  { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
-  { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
 ]
 
 function LineButton({ label, large = false }: { label: string; large?: boolean }) {
@@ -212,7 +210,7 @@ export default function NocsyJukuPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid gap-8 max-w-sm mx-auto">
             {MENTORS.map((m, i) => (
               <div key={i} className="border" style={{ borderColor: `${NAVY}1A` }}>
                 {/* 写真（あとから差し替え） */}
