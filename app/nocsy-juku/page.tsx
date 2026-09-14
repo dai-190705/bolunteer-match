@@ -55,9 +55,14 @@ const REASONS = [
   },
 ]
 
-/* メンター（写真・紹介文はあとから追加） */
+/* メンター（写真は準備でき次第 photo に /nocsy-juku/mentors/xxx.jpg を設定） */
 const MENTORS: { name: string; title: string; body: string; photo: string | null }[] = [
-  { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
+  {
+    name: '安井大翔',
+    title: '近畿大学総合社会学部1年',
+    body: '高校時代から地域のボランティアやプログラムに参加し、地方創生を中心に活動。同じく高校時代に地域観光のマーケティング会社でインターンした実績あり。内部の総合型選抜入試で近畿大学総合社会学部環境・まちづくり系専攻に進学した。',
+    photo: null,
+  },
   { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
   { name: 'Coming Soon', title: 'メンター紹介', body: '紹介文は近日公開予定です。', photo: null },
 ]
@@ -132,7 +137,7 @@ export default function NocsyJukuPage() {
           <p className="text-white/80 leading-relaxed max-w-2xl mx-auto mb-8">
             NOCSY塾は、オンラインで総合型選抜対策を行う専門塾です。NOCSYが提携するボランティア・探究プログラムを駆使し、志望理由書を書く前の課外活動の段階から手厚くサポートします。
           </p>
-          <LineButton label="公式LINEで無料受験相談 →" large />
+          <LineButton label="公式LINEで無料受験相談" large />
         </div>
       </section>
 
