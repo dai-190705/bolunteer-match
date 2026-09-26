@@ -245,11 +245,11 @@ export default function NOCSYHomePage() {
                   <p className="text-gray-700 leading-relaxed mb-6">
                     高校時代に、地方観光マーケティングを手掛けるスタートアップでインターンシップ生として入社し、オウンドメディアの運営やSNSマーケティング、旅館やホテルのマーケティングコンサルティングを10か月間従事。その後、個人事業主としてマーケティング支援Borderlessを立ち上げた。高校生の探究学習の重要性を感じ、2025年春に探究プログラムやボランティアを紹介するエージェントをスタートさせた。
                   </p>
-                  <p className="font-semibold text-gray-900">代表 安井大翔</p>
+                  <p className="font-semibold text-gray-900">代表取締役 安井大翔</p>
                 </div>
                 <img
                   src="/portrait.jpg"
-                  alt="代表 安井大翔"
+                  alt="代表取締役 安井大翔"
                   className="rounded-lg w-full object-cover object-top"
                 />
               </div>
