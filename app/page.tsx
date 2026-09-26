@@ -13,6 +13,7 @@ export default function NOCSYHomePage() {
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
             <a href="#greeting" className="hover:text-gray-900 transition-colors">ご挨拶</a>
             <a href="#services" className="hover:text-gray-900 transition-colors">私たちの仕事</a>
+            <a href="#company" className="hover:text-gray-900 transition-colors">会社情報</a>
             <a href="#representative" className="hover:text-gray-900 transition-colors">代表情報</a>
             <a href="#contact" className="hover:text-gray-900 transition-colors">お問い合わせ</a>
           </div>
@@ -172,8 +173,56 @@ export default function NOCSYHomePage() {
         </div>
       </section>
 
+      {/* Section: 会社情報 */}
+      <section id="company" className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex gap-8">
+            {/* Vertical label */}
+            <div className="flex-shrink-0 flex items-start gap-3">
+              <div className="w-px bg-gray-300 h-full min-h-[200px]" />
+              <span
+                className="text-xs text-gray-400 tracking-widest mt-2"
+                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+              >
+                会社情報
+              </span>
+            </div>
+
+            <div className="flex-1">
+              <h2 className="text-2xl md:text-3xl font-bold mb-10 leading-tight">
+                株式会社NOCSY
+              </h2>
+              <dl className="divide-y divide-gray-200 border-t border-gray-200">
+                <div className="py-5 md:flex md:gap-8">
+                  <dt className="text-sm text-gray-500 md:w-32 md:flex-shrink-0 mb-1 md:mb-0">会社名</dt>
+                  <dd className="text-gray-900">株式会社NOCSY</dd>
+                </div>
+                <div className="py-5 md:flex md:gap-8">
+                  <dt className="text-sm text-gray-500 md:w-32 md:flex-shrink-0 mb-1 md:mb-0">住所</dt>
+                  <dd className="text-gray-900 leading-relaxed">
+                    〒591-8025<br />
+                    大阪府堺市北区長曽根町130番地42（さかい新事業創造センター内）
+                  </dd>
+                </div>
+                <div className="py-5 md:flex md:gap-8">
+                  <dt className="text-sm text-gray-500 md:w-32 md:flex-shrink-0 mb-1 md:mb-0">資本金</dt>
+                  <dd className="text-gray-900">40万円</dd>
+                </div>
+                <div className="py-5 md:flex md:gap-8">
+                  <dt className="text-sm text-gray-500 md:w-32 md:flex-shrink-0 mb-1 md:mb-0">事業内容</dt>
+                  <dd className="text-gray-900 leading-relaxed">
+                    高校生の探究活動を支援する教育事業<br />
+                    学生の就職活動を支援する人材紹介事業
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Section: 代表情報 */}
-      <section id="representative" className="py-24 bg-white">
+      <section id="representative" className="py-24 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6">
           <div className="flex gap-8">
             {/* Vertical label */}

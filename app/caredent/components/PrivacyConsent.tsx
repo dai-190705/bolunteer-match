@@ -141,8 +141,8 @@ export default function PrivacyConsent({
               </section>
 
               <section className="text-xs text-gray-500 border-t border-gray-100 pt-4">
-                <p>事業者の氏名：学生団体NOCSY（安井大翔）</p>
-                <p>事業者の住所：大阪府堺市北区長曽根町1179-12ユニハイム新金岡1102号室</p>
+                <p>事業者の氏名：株式会社NOCSY（安井大翔）</p>
+                <p>事業者の住所：〒591-8025 大阪府堺市北区長曽根町130番地42（さかい新事業創造センター内）</p>
                 <p className="mt-1">2026年06月01日 制定</p>
               </section>
             </div>
