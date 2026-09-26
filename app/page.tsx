@@ -275,7 +275,7 @@ export default function NOCSYHomePage() {
       {/* Footer */}
       <footer className="bg-gray-900 border-t border-gray-800 py-6">
         <div className="max-w-6xl mx-auto px-6 text-center text-gray-500 text-sm">
-          © 2025 NOCSY
+          © 2026 NOCSY, inc
         </div>
       </footer>
     </div>

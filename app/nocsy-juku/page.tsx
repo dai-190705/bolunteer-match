@@ -274,7 +274,7 @@ export default function NocsyJukuPage() {
 
       {/* ===== Footer ===== */}
       <footer className="py-6 text-center text-sm text-white/50" style={{ backgroundColor: NAVY }}>
-        © 2025 NOCSY
+        © 2026 NOCSY, inc
       </footer>
     </div>
   )
