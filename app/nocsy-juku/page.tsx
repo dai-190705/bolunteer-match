@@ -158,6 +158,31 @@ export default function NocsyJukuPage() {
         </div>
       </section>
 
+      {/* ===== NOCSY塾の理念 ===== */}
+      <section id="philosophy" className="py-20 md:py-28 text-white" style={{ backgroundColor: NAVY }}>
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>PHILOSOPHY</p>
+            <h2 className="text-2xl md:text-3xl font-bold">NOCSY塾の理念</h2>
+          </div>
+
+          <div className="space-y-6 leading-loose text-white/85">
+            <p>
+              総合型選抜の対策において、大学合格はゴールではなく、人生を切り拓くためのスタートラインに過ぎません。
+            </p>
+            <p>
+              一般的な塾の役割は「大学に入学させること」で終わるかもしれません。しかし、学生の人生において真に重要なのは、その後に続く大学生活や、さらに先の社会でどのように活躍し、自らの道を歩んでいけるかです。
+            </p>
+            <p>
+              NOCSY塾では、目先の合格だけを目的とした指導は行いません。総合型選抜に向けた探究や対策のプロセスを通じて、自ら問いを立て、考え抜き、行動へとつなげる「一生モノの力」を養います。課題発見力、表現力、そして未来を切り拓く思考力——これら社会で求められる実戦的な能力を育むことこそが、私たちの真の目的です。
+            </p>
+            <p className="font-bold text-white">
+              大学合格は通過点。その先の人生で輝き続けるための確かな土台を共に創り上げること、それがNOCSY塾の理念です。
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ===== 2. なぜこんなに安いのか？ ===== */}
       <section id="price" className="py-20 md:py-28" style={{ backgroundColor: '#F5F9EE' }}>
         <div className="max-w-4xl mx-auto px-6">
