@@ -144,6 +144,7 @@ export default function PrivacyConsent({
                 <p>事業者の氏名：株式会社NOCSY（安井大翔）</p>
                 <p>事業者の住所：〒591-8025 大阪府堺市北区長曽根町130番地42（さかい新事業創造センター内）</p>
                 <p className="mt-1">2026年06月01日 制定</p>
+                <p>2026年09月11日 改定</p>
               </section>
             </div>
 
