@@ -60,36 +60,12 @@ export default function NocsyJukuDetailPage() {
     <div className="font-sans" style={{ color: NAVY }}>
       <JukuNav />
 
-      {/* ===== ページヘッダー ===== */}
-      <section className="pt-[60px] text-white" style={{ backgroundColor: NAVY }}>
-        <div className="max-w-4xl mx-auto px-6 py-16 md:py-20 text-center">
-          <p className="text-xs md:text-sm font-bold tracking-[0.3em] mb-4" style={{ color: GREEN }}>PROGRAM</p>
-          <h1 className="text-2xl md:text-4xl font-bold leading-snug mb-6">プログラム内容</h1>
-          <p className="text-white/80 leading-relaxed max-w-2xl mx-auto">
-            高校1年生から3年生まで、5つのステップで総合型選抜までの道のりを伴走します。興味を広げるところから始まり、社会での実践を経て、自分の言葉で語れる志望理由へとつなげていきます。
-          </p>
-        </div>
-      </section>
-
-      {/* ===== ロードマップ画像 ===== */}
-      <section className="py-16 md:py-20" style={{ backgroundColor: '#F5F9EE' }}>
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="bg-white border" style={{ borderColor: `${NAVY}1A` }}>
-            <img
-              src="/nocsy-juku/program.PNG"
-              alt="総合型選抜までのロードマップ：01 興味を広げる、02 自分の軸を見つける、03 軸を深掘りする、04 社会に実装する、05 言語化して未来へつなげる"
-              className="w-full object-contain"
-            />
-          </div>
-        </div>
-      </section>
-
       {/* ===== 5つのステップ ===== */}
-      <section className="py-20 md:py-28 bg-white">
+      <section className="pt-[124px] pb-20 md:pt-[140px] md:pb-28 bg-white">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>5 STEPS</p>
-            <h2 className="text-2xl md:text-3xl font-bold">5つのステップ</h2>
+            <h1 className="text-2xl md:text-3xl font-bold">5つのステップ</h1>
           </div>
 
           <div className="border-t" style={{ borderColor: `${NAVY}1A` }}>
