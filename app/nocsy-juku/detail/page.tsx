@@ -20,6 +20,8 @@ export const metadata: Metadata = {
 const STEPS = [
   {
     num: '01',
+    image: '/nocsy-juku/detail-step1.png',
+    imageAlt: '提携先のイベントで子どもたちと活動する学生',
     grade: '高校1年生',
     title: '興味を広げる',
     catch: 'いろんな「好き」や「やってみたい」に出会う',
@@ -27,6 +29,8 @@ const STEPS = [
   },
   {
     num: '02',
+    image: '/nocsy-juku/detail-step2.png',
+    imageAlt: '参加した活動を記録するマイポートフォリオの画面',
     grade: '高校1年生',
     title: '自分の軸を見つける',
     catch: '経験を振り返り、自分は何に惹かれるのかを知る',
@@ -34,6 +38,8 @@ const STEPS = [
   },
   {
     num: '03',
+    image: '/nocsy-juku/detail-step3.png',
+    imageAlt: 'テーマに本気で取り組む学生',
     grade: '高校2年生',
     title: '軸を深掘りする',
     catch: '興味をもとにテーマを絞り、本気で取り組む',
@@ -41,6 +47,8 @@ const STEPS = [
   },
   {
     num: '04',
+    image: '/nocsy-juku/detail-step4.jpg',
+    imageAlt: '社会の現場で活動した学生たちの集合写真',
     grade: '高校2年生',
     title: '社会に実装する',
     catch: '自分で考え、行動し、実際の社会で試す',
@@ -48,6 +56,8 @@ const STEPS = [
   },
   {
     num: '05',
+    image: '/nocsy-juku/detail-step5.jpg',
+    imageAlt: 'メンターと一緒に志望理由を言語化する高校生',
     grade: '高校3年生',
     title: '言語化して未来へつなげる',
     catch: '経験を言葉にし、総合型選抜で伝えられる形にする',
@@ -88,7 +98,13 @@ export default function NocsyJukuDetailPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl md:text-2xl font-bold mb-2">{step.title}</h3>
-                  <p className="font-bold text-sm mb-4" style={{ color: GREEN }}>{step.catch}</p>
+                  <p className="font-bold text-sm mb-5" style={{ color: GREEN }}>{step.catch}</p>
+                  <img
+                    src={step.image}
+                    alt={step.imageAlt}
+                    className="w-full h-auto border mb-5"
+                    style={{ borderColor: `${NAVY}1A` }}
+                  />
                   <p className="leading-relaxed" style={{ color: `${NAVY}B3` }}>{step.body}</p>
                 </div>
               </div>
