@@ -45,6 +45,47 @@ export function DocumentRequestButton(props: { label: string; large?: boolean })
   return <CtaButton href={DOCUMENT_REQUEST_URL} background={GREEN} color={NAVY} {...props} />
 }
 
+const DOCUMENT_CONTENTS = [
+  '実際の塾生が5つのステップをどう進んだのか',
+  '参加したボランティアや探究プログラムの実例',
+  '経験を志望理由へとつなげていくまでの過程',
+]
+
+export function DocumentRequestSection({ children }: { children?: React.ReactNode }) {
+  return (
+    <section id="document" className="py-20 md:py-28" style={{ backgroundColor: '#F5F9EE' }}>
+      <div className="max-w-2xl mx-auto px-6 text-center">
+        <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>DOCUMENT</p>
+        <h2 className="text-2xl md:text-3xl font-bold leading-snug mb-6">
+          「NOCSY塾での活動例」を<br />
+          無料でダウンロード
+        </h2>
+        <p className="leading-relaxed mb-10" style={{ color: `${NAVY}B3` }}>
+          実際の塾生が、興味を広げるところから総合型選抜で自分の経験を伝えるまでを、どのように歩んだのか。5つのステップに沿って、具体的な活動例としてまとめました。
+        </p>
+
+        <div className="bg-white text-left px-8 py-7 mb-10 border" style={{ borderColor: `${NAVY}1A` }}>
+          <p className="text-xs font-bold tracking-widest mb-4" style={{ color: GREEN }}>資料でわかること</p>
+          <ul className="space-y-3">
+            {DOCUMENT_CONTENTS.map((item) => (
+              <li key={item} className="flex items-start gap-3 font-bold leading-snug">
+                <span className="mt-[0.45em] w-2 h-2 flex-shrink-0" style={{ backgroundColor: GREEN }} />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p className="text-sm mb-8" style={{ color: `${NAVY}B3` }}>
+          「実際に何をするの？」が、具体的にイメージできる資料です。
+        </p>
+        <DocumentRequestButton label="活動例の資料をダウンロード" large />
+        {children}
+      </div>
+    </section>
+  )
+}
+
 export function SectionLabel({ en, ja }: { en: string; ja: string }) {
   return (
     <div className="text-center mb-14">
