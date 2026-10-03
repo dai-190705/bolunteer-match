@@ -34,7 +34,7 @@ const STEPS = [
     grade: '高校1年生',
     title: '自分の軸を見つける',
     catch: '経験を振り返り、自分は何に惹かれるのかを知る',
-    body: '参加した活動をメンターと一緒に振り返り、どんな場面で心が動いたのか、何に惹かれたのかを言葉にしていきます。たくさんの経験の中から、自分の関心の「軸」を見つけます。',
+    body: '参加した活動をメンターと一緒に振り返り、どんな場面で心が動いたのか、何に惹かれたのかを独自の分析ツールを使いながら言葉にしていきます。たくさんの経験の中から、自分の関心の「軸」を見つけます。',
   },
   {
     num: '03',
@@ -43,7 +43,7 @@ const STEPS = [
     grade: '高校2年生',
     title: '軸を深掘りする',
     catch: '興味をもとにテーマを絞り、本気で取り組む',
-    body: '見えてきた軸をもとに探究テーマを絞り込み、調査やフィールドワークを通じて本気で取り組みます。表面的な興味を、自分の言葉で語れる問いへと深めていきます。',
+    body: '見えてきた軸をもとに探究テーマを絞り込み、軸に沿ったプログラムへの参加や調査、フィールドワークを通じて、自分の問いに本気で取り組みます。表面的な興味を、自分の言葉で語れる問いへと深めていきます。',
   },
   {
     num: '04',
@@ -52,7 +52,7 @@ const STEPS = [
     grade: '高校2年生',
     title: '社会に実装する',
     catch: '自分で考え、行動し、実際の社会で試す',
-    body: '深めたテーマをもとに自分で企画を考え、実際の社会の現場で試します。地域や企業、団体の大人と関わりながら行動し、うまくいったこともいかなかったことも次の学びにつなげます。',
+    body: '深めたテーマをもとに自分で企画を考え、実際の社会の現場で試します。地域や企業、団体の大人と関わりながら行動し、うまくいったこともいかなかったことも分析し、次の問いにつなげます。',
   },
   {
     num: '05',
@@ -75,7 +75,7 @@ export default function NocsyJukuDetailPage() {
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>5 STEPS</p>
-            <h1 className="text-2xl md:text-3xl font-bold">5つのステップ</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">NOCSY塾の5つのステップ</h1>
           </div>
 
           <div className="border-t" style={{ borderColor: `${NAVY}1A` }}>
@@ -90,8 +90,8 @@ export default function NocsyJukuDetailPage() {
                     {step.num}
                   </p>
                   <p
-                    className="inline-block mt-3 text-xs font-bold px-2.5 py-1"
-                    style={{ backgroundColor: `${GREEN}33`, color: NAVY }}
+                    className="inline-block mt-4 text-sm font-bold tracking-wider text-white px-3 py-1.5"
+                    style={{ backgroundColor: NAVY }}
                   >
                     {step.grade}
                   </p>
