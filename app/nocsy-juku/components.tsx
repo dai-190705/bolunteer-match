@@ -42,7 +42,7 @@ export function LineButton(props: { label: string; large?: boolean }) {
 }
 
 export function DocumentRequestButton(props: { label: string; large?: boolean }) {
-  return <CtaButton href={DOCUMENT_REQUEST_URL} background={GREEN} color={NAVY} {...props} />
+  return <CtaButton href={DOCUMENT_REQUEST_URL} background={GREEN} color="#FFFFFF" {...props} />
 }
 
 const DOCUMENT_CONTENTS = [
