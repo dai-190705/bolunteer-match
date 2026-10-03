@@ -137,8 +137,8 @@ export default function NocsyJukuPrivacyPage() {
                 <p>代表取締役　安井大翔</p>
                 <p>
                   e-mail：
-                  <a href="mailto:info@nocsy.me" className="underline underline-offset-4 hover:opacity-60">
-                    info@nocsy.me
+                  <a href="mailto:daito.yasui@nocsy.me" className="underline underline-offset-4 hover:opacity-60">
+                    daito.yasui@nocsy.me
                   </a>
                 </p>
               </div>

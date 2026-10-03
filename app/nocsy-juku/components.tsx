@@ -3,8 +3,8 @@ import Link from 'next/link'
 
 export const LINE_URL = 'https://line.me/R/ti/p/@545kmxeh'
 
-// 資料請求フォームができたら差し替える
-export const DOCUMENT_REQUEST_URL = LINE_URL
+export const DOCUMENT_REQUEST_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSckVaMqKNoxww9dKCPJ1V2yM6kV5KlIUOxeajoYbGy9bTaK4w/viewform'
 
 export const NAVY = '#19365B'
 export const GREEN = '#8CC63F'
