@@ -60,6 +60,12 @@ export function DocumentRequestSection({ children }: { children?: React.ReactNod
           「NOCSY塾での活動例」を<br />
           無料でダウンロード
         </h2>
+        <img
+          src="/nocsy-juku/document.jpg"
+          alt="メンターと一緒に活動を振り返る高校生"
+          className="w-full h-auto border mb-8"
+          style={{ borderColor: `${NAVY}1A` }}
+        />
         <p className="leading-relaxed mb-10" style={{ color: `${NAVY}B3` }}>
           実際の塾生が、興味を広げるところから総合型選抜で自分の経験を伝えるまでを、どのように歩んだのか。5つのステップに沿って、具体的な活動例としてまとめました。
         </p>
