@@ -88,7 +88,7 @@ export default function NocsyJukuPage() {
           <p className="text-white/80 leading-relaxed max-w-2xl mx-auto mb-8">
             NOCSY塾は、オンラインで総合型選抜対策を行う専門塾です。NOCSYが提携するボランティア・探究プログラムを駆使し、志望理由書を書く前の課外活動の段階から手厚くサポートします。
           </p>
-          <LineButton label="公式LINEで無料受験相談" large />
+          <DocumentRequestButton label="資料を請求する" large />
         </div>
       </section>
 

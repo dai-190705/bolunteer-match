@@ -9,10 +9,10 @@ export const DOCUMENT_REQUEST_URL = LINE_URL
 export const NAVY = '#19365B'
 export const GREEN = '#8CC63F'
 
-export function LineButton({ label, large = false }: { label: string; large?: boolean }) {
+function CtaButton({ href, label, large = false }: { href: string; label: string; large?: boolean }) {
   return (
     <a
-      href={LINE_URL}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={`inline-flex items-center justify-center gap-2 rounded-full font-bold text-white shadow-md hover:opacity-90 hover:shadow-lg transition-all ${
@@ -25,20 +25,12 @@ export function LineButton({ label, large = false }: { label: string; large?: bo
   )
 }
 
-export function DocumentRequestButton({ label, large = false }: { label: string; large?: boolean }) {
-  return (
-    <a
-      href={DOCUMENT_REQUEST_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-bold text-white shadow-md hover:opacity-90 hover:shadow-lg transition-all ${
-        large ? 'px-10 py-4 text-base' : 'px-6 py-3 text-sm'
-      }`}
-      style={{ backgroundColor: NAVY }}
-    >
-      {label}
-    </a>
-  )
+export function LineButton(props: { label: string; large?: boolean }) {
+  return <CtaButton href={LINE_URL} {...props} />
+}
+
+export function DocumentRequestButton(props: { label: string; large?: boolean }) {
+  return <CtaButton href={DOCUMENT_REQUEST_URL} {...props} />
 }
 
 export function SectionLabel({ en, ja }: { en: string; ja: string }) {
