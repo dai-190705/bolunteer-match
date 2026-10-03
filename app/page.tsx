@@ -1,5 +1,10 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
+
+export const metadata: Metadata = {
+  title: '株式会社NOCSY',
+}
 
 export default function NOCSYHomePage() {
   return (
