@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { GREEN, JukuFooter, JukuNav, LineButton, NAVY, SectionLabel } from './components'
+import { DocumentRequestButton, GREEN, JukuFooter, JukuNav, LineButton, NAVY, SectionLabel } from './components'
 
 export const metadata: Metadata = {
   title: '総合型選抜対策専門塾 NOCSY塾 | NOCSY',
@@ -266,15 +266,15 @@ export default function NocsyJukuPage() {
         </div>
       </section>
 
-      {/* ===== 5. 公式LINEから受験相談 ===== */}
+      {/* ===== 5. 資料請求 ===== */}
       <section className="py-20 md:py-28" style={{ backgroundColor: '#F5F9EE' }}>
         <div className="max-w-2xl mx-auto px-6 text-center">
-          <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>CONTACT</p>
-          <h2 className="text-2xl md:text-3xl font-bold mb-5">公式LINEから受験相談</h2>
+          <p className="text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>DOCUMENT</p>
+          <h2 className="text-2xl md:text-3xl font-bold mb-5">まずは資料請求から</h2>
           <p className="leading-relaxed mb-10" style={{ color: `${NAVY}B3` }}>
-            入塾の申込・受験のお悩み・料金のご質問など、すべて公式LINEで受け付けています。まずはお気軽に友だち追加してください。
+            NOCSY塾の詳しいご案内資料をお送りします。入塾をご検討中の方は、お気軽にご請求ください。
           </p>
-          <LineButton label="公式LINEを友だち追加する →" large />
+          <DocumentRequestButton label="資料を請求する" large />
         </div>
       </section>
 

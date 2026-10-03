@@ -3,6 +3,9 @@ import Link from 'next/link'
 
 export const LINE_URL = 'https://line.me/R/ti/p/@545kmxeh'
 
+// 資料請求フォームができたら差し替える
+export const DOCUMENT_REQUEST_URL = LINE_URL
+
 export const NAVY = '#19365B'
 export const GREEN = '#8CC63F'
 
@@ -16,6 +19,22 @@ export function LineButton({ label, large = false }: { label: string; large?: bo
         large ? 'px-10 py-4 text-base' : 'px-6 py-3 text-sm'
       }`}
       style={{ backgroundColor: '#06C755' }}
+    >
+      {label}
+    </a>
+  )
+}
+
+export function DocumentRequestButton({ label, large = false }: { label: string; large?: boolean }) {
+  return (
+    <a
+      href={DOCUMENT_REQUEST_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`inline-flex items-center justify-center gap-2 rounded-full font-bold text-white shadow-md hover:opacity-90 hover:shadow-lg transition-all ${
+        large ? 'px-10 py-4 text-base' : 'px-6 py-3 text-sm'
+      }`}
+      style={{ backgroundColor: NAVY }}
     >
       {label}
     </a>
@@ -45,7 +64,7 @@ export function JukuNav() {
           <a href="/nocsy-juku#mentors" className="hover:opacity-60 transition-opacity">メンター紹介</a>
           <a href="/nocsy-juku#campaign" className="hover:opacity-60 transition-opacity">キャンペーン</a>
         </div>
-        <LineButton label="LINEで相談" />
+        <DocumentRequestButton label="資料請求" />
       </div>
     </nav>
   )

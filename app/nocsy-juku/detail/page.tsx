@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { GREEN, JukuFooter, JukuNav, LineButton, NAVY } from '../components'
+import { DocumentRequestButton, GREEN, JukuFooter, JukuNav, NAVY } from '../components'
 
 export const metadata: Metadata = {
   title: 'プログラム内容 | 総合型選抜対策専門塾 NOCSY塾',
@@ -116,11 +116,11 @@ export default function NocsyJukuDetailPage() {
       {/* ===== CTA ===== */}
       <section className="py-20 md:py-28" style={{ backgroundColor: '#F5F9EE' }}>
         <div className="max-w-2xl mx-auto px-6 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-5">まずは公式LINEから受験相談</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-5">まずは資料請求から</h2>
           <p className="leading-relaxed mb-10" style={{ color: `${NAVY}B3` }}>
-            いまの学年や状況に合わせて、どのステップから始めるかをご提案します。お気軽にご相談ください。
+            NOCSY塾の詳しいご案内資料をお送りします。入塾をご検討中の方は、お気軽にご請求ください。
           </p>
-          <LineButton label="公式LINEで無料受験相談" large />
+          <DocumentRequestButton label="資料を請求する" large />
           <div className="mt-10">
             <Link href="/nocsy-juku" className="text-sm underline underline-offset-4 hover:opacity-60 transition-opacity">
               NOCSY塾のトップへ戻る
