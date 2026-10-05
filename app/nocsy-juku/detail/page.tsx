@@ -20,7 +20,9 @@ export const metadata: Metadata = {
 const STEPS = [
   {
     num: '01',
-    image: '/nocsy-juku/detail-step1.png',
+    image: '/nocsy-juku/detail-step1.jpg',
+    imageWidth: 1400,
+    imageHeight: 1050,
     imageAlt: '提携先のイベントで子どもたちと活動する学生',
     grade: '高校1年生',
     title: '興味を広げる',
@@ -30,6 +32,8 @@ const STEPS = [
   {
     num: '02',
     image: '/nocsy-juku/detail-step2.png',
+    imageWidth: 1400,
+    imageHeight: 961,
     imageAlt: '参加した活動を記録するマイポートフォリオの画面',
     grade: '高校1年生',
     title: '自分の軸を見つける',
@@ -38,7 +42,9 @@ const STEPS = [
   },
   {
     num: '03',
-    image: '/nocsy-juku/detail-step3.png',
+    image: '/nocsy-juku/detail-step3.jpg',
+    imageWidth: 1200,
+    imageHeight: 899,
     imageAlt: 'テーマに本気で取り組む学生',
     grade: '高校2年生',
     title: '軸を深掘りする',
@@ -48,6 +54,8 @@ const STEPS = [
   {
     num: '04',
     image: '/nocsy-juku/detail-step4.jpg',
+    imageWidth: 1166,
+    imageHeight: 1009,
     imageAlt: '社会の現場で活動した学生たちの集合写真',
     grade: '高校2年生',
     title: '社会に実装する',
@@ -57,6 +65,8 @@ const STEPS = [
   {
     num: '05',
     image: '/nocsy-juku/detail-step5.jpg',
+    imageWidth: 1400,
+    imageHeight: 933,
     imageAlt: 'メンターと一緒に志望理由を言語化する高校生',
     grade: '高校3年生',
     title: '言語化して未来へつなげる',
@@ -102,6 +112,10 @@ export default function NocsyJukuDetailPage() {
                   <img
                     src={step.image}
                     alt={step.imageAlt}
+                    width={step.imageWidth}
+                    height={step.imageHeight}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-auto border mb-5"
                     style={{ borderColor: `${NAVY}1A` }}
                   />

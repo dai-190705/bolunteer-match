@@ -63,6 +63,10 @@ export function DocumentRequestSection({ children }: { children?: React.ReactNod
         <img
           src="/nocsy-juku/document.jpg"
           alt="メンターと一緒に活動を振り返る高校生"
+          width={1400}
+          height={933}
+          loading="lazy"
+          decoding="async"
           className="w-full h-auto border mb-8"
           style={{ borderColor: `${NAVY}1A` }}
         />
