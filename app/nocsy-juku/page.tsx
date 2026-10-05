@@ -12,7 +12,7 @@ export const metadata: Metadata = {
       'オンラインで総合型選抜対策を行う専門塾。課外活動の段階からマンツーマンでサポート。月額1.5万円から。',
     url: 'https://www.nocsy.me/nocsy-juku',
     siteName: 'NOCSY',
-    images: [{ url: '/nocsy-juku/hero.png', width: 1920, height: 1280, alt: 'NOCSY塾' }],
+    images: [{ url: '/nocsy-juku/hero.jpg', width: 1920, height: 1280, alt: 'NOCSY塾' }],
     locale: 'ja_JP',
     type: 'website',
   },
@@ -69,7 +69,10 @@ export default function NocsyJukuPage() {
       {/* ===== Hero（トップ画像） ===== */}
       <section className="pt-[60px]">
         <img
-          src="/nocsy-juku/hero.png"
+          src="/nocsy-juku/hero.jpg"
+          width={1920}
+          height={1280}
+          fetchPriority="high"
           alt="総合型選抜対策専門塾 NOCSY塾 — マンツーマンで課外活動からサポート、総合型選抜経験のある大学生メンターがリアルな指導、月額1.5万円〜の安心低価格"
           className="w-full object-cover"
         />
@@ -122,7 +125,11 @@ export default function NocsyJukuPage() {
 
           <div className="bg-white border mb-12" style={{ borderColor: `${NAVY}1A` }}>
             <img
-              src="/nocsy-juku/program.PNG"
+              src="/nocsy-juku/program.jpg"
+              width={1672}
+              height={941}
+              loading="lazy"
+              decoding="async"
               alt="総合型選抜までのロードマップ：01 興味を広げる、02 自分の軸を見つける、03 軸を深掘りする、04 社会に実装する、05 言語化して未来へつなげる"
               className="w-full object-contain"
             />

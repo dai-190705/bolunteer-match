@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description: '高校1年生から3年生までの5つのステップで、総合型選抜まで伴走します。',
     url: 'https://www.nocsy.me/nocsy-juku/detail',
     siteName: 'NOCSY',
-    images: [{ url: '/nocsy-juku/program.PNG', width: 1672, height: 941, alt: '総合型選抜までのロードマップ' }],
+    images: [{ url: '/nocsy-juku/program.jpg', width: 1672, height: 941, alt: '総合型選抜までのロードマップ' }],
     locale: 'ja_JP',
     type: 'website',
   },

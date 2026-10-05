@@ -160,7 +160,11 @@ export default function NOCSYHomePage() {
 
                 <div className="mb-8">
                   <img
-                    src="/nocsy-juku/hero.png"
+                    src="/nocsy-juku/hero.jpg"
+                    width={1920}
+                    height={1280}
+                    loading="lazy"
+                    decoding="async"
                     alt="総合型選抜対策専門塾 NOCSY塾"
                     className="w-full object-contain"
                   />
