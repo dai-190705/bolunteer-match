@@ -3,8 +3,6 @@ import Link from 'next/link'
 
 export const LINE_URL = 'https://line.me/R/ti/p/@545kmxeh'
 
-export const DOCUMENT_REQUEST_URL = '/go/form'
-
 export const NAVY = '#19365B'
 export const GREEN = '#8CC63F'
 
@@ -40,8 +38,16 @@ export function LineButton(props: { label: string; large?: boolean }) {
   return <CtaButton href={LINE_URL} background="#06C755" color="#FFFFFF" {...props} />
 }
 
-export function DocumentRequestButton(props: { label: string; large?: boolean }) {
-  return <CtaButton href={DOCUMENT_REQUEST_URL} background={GREEN} color="#FFFFFF" {...props} />
+// どのボタンから資料請求フォームへ遷移したかを Vercel Web Analytics で区別するため、位置ごとに中継URLを分ける
+export function DocumentRequestButton({
+  position,
+  ...props
+}: {
+  position: 'header' | 'hero' | 'bottom'
+  label: string
+  large?: boolean
+}) {
+  return <CtaButton href={`/go/form/${position}`} background={GREEN} color="#FFFFFF" {...props} />
 }
 
 const DOCUMENT_CONTENTS = [
@@ -88,7 +94,7 @@ export function DocumentRequestSection({ children }: { children?: React.ReactNod
         <p className="text-sm mb-8" style={{ color: `${NAVY}B3` }}>
           「実際に何をするの？」が、具体的にイメージできる資料です。
         </p>
-        <DocumentRequestButton label="活動例の資料をダウンロード" large />
+        <DocumentRequestButton position="bottom" label="活動例の資料をダウンロード" large />
         {children}
       </div>
     </section>
@@ -118,7 +124,7 @@ export function JukuNav() {
           <a href="/nocsy-juku#mentors" className="hover:opacity-60 transition-opacity">メンター紹介</a>
           <a href="/nocsy-juku#campaign" className="hover:opacity-60 transition-opacity">キャンペーン</a>
         </div>
-        <DocumentRequestButton label="資料請求" />
+        <DocumentRequestButton position="header" label="資料請求" />
       </div>
     </nav>
   )

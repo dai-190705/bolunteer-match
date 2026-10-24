@@ -91,7 +91,7 @@ export default function NocsyJukuPage() {
           <p className="text-white/80 leading-relaxed max-w-2xl mx-auto mb-8">
             NOCSY塾は、オンラインで総合型選抜対策を行う専門塾です。NOCSYが提携するボランティア・探究プログラムを駆使し、志望理由書を書く前の課外活動の段階から手厚くサポートします。
           </p>
-          <DocumentRequestButton label="活動例の資料をダウンロード" large />
+          <DocumentRequestButton position="hero" label="活動例の資料をダウンロード" large />
         </div>
       </section>
 
