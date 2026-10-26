@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { DocumentRequestSection, GREEN, JukuFooter, JukuNav, NAVY } from '../components'
+import { GREEN, JukuFooter, JukuNav, LineCtaSection, NAVY } from '../components'
 
 export const metadata: Metadata = {
   title: 'プログラム内容 | 総合型選抜対策専門塾 NOCSY塾',
@@ -127,13 +127,13 @@ export default function NocsyJukuDetailPage() {
         </div>
       </section>
 
-      <DocumentRequestSection>
+      <LineCtaSection position="detail">
         <div className="mt-10">
           <Link href="/nocsy-juku" className="text-sm underline underline-offset-4 hover:opacity-60 transition-opacity">
             NOCSY塾のトップへ戻る
           </Link>
         </div>
-      </DocumentRequestSection>
+      </LineCtaSection>
 
       <JukuFooter />
     </div>
