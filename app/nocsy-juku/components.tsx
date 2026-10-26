@@ -74,7 +74,7 @@ export function LineCtaSection({
         <p className="text-xs md:text-sm font-bold tracking-[0.3em] mb-3" style={{ color: GREEN }}>CONTACT</p>
         <h2 className="text-2xl md:text-3xl font-bold leading-snug mb-5">まずはLINEで無料相談</h2>
         <p className="leading-relaxed mb-8" style={{ color: `${NAVY}B3` }}>
-          友だち追加で、NOCSY塾での活動例をまとめた資料をお送りします。お子さまの学年や状況に合わせたプランのご相談も、LINEでお気軽にどうぞ。
+          お子さまの学年や状況に合わせたプランのご相談を、LINEでお気軽にどうぞ。
         </p>
         <LineButton position={position} label="LINEで無料相談する" large />
         {children}
