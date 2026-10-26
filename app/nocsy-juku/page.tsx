@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GREEN, JukuFooter, JukuNav, LineButton, LineCtaSection, NAVY, PALE_GREEN, SectionLabel } from './components'
+import { findImage } from './find-image'
 
 export const metadata: Metadata = {
   title: '総合型選抜対策専門塾 NOCSY塾 | NOCSY',
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
   },
 }
 
-const PROMISES = ['入会金0円', '契約期間の縛りなし', '毎月の報告書つき']
+const PROMISES = ['入会金0円', '契約の縛りなし', '毎月の報告書つき']
 
 const WORRIES = [
   '総合型選抜に興味はあるけれど、何から始めればいいかわからない',
@@ -66,7 +67,9 @@ const MODEL_CASE = [
   { period: '4〜6か月目', title: 'テーマを見つける', body: '活動をふり返り、深めたいテーマを決める' },
   { period: '7〜10か月目', title: '自分で動く', body: 'マルシェ出展や自主イベントを企画して挑戦' },
   { period: '11〜12か月目', title: '記録にまとめる', body: '1年の経験を、言葉と記録に残す' },
-]
+].map((m, i) => ({ ...m, image: findImage(`/nocsy-juku/model/model-${i + 1}`) }))
+
+const COMPARE_IMAGE = findImage('/nocsy-juku/price-comparison')
 
 const COMPARE = {
   columns: ['NOCSY塾', 'A塾', 'B塾', 'C塾'],
@@ -117,7 +120,7 @@ export default function NocsyJukuPage() {
     <div className="font-sans" style={{ color: NAVY }}>
       <JukuNav />
 
-      {/* ===== ファーストビュー ===== */}
+      {/* ===== ファーストビュー（スマホで開いた瞬間にLINEボタンまで見えるよう高さを抑える） ===== */}
       <section className="pt-[60px]">
         <img
           src="/nocsy-juku/hero-photo.jpg"
@@ -125,37 +128,40 @@ export default function NocsyJukuPage() {
           width={1260}
           height={570}
           fetchPriority="high"
-          className="w-full h-auto max-h-[480px] object-cover"
+          className="w-full h-[130px] md:h-[380px] object-cover object-[center_30%]"
         />
         <div className="text-white" style={{ backgroundColor: NAVY }}>
-          <div className="max-w-3xl mx-auto px-6 py-12 md:py-16 text-center">
-            <p className="text-xs md:text-sm font-bold tracking-[0.3em] mb-4" style={{ color: GREEN }}>
+          <div className="max-w-3xl mx-auto px-6 pt-7 pb-8 md:py-14 text-center">
+            <p className="text-[11px] md:text-sm font-bold tracking-[0.25em] mb-2 md:mb-4" style={{ color: GREEN }}>
               総合型選抜対策専門塾 NOCSY塾
             </p>
-            <h1 className="text-[1.7rem] md:text-4xl font-bold leading-snug mb-5">
+            <h1 className="text-[1.6rem] md:text-4xl font-bold leading-snug mb-3 md:mb-5">
               総合型選抜の準備を、
               <br />
               高1から。
             </h1>
-            <p className="text-white/85 leading-relaxed mb-8">
-              週1回40分のオンライン個別指導で、課外活動づくりから志望理由書・面接まで、お子さまに伴走します。
+            <p className="text-sm md:text-base text-white/85 leading-relaxed mb-4 md:mb-6">
+              週1回40分のオンライン個別指導で、
+              <br className="md:hidden" />
+              課外活動から志望理由書・面接まで伴走します。
             </p>
-            <p className="mb-6">
+            <p className="mb-2 md:mb-3">
               <span className="text-sm text-white/80 mr-2">月額</span>
-              <span className="text-5xl md:text-6xl font-bold" style={{ color: GREEN }}>
+              <span className="text-[2.6rem] md:text-6xl font-bold leading-none" style={{ color: GREEN }}>
                 9,800
               </span>
-              <span className="text-xl font-bold ml-1">円〜</span>
+              <span className="text-lg md:text-xl font-bold ml-1">円〜</span>
             </p>
-            <ul className="flex flex-wrap justify-center gap-2 mb-10">
+            <ul className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs md:text-sm font-bold text-white/90 mb-5 md:mb-8">
               {PROMISES.map((p) => (
-                <li key={p} className="text-sm font-bold px-3 py-1.5 border border-white/40">
+                <li key={p} className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: GREEN }} />
                   {p}
                 </li>
               ))}
             </ul>
             <LineButton position="hero" label="LINEで無料相談する" large />
-            <p className="mt-4 text-xs text-white/70">友だち追加で、活動例をまとめた資料をお送りします</p>
+            <p className="mt-3 text-[11px] md:text-xs text-white/70">友だち追加で、活動例をまとめた資料をお送りします</p>
           </div>
         </div>
       </section>
@@ -164,14 +170,14 @@ export default function NocsyJukuPage() {
       <section className="py-16 md:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-6">
           <SectionLabel en="WORRIES" ja="こんなお悩みはありませんか？" />
-          <ul className="border-t" style={{ borderColor: `${NAVY}1A` }}>
+          <ul className="space-y-3">
             {WORRIES.map((w) => (
               <li
                 key={w}
-                className="flex items-start gap-4 py-4 border-b font-bold leading-relaxed"
-                style={{ borderColor: `${NAVY}1A` }}
+                className="flex items-start gap-3 px-5 py-4 rounded-lg font-bold leading-relaxed"
+                style={{ backgroundColor: PALE_GREEN }}
               >
-                <span className="mt-[0.55em] w-2 h-2 flex-shrink-0" style={{ backgroundColor: GREEN }} />
+                <span className="mt-[0.6em] w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: GREEN }} />
                 {w}
               </li>
             ))}
@@ -184,40 +190,36 @@ export default function NocsyJukuPage() {
         <div className="max-w-5xl mx-auto px-6">
           <SectionLabel en="PLANS" ja="学年に合わせた2つのプラン" />
 
-          <div className="grid md:grid-cols-2 gap-6 mb-10">
+          <div className="grid md:grid-cols-2 gap-5 mb-10">
             {PLANS.map((plan) => (
-              <div key={plan.name} className="bg-white border" style={{ borderColor: `${NAVY}1A` }}>
-                <div className="px-6 py-4 text-white" style={{ backgroundColor: NAVY }}>
-                  <p className="text-xs font-bold tracking-widest" style={{ color: GREEN }}>
-                    {plan.grade}
-                  </p>
-                  <p className="text-lg font-bold">{plan.name}</p>
-                </div>
-                <div className="p-6">
-                  <p className="mb-5">
-                    <span className="text-sm mr-1">月額</span>
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="font-bold ml-1">円</span>
-                  </p>
-                  <ul className="space-y-2.5">
-                    {plan.items.map((item) => (
-                      <li key={item} className="flex items-start gap-3 text-sm leading-relaxed">
-                        <span className="mt-[0.5em] w-1.5 h-1.5 flex-shrink-0" style={{ backgroundColor: GREEN }} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <div key={plan.name} className="bg-white rounded-xl p-6 md:p-8">
+                <p className="text-sm font-bold mb-1" style={{ color: GREEN }}>
+                  {plan.grade}
+                </p>
+                <p className="text-xl font-bold mb-4">{plan.name}</p>
+                <p className="pb-5 mb-5 border-b" style={{ borderColor: `${NAVY}1A` }}>
+                  <span className="text-sm mr-1">月額</span>
+                  <span className="text-4xl font-bold">{plan.price}</span>
+                  <span className="font-bold ml-1">円</span>
+                </p>
+                <ul className="space-y-2.5">
+                  {plan.items.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm leading-relaxed">
+                      <span className="mt-[0.55em] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: GREEN }} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
 
           <p className="text-center text-sm font-bold mb-4">どちらのプランにも含まれます</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px" style={{ backgroundColor: `${NAVY}1A` }}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {COMMON.map((c) => (
-              <div key={c.title} className="bg-white p-5">
-                <p className="font-bold mb-1.5">{c.title}</p>
-                <p className="text-xs leading-relaxed" style={{ color: `${NAVY}B3` }}>
+              <div key={c.title} className="bg-white rounded-lg p-4 text-center">
+                <p className="font-bold mb-1">{c.title}</p>
+                <p className="text-xs" style={{ color: `${NAVY}B3` }}>
                   {c.body}
                 </p>
               </div>
@@ -229,28 +231,24 @@ export default function NocsyJukuPage() {
       {/* ===== 高1・2の1年間 ===== */}
       <section id="model" className="py-16 md:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-6">
-          <SectionLabel
-            en="MODEL CASE"
-            ja="高1から始めた場合の1年間"
-            lead="課外活動をつくるプランの一例です。"
-          />
+          <SectionLabel en="MODEL CASE" ja="高1から始めた場合の1年間" lead="課外活動をつくるプランの一例です。" />
 
-          <ol className="border-t" style={{ borderColor: `${NAVY}1A` }}>
+          <ol className="space-y-8 md:space-y-10">
             {MODEL_CASE.map((m) => (
-              <li
-                key={m.period}
-                className="py-6 border-b md:flex md:gap-8"
-                style={{ borderColor: `${NAVY}1A` }}
-              >
-                <p className="md:w-32 flex-shrink-0 mb-2 md:mb-0">
-                  <span
-                    className="inline-block text-sm font-bold text-white px-3 py-1"
-                    style={{ backgroundColor: NAVY }}
-                  >
-                    {m.period}
-                  </span>
-                </p>
+              <li key={m.period} className="md:flex md:gap-8 md:items-center">
+                {m.image && (
+                  <img
+                    src={m.image}
+                    alt={m.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full md:w-64 aspect-[4/3] object-cover rounded-lg mb-4 md:mb-0 flex-shrink-0"
+                  />
+                )}
                 <div>
+                  <p className="text-sm font-bold mb-1" style={{ color: GREEN }}>
+                    {m.period}
+                  </p>
                   <p className="font-bold text-lg mb-1">{m.title}</p>
                   <p className="text-sm leading-relaxed" style={{ color: `${NAVY}B3` }}>
                     {m.body}
@@ -260,15 +258,14 @@ export default function NocsyJukuPage() {
             ))}
           </ol>
 
-          <div className="mt-8 p-6 md:p-8 text-center text-white" style={{ backgroundColor: NAVY }}>
-            <p className="text-xs font-bold tracking-widest mb-2" style={{ color: GREEN }}>
+          <div className="mt-10 rounded-xl p-6 md:p-8 text-center text-white" style={{ backgroundColor: NAVY }}>
+            <p className="text-sm font-bold mb-2" style={{ color: GREEN }}>
               高3の春には
             </p>
             <p className="font-bold text-lg leading-relaxed">
               志望理由書に書ける経験と、その記録がそろった状態で出願準備をスタートできます。
             </p>
           </div>
-
 
           <div className="mt-10 text-center">
             <LineButton position="middle" label="LINEで無料相談する" large />
@@ -286,55 +283,57 @@ export default function NocsyJukuPage() {
         <div className="max-w-3xl mx-auto px-6">
           <SectionLabel en="COMPARE" ja="他の専門塾との料金比較" />
 
-          <div>
-            <table className="w-full table-fixed bg-white text-center text-xs sm:text-sm border-collapse">
-              <thead>
-                <tr>
-                  <th className="w-[18%] p-2 sm:p-3 border" style={{ borderColor: `${NAVY}1A` }} />
-                  {COMPARE.columns.map((col, i) => (
-                    <th
-                      key={col}
-                      className="p-2 sm:p-3 border font-bold"
-                      style={
-                        i === 0
-                          ? { backgroundColor: NAVY, color: '#FFFFFF', borderColor: NAVY }
-                          : { borderColor: `${NAVY}1A` }
-                      }
-                    >
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {COMPARE.rows.map((row) => (
-                  <tr key={row.label}>
-                    <th className="p-2 sm:p-3 border font-normal text-xs" style={{ borderColor: `${NAVY}1A`, color: `${NAVY}B3` }}>
-                      {row.label}
-                    </th>
-                    {row.values.map((v, i) => (
-                      <td
-                        key={i}
-                        className={`px-1 py-3 sm:p-3 border leading-snug ${i === 0 ? 'font-bold text-sm sm:text-base' : ''}`}
-                        style={
-                          i === 0
-                            ? { backgroundColor: NAVY, color: GREEN, borderColor: NAVY }
-                            : { borderColor: `${NAVY}1A` }
-                        }
+          {COMPARE_IMAGE ? (
+            <img
+              src={COMPARE_IMAGE}
+              alt="NOCSY塾と他の総合型選抜専門塾の料金比較"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-auto rounded-xl bg-white"
+            />
+          ) : (
+            <div className="rounded-xl overflow-hidden bg-white">
+              <table className="w-full table-fixed text-center text-xs sm:text-sm border-collapse">
+                <thead>
+                  <tr>
+                    <th className="w-[18%] p-2 sm:p-3" />
+                    {COMPARE.columns.map((col, i) => (
+                      <th
+                        key={col}
+                        className="p-2 sm:p-3 font-bold"
+                        style={i === 0 ? { backgroundColor: NAVY, color: '#FFFFFF' } : undefined}
                       >
-                        {v}
-                      </td>
+                        {col}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {COMPARE.rows.map((row) => (
+                    <tr key={row.label} className="border-t" style={{ borderColor: `${NAVY}1A` }}>
+                      <th className="p-2 sm:p-3 font-normal text-xs" style={{ color: `${NAVY}B3` }}>
+                        {row.label}
+                      </th>
+                      {row.values.map((v, i) => (
+                        <td
+                          key={i}
+                          className={`px-1 py-3 sm:p-3 leading-snug ${i === 0 ? 'font-bold text-sm sm:text-base' : ''}`}
+                          style={i === 0 ? { backgroundColor: NAVY, color: GREEN } : undefined}
+                        >
+                          {v}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
           <p className="mt-3 text-xs text-right" style={{ color: `${NAVY}80` }}>
             ※ 各社の公開情報をもとに作成
           </p>
 
-          <div className="mt-10 bg-white p-6 md:p-8">
+          <div className="mt-10 bg-white rounded-xl p-6 md:p-8">
             <p className="font-bold mb-3">なぜこの価格でできるのか</p>
             <p className="text-sm leading-relaxed" style={{ color: `${NAVY}B3` }}>
               校舎を持たずオンラインで指導することで固定費を抑え、いまは利益よりも支援の実績づくりを優先しているためです。
@@ -361,7 +360,7 @@ export default function NocsyJukuPage() {
                 height={2752}
                 loading="lazy"
                 decoding="async"
-                className="w-40 h-40 md:w-48 md:h-48 object-cover mx-auto md:mx-0 mb-5 md:mb-0 flex-shrink-0"
+                className="w-40 h-40 md:w-48 md:h-48 object-cover rounded-full mx-auto md:mx-0 mb-5 md:mb-0 flex-shrink-0"
               />
               <div>
                 <p className="text-xs font-bold mb-1" style={{ color: GREEN }}>
@@ -375,19 +374,19 @@ export default function NocsyJukuPage() {
             </div>
           ))}
 
-          <div className="border-t pt-8" style={{ borderColor: `${NAVY}1A` }}>
+          <div className="rounded-xl p-6" style={{ backgroundColor: PALE_GREEN }}>
             <p className="text-sm font-bold mb-3">運営会社</p>
             <dl className="text-sm leading-relaxed space-y-1" style={{ color: `${NAVY}B3` }}>
               <div className="flex gap-4">
-                <dt className="w-20 flex-shrink-0">会社名</dt>
+                <dt className="w-16 flex-shrink-0">会社名</dt>
                 <dd>株式会社NOCSY</dd>
               </div>
               <div className="flex gap-4">
-                <dt className="w-20 flex-shrink-0">代表</dt>
+                <dt className="w-16 flex-shrink-0">代表</dt>
                 <dd>代表取締役 安井大翔</dd>
               </div>
               <div className="flex gap-4">
-                <dt className="w-20 flex-shrink-0">所在地</dt>
+                <dt className="w-16 flex-shrink-0">所在地</dt>
                 <dd>大阪府堺市北区長曽根町130番地42（さかい新事業創造センター内）</dd>
               </div>
             </dl>
@@ -399,9 +398,9 @@ export default function NocsyJukuPage() {
       <section id="faq" className="py-16 md:py-24" style={{ backgroundColor: PALE_GREEN }}>
         <div className="max-w-3xl mx-auto px-6">
           <SectionLabel en="FAQ" ja="よくある質問" />
-          <div className="bg-white border-t" style={{ borderColor: `${NAVY}1A` }}>
+          <div className="space-y-3">
             {FAQS.map((f) => (
-              <details key={f.q} className="group border-b px-5" style={{ borderColor: `${NAVY}1A` }}>
+              <details key={f.q} className="group bg-white rounded-lg px-5">
                 <summary className="flex items-start gap-3 py-5 cursor-pointer list-none font-bold leading-relaxed">
                   <span style={{ color: GREEN }}>Q.</span>
                   <span className="flex-1">{f.q}</span>

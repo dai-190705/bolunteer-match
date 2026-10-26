@@ -155,14 +155,14 @@ export default function NOCSYHomePage() {
                   総合型選抜対策専門塾「NOCSY塾」
                 </h2>
                 <p className="text-gray-700 leading-relaxed mb-8">
-                  オンラインで総合型選抜対策を行う専門塾を運営しています。NOCSYが提携するボランティア・探究プログラムを駆使し、志望理由書を書く前の課外活動の段階から手厚くサポートするのが特徴。総合型選抜の実績がある大学生メンターがマンツーマンで指導し、月額1.5万円からの安心低価格で、自分の言葉で語れる合格ストーリーづくりを支援します。
+                  オンラインで総合型選抜対策を行う専門塾を運営しています。NOCSYが提携するボランティア・探究プログラムを駆使し、志望理由書を書く前の課外活動の段階から手厚くサポートするのが特徴。総合型選抜の実績がある大学生メンターがマンツーマンで指導し、高校1・2年生は月額9,800円からの安心低価格で、自分の言葉で語れる合格ストーリーづくりを支援します。
                 </p>
 
                 <div className="mb-8">
                   <img
-                    src="/nocsy-juku/hero.jpg"
-                    width={1920}
-                    height={1280}
+                    src="/nocsy-juku/hero-photo.jpg"
+                    width={1260}
+                    height={570}
                     loading="lazy"
                     decoding="async"
                     alt="総合型選抜対策専門塾 NOCSY塾"
