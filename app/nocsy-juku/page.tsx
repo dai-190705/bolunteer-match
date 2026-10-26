@@ -70,7 +70,7 @@ const MODEL_CASE = [
     end: 1,
     title: '興味を整理する',
     body: '面談で、好きなこと・気になることを洗い出す',
-    image: '/nocsy-juku/detail-step1.jpg',
+    image: '/nocsy-juku/detail-step5.jpg',
   },
   {
     period: '2〜3か月目',
@@ -78,7 +78,7 @@ const MODEL_CASE = [
     end: 3,
     title: '社会に出てみる',
     body: '提携団体のボランティアや探究プログラムに参加',
-    image: '/nocsy-juku/detail-step2.png',
+    image: '/nocsy-juku/detail-step1.jpg',
   },
   {
     period: '4〜6か月目',
@@ -86,7 +86,7 @@ const MODEL_CASE = [
     end: 6,
     title: 'テーマを見つける',
     body: '活動をふり返り、深めたいテーマを決める',
-    image: '/nocsy-juku/detail-step3.jpg',
+    image: '/nocsy-juku/detail-step4.jpg',
   },
   {
     period: '7〜10か月目',
@@ -94,7 +94,7 @@ const MODEL_CASE = [
     end: 10,
     title: '自分で動く',
     body: 'マルシェ出展や自主イベントを企画して挑戦',
-    image: '/nocsy-juku/detail-step4.jpg',
+    image: '/nocsy-juku/detail-step3.jpg',
   },
   {
     period: '11〜12か月目',
@@ -102,7 +102,9 @@ const MODEL_CASE = [
     end: 12,
     title: '記録にまとめる',
     body: '1年の経験を、言葉と記録に残す',
-    image: '/nocsy-juku/detail-step5.jpg',
+    image: '/nocsy-juku/detail-step2.png',
+    // 文字の多いスクリーンショットなので、重ねる文字が読めるよう暗く・ぼかす
+    busyBackground: true,
   },
 ]
 
