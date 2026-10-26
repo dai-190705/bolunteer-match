@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { GREEN, JukuFooter, JukuNav, LineButton, LineCtaSection, NAVY, PALE_GREEN, SectionLabel } from './components'
 import CompareMobile from './CompareMobile'
 import { findImage } from './find-image'
@@ -24,10 +23,10 @@ export const metadata: Metadata = {
 const PROMISES = ['入会金0円', '契約の縛りなし', '毎月の報告書つき']
 
 const WORRIES = [
-  '総合型選抜に興味はあるけれど、何から始めればいいかわからない',
-  '子どもに「やりたいこと」がまだ見つかっていない',
-  '専門塾は月4万円以上かかると聞いて、迷っている',
-  '部活や学校が忙しく、通塾の時間がとれない',
+  '第一志望は学力が足りず、一般選抜では厳しい',
+  '勉強は得意ではなく、それ以外での進学方法を探している',
+  '一般選抜と並行して総合型の対策をしたいけど、塾費用が高い',
+  '部活動や学校が忙しく、通塾や勉強の時間が取れない',
 ]
 
 const PLANS = [
@@ -220,7 +219,6 @@ export default function NocsyJukuPage() {
               ))}
             </ul>
             <LineButton position="hero" label="LINEで無料相談する" large />
-            <p className="mt-3 text-[11px] md:text-xs text-white/70">友だち追加で、活動例をまとめた資料をお送りします</p>
           </div>
         </div>
       </section>
@@ -306,11 +304,6 @@ export default function NocsyJukuPage() {
             </p>
           </div>
 
-          <div className="mt-5 text-center">
-            <Link href="/nocsy-juku/detail" className="text-sm underline underline-offset-4 hover:opacity-60">
-              NOCSY塾の5つのステップを詳しく見る
-            </Link>
-          </div>
 
           <div className="mt-10 text-center">
             <LineButton position="middle" label="LINEで無料相談する" large />
@@ -341,7 +334,7 @@ export default function NocsyJukuPage() {
             ※ 各社の公開情報をもとに作成
           </p>
 
-          <div className="mt-10 bg-white rounded-xl p-6 md:p-8">
+          <div className="mt-10">
             <p className="font-bold mb-3">なぜこの価格でできるのか</p>
             <p className="text-sm leading-relaxed" style={{ color: `${NAVY}B3` }}>
               校舎を持たずオンラインで指導することで固定費を抑え、いまは利益よりも支援の実績づくりを優先しているためです。
