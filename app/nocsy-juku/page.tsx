@@ -186,7 +186,7 @@ export default function NocsyJukuPage() {
           width={1920}
           height={1280}
           fetchPriority="high"
-          className="w-full md:max-w-5xl md:mx-auto h-auto"
+          className="w-full h-auto"
         />
         <div className="max-w-3xl mx-auto px-6 pt-5 pb-6 md:py-12 text-center text-white">
           <h1 className="text-[1.35rem] md:text-4xl font-bold leading-snug mb-2 md:mb-4">
@@ -279,8 +279,11 @@ export default function NocsyJukuPage() {
       <section id="model" className="py-16 md:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-6">
           <SectionLabel en="MODEL CASE" ja="高1から始めた場合の1年間" lead="課外活動をつくるプランの一例です。" />
+        </div>
 
-          <ModelCaseSlider phases={MODEL_CASE} />
+        <ModelCaseSlider phases={MODEL_CASE} />
+
+        <div className="max-w-3xl mx-auto px-6">
           <p className="mt-3 text-center text-xs" style={{ color: `${NAVY}99` }}>
             写真をタップ・スワイプすると次の時期に進みます
           </p>
