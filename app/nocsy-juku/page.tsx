@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { GREEN, JukuFooter, JukuNav, LineButton, LineCtaSection, NAVY, PALE_GREEN, SectionLabel } from './components'
+import CompareMobile from './CompareMobile'
 import { findImage } from './find-image'
+import ModelCaseSlider from './ModelCaseSlider'
 
 export const metadata: Metadata = {
   title: '総合型選抜対策専門塾 NOCSY塾 | NOCSY',
@@ -62,37 +64,64 @@ const COMMON = [
 ]
 
 const MODEL_CASE = [
-  { period: '1か月目', months: 1, title: '興味を整理する', body: '面談で、好きなこと・気になることを洗い出す' },
-  { period: '2〜3か月目', months: 2, title: '社会に出てみる', body: '提携団体のボランティアや探究プログラムに参加' },
-  { period: '4〜6か月目', months: 3, title: 'テーマを見つける', body: '活動をふり返り、深めたいテーマを決める' },
-  { period: '7〜10か月目', months: 4, title: '自分で動く', body: 'マルシェ出展や自主イベントを企画して挑戦' },
-  { period: '11〜12か月目', months: 2, title: '記録にまとめる', body: '1年の経験を、言葉と記録に残す' },
-]
-
-// 1か月目から12か月目に向けて色が濃くなるようにして、時間の経過を表す
-const MODEL_COLORS = [
-  { bg: '#E3F1D1', fg: NAVY },
-  { bg: '#C6E3A0', fg: NAVY },
-  { bg: '#A9D46F', fg: NAVY },
-  { bg: GREEN, fg: NAVY },
-  { bg: NAVY, fg: '#FFFFFF' },
+  {
+    period: '1か月目',
+    start: 1,
+    end: 1,
+    title: '興味を整理する',
+    body: '面談で、好きなこと・気になることを洗い出す',
+    image: '/nocsy-juku/detail-step1.jpg',
+  },
+  {
+    period: '2〜3か月目',
+    start: 2,
+    end: 3,
+    title: '社会に出てみる',
+    body: '提携団体のボランティアや探究プログラムに参加',
+    image: '/nocsy-juku/detail-step2.png',
+  },
+  {
+    period: '4〜6か月目',
+    start: 4,
+    end: 6,
+    title: 'テーマを見つける',
+    body: '活動をふり返り、深めたいテーマを決める',
+    image: '/nocsy-juku/detail-step3.jpg',
+  },
+  {
+    period: '7〜10か月目',
+    start: 7,
+    end: 10,
+    title: '自分で動く',
+    body: 'マルシェ出展や自主イベントを企画して挑戦',
+    image: '/nocsy-juku/detail-step4.jpg',
+  },
+  {
+    period: '11〜12か月目',
+    start: 11,
+    end: 12,
+    title: '記録にまとめる',
+    body: '1年の経験を、言葉と記録に残す',
+    image: '/nocsy-juku/detail-step5.jpg',
+  },
 ]
 
 const COMPARE_IMAGE = findImage('/nocsy-juku/price-comparison')
-const COMPARE_IMAGE_SP = findImage('/nocsy-juku/price-comparison-sp')
 
 const COMPETITORS = ['A塾', 'B塾', 'C塾']
 
 const COMPARE = [
   {
-    label: '授業料（月あたり）',
+    label: '月額',
     nocsy: '9,800円〜',
     note: '安価で一般入試対策と並行して通いやすい',
+    highlight: true,
     others: ['4.4万円〜', '4.4万円〜', '3.98万円〜'],
   },
   {
     label: '入会金',
     nocsy: '0円',
+    highlight: true,
     others: ['5.5万円', '3.3万〜4.5万円', '2.95万円'],
   },
   {
@@ -261,50 +290,10 @@ export default function NocsyJukuPage() {
         <div className="max-w-3xl mx-auto px-6">
           <SectionLabel en="MODEL CASE" ja="高1から始めた場合の1年間" lead="課外活動をつくるプランの一例です。" />
 
-          {/* 12か月のうち各時期が占める長さ */}
-          <div className="mb-2 flex h-9 rounded-full overflow-hidden">
-            {MODEL_CASE.map((m, i) => (
-              <div
-                key={m.period}
-                className="flex items-center justify-center text-sm font-bold"
-                style={{ flexGrow: m.months, flexBasis: 0, backgroundColor: MODEL_COLORS[i].bg, color: MODEL_COLORS[i].fg }}
-              >
-                {i + 1}
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between text-xs mb-10" style={{ color: `${NAVY}99` }}>
-            <span>1か月目</span>
-            <span>半年</span>
-            <span>1年</span>
-          </div>
-
-          <ol>
-            {MODEL_CASE.map((m, i) => (
-              <li key={m.period} className="relative flex gap-4 pb-6 last:pb-0">
-                {i < MODEL_CASE.length - 1 && (
-                  <span className="absolute left-[15px] top-8 bottom-0 w-0.5" style={{ backgroundColor: `${GREEN}66` }} />
-                )}
-                <span
-                  className="relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                  style={{ backgroundColor: MODEL_COLORS[i].bg, color: MODEL_COLORS[i].fg }}
-                >
-                  {i + 1}
-                </span>
-                <div className="pt-0.5">
-                  <p className="leading-snug">
-                    <span className="text-xs font-bold mr-2" style={{ color: GREEN }}>
-                      {m.period}
-                    </span>
-                    <span className="font-bold">{m.title}</span>
-                  </p>
-                  <p className="text-sm leading-relaxed mt-1" style={{ color: `${NAVY}B3` }}>
-                    {m.body}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <ModelCaseSlider phases={MODEL_CASE} />
+          <p className="mt-3 text-center text-xs" style={{ color: `${NAVY}99` }}>
+            写真をタップ・スワイプすると次の時期に進みます
+          </p>
 
           <div className="mt-8 rounded-xl p-6 md:p-8 text-center text-white" style={{ backgroundColor: NAVY }}>
             <p className="text-sm font-bold mb-2" style={{ color: GREEN }}>
@@ -342,44 +331,9 @@ export default function NocsyJukuPage() {
             />
           )}
 
-          {/* スマホでは横長の比較表画像の文字が小さすぎて読めないため、項目ごとに縦に並べる */}
+          {/* スマホでは横長の比較表画像の文字が小さすぎて読めないため、2列の表で見せる */}
           <div className={COMPARE_IMAGE ? 'md:hidden' : ''}>
-            {COMPARE_IMAGE_SP ? (
-              <img
-                src={COMPARE_IMAGE_SP}
-                alt="NOCSY塾と他の総合型選抜専門塾の比較表"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-auto rounded-xl bg-white"
-              />
-            ) : (
-              <div className="space-y-3">
-                {COMPARE.map((row) => (
-                  <div key={row.label} className="bg-white rounded-xl p-4">
-                    <p className="text-xs font-bold mb-2" style={{ color: `${NAVY}99` }}>
-                      {row.label}
-                    </p>
-                    <div className="rounded-lg px-4 py-3 mb-3 text-white" style={{ backgroundColor: NAVY }}>
-                      <p className="text-[11px] font-bold mb-0.5" style={{ color: GREEN }}>
-                        NOCSY塾
-                      </p>
-                      <p className="font-bold leading-snug">{row.nocsy}</p>
-                      {row.note && <p className="text-xs text-white/80 mt-1 leading-relaxed">{row.note}</p>}
-                    </div>
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      {row.others.map((v, i) => (
-                        <div key={i}>
-                          <p className="text-[11px] font-bold mb-0.5">{COMPETITORS[i]}</p>
-                          <p className="text-[11px] leading-snug" style={{ color: `${NAVY}B3` }}>
-                            {v}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <CompareMobile competitors={COMPETITORS} rows={COMPARE} />
           </div>
           <p className="mt-3 text-xs text-right" style={{ color: `${NAVY}80` }}>
             ※ 各社の公開情報をもとに作成
