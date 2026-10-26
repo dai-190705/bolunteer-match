@@ -14,7 +14,7 @@ export const metadata: Metadata = {
       '週1回40分のオンライン個別指導で、課外活動づくりから志望理由書・面接まで伴走。月額9,800円〜、入会金0円・縛りなし。',
     url: 'https://www.nocsy.me/nocsy-juku',
     siteName: 'NOCSY',
-    images: [{ url: '/nocsy-juku/hero-photo.jpg', width: 1260, height: 570, alt: 'NOCSY塾' }],
+    images: [{ url: '/nocsy-juku/hero.jpg', width: 1920, height: 1280, alt: 'NOCSY塾' }],
     locale: 'ja_JP',
     type: 'website',
   },
@@ -178,48 +178,38 @@ export default function NocsyJukuPage() {
     <div className="font-sans" style={{ color: NAVY }}>
       <JukuNav />
 
-      {/* ===== ファーストビュー（スマホで開いた瞬間にLINEボタンまで見えるよう高さを抑える） ===== */}
-      <section className="pt-[60px]">
+      {/* ===== ファーストビュー（スマホで開いた瞬間にLINEボタンまで見えるよう、画像下の文字は最小限にする） ===== */}
+      <section className="pt-[60px]" style={{ backgroundColor: NAVY }}>
         <img
-          src="/nocsy-juku/hero-photo.jpg"
-          alt="総合型選抜対策専門塾 NOCSY塾で学ぶ高校生"
-          width={1260}
-          height={570}
+          src="/nocsy-juku/hero.jpg"
+          alt="総合型選抜対策専門塾 NOCSY塾 — マンツーマンで課外活動からサポート、総合型選抜経験のある大学生メンターがリアルな指導、月額9,800円〜の安心低価格"
+          width={1920}
+          height={1280}
           fetchPriority="high"
-          className="w-full h-[130px] md:h-[380px] object-cover object-[center_30%]"
+          className="w-full md:max-w-5xl md:mx-auto h-auto"
         />
-        <div className="text-white" style={{ backgroundColor: NAVY }}>
-          <div className="max-w-3xl mx-auto px-6 pt-7 pb-8 md:py-14 text-center">
-            <p className="text-[11px] md:text-sm font-bold tracking-[0.25em] mb-2 md:mb-4" style={{ color: GREEN }}>
-              総合型選抜対策専門塾 NOCSY塾
-            </p>
-            <h1 className="text-[1.6rem] md:text-4xl font-bold leading-snug mb-3 md:mb-5">
-              総合型選抜の準備を、
-              <br />
-              高1から。
-            </h1>
-            <p className="text-sm md:text-base text-white/85 leading-relaxed mb-4 md:mb-6">
-              週1回40分のオンライン個別指導で、
-              <br className="md:hidden" />
-              課外活動から志望理由書・面接まで伴走します。
-            </p>
-            <p className="mb-2 md:mb-3">
-              <span className="text-sm text-white/80 mr-2">月額</span>
-              <span className="text-[2.6rem] md:text-6xl font-bold leading-none" style={{ color: GREEN }}>
-                9,800
-              </span>
-              <span className="text-lg md:text-xl font-bold ml-1">円〜</span>
-            </p>
-            <ul className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs md:text-sm font-bold text-white/90 mb-5 md:mb-8">
-              {PROMISES.map((p) => (
-                <li key={p} className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: GREEN }} />
-                  {p}
-                </li>
-              ))}
-            </ul>
-            <LineButton position="hero" label="LINEで無料相談する" large />
-          </div>
+        <div className="max-w-3xl mx-auto px-6 pt-5 pb-6 md:py-12 text-center text-white">
+          <h1 className="text-[1.35rem] md:text-4xl font-bold leading-snug mb-2 md:mb-4">
+            総合型選抜の準備を、
+            <br className="hidden md:inline" />
+            高1から。
+          </h1>
+          <p className="mb-1.5 md:mb-3">
+            <span className="text-sm text-white/80 mr-2">月額</span>
+            <span className="text-[2.2rem] md:text-6xl font-bold leading-none" style={{ color: GREEN }}>
+              9,800
+            </span>
+            <span className="text-lg md:text-xl font-bold ml-1">円〜</span>
+          </p>
+          <ul className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 text-xs md:text-sm font-bold text-white/90 mb-4 md:mb-8">
+            {PROMISES.map((p) => (
+              <li key={p} className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: GREEN }} />
+                {p}
+              </li>
+            ))}
+          </ul>
+          <LineButton position="hero" label="LINEで無料相談する" large />
         </div>
       </section>
 
