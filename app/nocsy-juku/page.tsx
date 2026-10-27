@@ -14,7 +14,7 @@ export const metadata: Metadata = {
       '週1回40分のオンライン個別指導で、課外活動づくりから志望理由書・面接まで伴走。月額9,800円〜、入会金0円・縛りなし。',
     url: 'https://www.nocsy.me/nocsy-juku',
     siteName: 'NOCSY',
-    images: [{ url: '/nocsy-juku/hero.jpg', width: 1920, height: 1280, alt: 'NOCSY塾' }],
+    images: [{ url: '/nocsy-juku/hero.jpg', width: 1200, height: 800, alt: 'NOCSY塾' }],
     locale: 'ja_JP',
     type: 'website',
   },
@@ -182,6 +182,8 @@ export default function NocsyJukuPage() {
       <section className="pt-[60px]" style={{ backgroundColor: NAVY }}>
         <img
           src="/nocsy-juku/hero.jpg"
+          srcSet="/nocsy-juku/hero.jpg 1200w, /nocsy-juku/hero-lp.jpg 1920w"
+          sizes="100vw"
           alt="総合型選抜対策専門塾 NOCSY塾 — マンツーマンで課外活動からサポート、総合型選抜経験のある大学生メンターがリアルな指導、月額9,800円〜の安心低価格"
           width={1920}
           height={1280}

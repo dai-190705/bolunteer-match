@@ -29,7 +29,7 @@ export default function NOCSYHomePage() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url('/hero.png')` }}
+          style={{ backgroundImage: `url('/hero.jpg')` }}
         />
         <div className="absolute inset-0 bg-black/55" />
 
@@ -134,7 +134,7 @@ export default function NOCSYHomePage() {
 
                 <div className="mb-8">
                   <img
-                    src="/services/event.png"
+                    src="/services/event.jpg"
                     alt="探究イベントの開催"
                     className="w-full object-contain"
                   />
@@ -161,8 +161,8 @@ export default function NOCSYHomePage() {
                 <div className="mb-8">
                   <img
                     src="/nocsy-juku/hero.jpg"
-                    width={1920}
-                    height={1280}
+                    width={1200}
+                    height={800}
                     loading="lazy"
                     decoding="async"
                     alt="総合型選抜対策専門塾 NOCSY塾"

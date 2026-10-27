@@ -42,7 +42,7 @@ export const EVENTS: NocsyEvent[] = [
     place: 'Sodachi（堺市北区百舌鳥梅北町4-194）',
     target: '小学生',
     fee: '4,000円（お1人につき）',
-    imageUrl: '/events/kodomo-omiseyasan-fes.png',
+    imageUrl: '/events/kodomo-omiseyasan-fes.jpg',
     applyUrl: 'https://forms.gle/SaEjeu7aXRxkxGiQA',
     description: `9月6日（日）開催！こどもお店屋さんフェス！
 
